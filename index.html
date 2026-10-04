@@ -363,6 +363,22 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
   input,textarea,select{font-size:16px !important}
 }
 
+
+.question-line{width:100%;text-align:center;font-size:clamp(17px,2vw,24px);font-weight:600;line-height:1.2;margin:2px 0 5px;white-space:nowrap}
+@media(max-width:700px){.question-line{font-size:14px;margin:1px 0 2px;line-height:1.05}}
+
+.origin-practice{margin-top:10px;padding-top:9px;border-top:1px solid #e5e0d8;text-align:center}
+.origin-question{font-size:clamp(17px,2vw,22px);font-weight:600;line-height:1.2;margin-bottom:7px;white-space:nowrap}
+.origin-answer{align-items:center;justify-content:center;gap:5px;font-size:clamp(17px,2vw,22px);font-weight:600;white-space:nowrap}
+.origin-input{width:135px;height:38px;border:1.5px solid #bdbdbd;border-radius:9px;background:#fff;outline:none;padding:3px 7px;text-align:center;font:inherit;color:#292929}
+.origin-input::placeholder{color:#aaa;opacity:.72;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-weight:400}
+@media(max-width:700px){
+ .origin-practice{margin-top:5px;padding-top:5px}
+ .origin-question{font-size:14px;margin-bottom:3px;line-height:1.05}
+ .origin-answer{font-size:14px;gap:3px}
+ .origin-input{width:90px;height:32px;font-size:16px!important;padding:1px 5px;border-radius:7px}
+}
+
 </style>
 
 <style>
@@ -403,6 +419,8 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
   <section class="drawer" id="drawer">
     <div class="composer">
       <div class="subject-guide">介绍一下中国料理吧：</div>
+<div id="questionLine" class="question-line" style="display:none"></div>
+
 <div class="sentence-row">
         <div class="sentence">
           <input class="subject" id="subject" type="text" autocomplete="off" placeholder="请输入料理名">
@@ -430,6 +448,14 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
         <div class="group three">
           <div class="group-head">の</div>
           <div class="choices" id="row3"></div>
+        </div>
+      </div>
+
+      <div class="origin-practice">
+        <div id="originQuestion" class="origin-question" style="display:none"></div>
+        <div id="originAnswer" class="origin-answer" style="display:none">
+          <input id="originInput" class="origin-input" type="text" autocomplete="off" placeholder="请输入国家名">
+          <span>の りょうりです。</span>
         </div>
       </div>
 
@@ -499,8 +525,27 @@ function setToken(id,val,list,placeholder){
 }
 
 function validate(){
- document.getElementById("postBtn").disabled=
-   !(document.getElementById("subject").value.trim() && s1 && s3);
+ const subjectValue=document.getElementById("subject").value.trim();
+ const questionLine=document.getElementById("questionLine");
+ const originQuestion=document.getElementById("originQuestion");
+ const originAnswer=document.getElementById("originAnswer");
+
+ if(subjectValue){
+   questionLine.textContent=subjectValue+"は なんの りょうり ですか。";
+   questionLine.style.display="block";
+
+   originQuestion.textContent=subjectValue+"は どこの りょうり ですか。";
+   originQuestion.style.display="block";
+   originAnswer.style.display="flex";
+ }else{
+   questionLine.textContent="";
+   questionLine.style.display="none";
+
+   originQuestion.textContent="";
+   originQuestion.style.display="none";
+   originAnswer.style.display="none";
+ }
+ document.getElementById("postBtn").disabled=!(subjectValue && s1 && s3);
 }
 document.getElementById("subject").addEventListener("input",validate);
 
