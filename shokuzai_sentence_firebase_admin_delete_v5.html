@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>食材の文を作ろう</title>
+<style>
+*{box-sizing:border-box}
+:root{
+ --bg:#f6f2ea; --ink:#292929; --line:#d9d2c7;
+ --orange:#ffe4cf; --orangeText:#8b431d; --orangeStrong:#f3b27f;
+ --blue:#dceeff; --blueText:#245f8b; --blueStrong:#91c7ec;
+ --green:#ddf1d8; --greenText:#39713a; --greenStrong:#9ed294;
+}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+ font-family:"Yu Kyokasho","YuKyokasho","BIZ UDPGothic","Noto Sans JP",sans-serif}
+.app{width:min(1050px,95vw);margin:0 auto;padding:22px 0 55px}
+
+/* 投稿一覧 */
+.board-title{font-size:14px;color:#777;margin:0 0 7px 4px}
+.feed{
+ height:350px; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth;
+ background:rgba(255,255,255,.68); border:1px solid var(--line);
+ border-radius:18px; padding:10px; display:flex; flex-direction:column; gap:8px;
+}
+.empty{height:100%;display:grid;place-items:center;color:#aaa;font-size:14px}
+.post{
+ flex:0 0 64px; min-height:64px; background:#fff; border:1px solid #e4dfd7;
+ border-radius:12px; display:flex; align-items:center; justify-content:flex-start;
+ gap:6px; white-space:nowrap; font-size:17px; padding:0 10px 0 14px; box-shadow:0 1px 4px rgba(0,0,0,.04)
+}
+.post-text{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.like-btn{
+ margin-left:auto;flex:0 0 auto;min-height:auto;border:1px solid #e6b8bf;
+ background:#fff7f8;color:#b84e61;border-radius:9px;padding:5px 9px;
+ font:600 12px inherit;cursor:pointer;box-shadow:none
+}
+.like-btn:hover{background:#ffecef}
+.like-btn.liked{background:#ffe1e6;color:#a9364d;border-color:#d98b99}
+.heart-count{margin-left:2px;font-size:13px;color:#b84e61;font-weight:600;white-space:nowrap}
+.post.pending{border-left:4px solid #e2b15d}
+.post.synced{border-left:4px solid #9fc79c}
+.post-word{position:relative;display:inline-flex;align-items:center;justify-content:center;
+ padding:5px 8px;border-radius:8px;line-height:1;vertical-align:baseline}
+.post-word.ing{background:var(--orange);color:var(--orangeText)}
+.post-word.dish{background:var(--green);color:var(--greenText)}
+.post-cn{position:absolute;top:calc(100% + 3px);left:0;right:0;text-align:center;
+ font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-size:12px;line-height:1;color:#555}
+
+/* 下の作成ドロワー */
+.drawer{position:relative;margin-top:28px}
+
+
+.composer{
+ background:#fff;border:1px solid var(--line);border-radius:18px;
+ padding:14px 16px 16px;box-shadow:0 5px 18px rgba(0,0,0,.045)
+}
+.sentence-row{display:flex;align-items:center;gap:10px}
+.sentence{
+ flex:1;min-width:0;display:flex;align-items:center;justify-content:center;
+ gap:6px;white-space:nowrap;font-size:clamp(17px,2vw,24px);font-weight:600;
+ min-height:58px
+}
+.subject{
+ width:135px;height:42px;background:#fff;border:1.5px solid #bdbdbd;border-radius:9px;
+ outline:none;text-align:center;font:inherit;color:var(--ink);padding:4px 7px
+}
+.subject::placeholder{
+ color:#aaa;
+ opacity:.72;
+ font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+ font-size:inherit;
+ font-weight:400;
+}
+.token{position:relative;display:inline-flex;align-items:center;justify-content:center;
+ padding:6px 9px;border-radius:9px;line-height:1}
+.token.ing{background:var(--orange);color:var(--orangeText)}
+.token.dish{background:var(--green);color:var(--greenText)}
+.token.empty-token{background:transparent;color:#999}
+.token-cn{position:absolute;top:calc(100% + 3px);left:0;right:0;text-align:center;
+ font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-size:12px;font-weight:500;
+ color:#666;line-height:1}
+.post-btn{
+ flex:0 0 auto;height:40px;padding:0 17px;border:0;border-radius:10px;
+ background:#333;color:#fff;font:600 14px inherit;cursor:pointer
+}
+.post-btn:disabled{opacity:.28;cursor:default}
+
+/* 選択 */
+.pickers{margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.group{padding:10px;border-radius:14px}
+.group.one{background:var(--orange)}
+.group.two{background:var(--blue);transition:opacity .18s}
+.group.two.waiting{opacity:.42}
+.group.three{background:var(--green)}
+.group-head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:7px;
+ font-size:18px;font-weight:600}
+.group-head .cn-note{font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+ font-weight:400;color:#587084;font-size:15px}
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.choice{
+ min-height:49px;border-radius:9px;cursor:pointer;padding:5px 4px;
+ font:inherit;box-shadow:none
+}
+.one .choice{background:#fff3e9;border:1px solid #e8aa80;color:var(--orangeText)}
+.two .choice{background:#eef7ff;border:1px solid #91bfdf;color:var(--blueText)}
+.three .choice{background:#eff9ec;border:1px solid #9bc796;color:var(--greenText)}
+.one .choice.selected{background:var(--orangeStrong);border-color:#b9612d}
+.two .choice.selected{background:var(--blueStrong);border-color:#4d8fbd}
+.three .choice.selected{background:var(--greenStrong);border-color:#5a9a55}
+.jp{display:block;font-size:clamp(15px,1.65vw,19px);font-weight:600;line-height:1.05}
+.cn{display:block;margin-top:3px;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+ font-size:12px;line-height:1;color:inherit;opacity:.78}
+.bottom{display:flex;justify-content:center;margin-top:10px}
+.reset{border:1px solid #ccc;background:#fff;color:#666;border-radius:8px;
+ padding:6px 15px;font:12px inherit;cursor:pointer}
+
+@media(max-width:720px){
+ .app{width:96vw}
+ .feed{height:330px}
+ .post{font-size:14px}
+ .composer{padding:10px}
+ .sentence-row{gap:5px}
+ .sentence{font-size:14px;gap:3px}
+ .subject{width:90px;height:36px}
+ .token{padding:5px 5px}
+ .post-btn{height:36px;padding:0 10px;font-size:12px}
+ .choices{grid-template-columns:repeat(3,1fr)}
+ .drawer.closed{transform:translateY(360px)}
+}
+
+.name-modal{
+ position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.28);
+ display:flex;align-items:center;justify-content:center;padding:20px
+}
+.name-modal.hidden{display:none}
+.name-box{
+ width:min(360px,92vw);background:#fff;border-radius:18px;padding:24px;
+ box-shadow:0 12px 40px rgba(0,0,0,.16);text-align:center
+}
+.name-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.name-note{font-size:13px;color:#777;margin-bottom:15px}
+.name-input{
+ width:100%;box-sizing:border-box;border:1.5px solid #ddd;border-radius:12px;
+ padding:12px 14px;font-size:18px;text-align:center;outline:none;background:#fff;color:#333
+}
+.name-input::placeholder{color:#b8b8b8;opacity:1;font-weight:400}
+.name-save{
+ margin-top:14px;border:0;border-radius:12px;padding:10px 24px;
+ font-size:16px;font-weight:700;background:#333;color:#fff;cursor:pointer
+}
+
+.like-btn:disabled{cursor:default;opacity:.58}
+
+.delete-modal{
+ position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.28);
+ display:flex;align-items:center;justify-content:center;padding:20px
+}
+.delete-modal.hidden{display:none}
+.delete-box{
+ width:min(320px,90vw);background:#fff;border-radius:18px;padding:22px;
+ box-shadow:0 12px 40px rgba(0,0,0,.16);text-align:center
+}
+.delete-question{font-size:18px;font-weight:700;margin-bottom:18px}
+.delete-actions{display:flex;gap:10px;justify-content:center}
+.delete-actions button{
+ min-width:90px;border:0;border-radius:11px;padding:9px 18px;
+ font-size:15px;font-weight:700;cursor:pointer
+}
+.delete-yes{background:#333;color:#fff}
+.delete-no{background:#eee;color:#444}
+.post{touch-action:pan-y}
+
+.subject-guide{font-size:14px;color:#666;white-space:nowrap;flex:0 0 auto;transform:translateX(-18px);margin-right:-18px}
+</style>
+</head>
+<body>
+
+<div id="nameModal" class="name-modal hidden">
+ <div class="name-box">
+  
+  
+  <input id="userNameInput" class="name-input" type="text" maxlength="20" autocomplete="name" placeholder="请输入姓名">
+  <br>
+  <button class="name-save" onclick="saveUserName()">确定</button>
+ </div>
+</div>
+
+<div id="deleteModal" class="delete-modal hidden">
+ <div class="delete-box">
+  <div class="delete-question">消しますか？</div>
+  <div class="delete-actions">
+   <button class="delete-yes" onclick="confirmDeletePost()">はい</button>
+   <button class="delete-no" onclick="cancelDeletePost()">いいえ</button>
+  </div>
+ </div>
+</div>
+
+<div class="app">
+  <div class="board-title">发布 <span id="syncStatus" style="margin-left:8px;font-size:11px;color:#999">● オフライン</span></div>
+  <section class="feed" id="feed">
+    <div class="empty" id="empty">まだ投稿がありません。</div>
+  </section>
+
+  <section class="drawer" id="drawer">
+    <div class="composer">
+      <div class="sentence-row">
+        <div class="sentence">
+          <span class="subject-guide">介绍一下中国料理吧：</span><input class="subject" id="subject" type="text" autocomplete="off" placeholder="请输入料理名">
+          <span>は</span>
+          <span class="token ing empty-token" id="t1"><span id="t1jp">＿＿</span><span class="token-cn" id="t1cn"></span></span>
+          <span id="and" style="display:none">と</span>
+          <span class="token ing" id="t2" style="display:none"><span id="t2jp"></span><span class="token-cn" id="t2cn"></span></span>
+          <span>の</span>
+          <span class="token dish empty-token" id="t3"><span id="t3jp">＿＿</span><span class="token-cn" id="t3cn"></span></span>
+          <span>です。</span>
+        </div>
+        <button class="post-btn" id="postBtn" onclick="postSentence()" disabled>发布</button>
+      </div>
+
+      <div class="pickers">
+        <div class="group one">
+          <div class="choices" id="row1"></div>
+        </div>
+
+        <div class="group two waiting" id="group2">
+          <div class="group-head"><span>と</span><span class="cn-note">如果还要选一种食材，请点击。</span></div>
+          <div class="choices" id="row2"></div>
+        </div>
+
+        <div class="group three">
+          <div class="group-head">の</div>
+          <div class="choices" id="row3"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<script>
+const ingredients=[
+ ["とりにく","鸡肉"],["ぎゅうにく","牛肉"],["ぶたにく","猪肉"],
+ ["やさい","蔬菜"],["たまご","鸡蛋"],["さかな","鱼"],
+ ["トマト","西红柿"],["えび","虾"],["とうふ","豆腐"],["ごはん","米饭"]
+];
+const dishes=[
+ ["りょうり","料理"],["スープ","汤"],["ジュース","果汁"],
+ ["カレー","咖喱"],["米粉","米粉"],["ラーメン","拉面"],["なべ","火锅"]
+];
+
+let s1=null,s2=null,s3=null;
+
+const cnOf=(list,v)=>(list.find(x=>x[0]===v)||["",""])[1];
+
+function makeChoice(item,selected,onClick){
+ const b=document.createElement("button");
+ b.className="choice"+(selected===item[0]?" selected":"");
+ b.innerHTML=`<span class="jp">${item[0]}</span><span class="cn">${item[1]}</span>`;
+ b.onclick=()=>onClick(item[0]);
+ return b;
+}
+
+function render(){
+ const r1=document.getElementById("row1"),r2=document.getElementById("row2"),r3=document.getElementById("row3");
+ r1.innerHTML=r2.innerHTML=r3.innerHTML="";
+
+ ingredients.forEach(x=>r1.appendChild(makeChoice(x,s1,v=>{
+   const old=s1;s1=(s1===v?null:v);
+   if(s2===s1 || (old && s2===v)) s2=null;
+   render();
+ })));
+
+ ingredients.filter(x=>x[0]!==s1).forEach(x=>r2.appendChild(makeChoice(x,s2,v=>{
+   s2=(s2===v?null:v);render();
+ })));
+
+ dishes.forEach(x=>r3.appendChild(makeChoice(x,s3,v=>{
+   s3=(s3===v?null:v);render();
+ })));
+
+ setToken("t1",s1,ingredients,"＿＿");
+ setToken("t3",s3,dishes,"＿＿");
+
+ document.getElementById("and").style.display=s2?"inline":"none";
+ document.getElementById("t2").style.display=s2?"inline-flex":"none";
+ document.getElementById("t2jp").textContent=s2||"";
+ document.getElementById("t2cn").textContent=s2?cnOf(ingredients,s2):"";
+ document.getElementById("group2").classList.toggle("waiting",!s2);
+ validate();
+}
+
+function setToken(id,val,list,placeholder){
+ const box=document.getElementById(id);
+ document.getElementById(id+"jp").textContent=val||placeholder;
+ document.getElementById(id+"cn").textContent=val?cnOf(list,val):"";
+ box.classList.toggle("empty-token",!val);
+}
+
+function validate(){
+ document.getElementById("postBtn").disabled=
+   !(document.getElementById("subject").value.trim() && s1 && s3);
+}
+document.getElementById("subject").addEventListener("input",validate);
+
+function esc(v){
+ return v.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+}
+function postWord(jp,cn,type){
+ return `<span class="post-word ${type}"><span>${jp}</span><span class="post-cn">${cn}</span></span>`;
+}
+function likePost(btn){
+ const item=btn.closest(".post");
+ const id=item.dataset.id;
+ const post=postsById[id];
+ if(!post || hasLiked(id)) return;
+
+ rememberLike(id);
+ post.likes=(post.likes||0)+1;
+ saveLocalPost(post);
+ renderHeart(item,post.likes);
+ btn.disabled=true;
+ btn.classList.add("liked");
+ queueLikeSync(post);
+}function postSentence(){
+ const subject=document.getElementById("subject").value.trim();
+ if(!subject||!s1||!s3)return;
+
+ const post={
+   id:makeId(),
+   subject,
+   s1,
+   s2:s2||"",
+   s3,
+   likes:0,
+   createdAt:Date.now(),
+   clientId,
+   author:userName,
+   pending:true
+ };
+
+ postsById[post.id]=post;
+ saveLocalPost(post);
+ renderPost(post,true);
+ enqueue(post.id);
+
+ document.getElementById("subject").value="";
+ s1=s2=s3=null;
+ render();
+
+ if(firebaseConnected) flushQueue();
+}
+
+function resetSelection(){
+ s1=s2=s3=null; render();
+}
+
+function toggleDrawer(){
+ const drawer=document.getElementById("drawer");
+ const handle=document.getElementById("handle");
+ const closed=drawer.classList.toggle("closed");
+ handle.textContent=closed?"▲ 選択を戻す":"▼ 選択を半分閉じる";
+}
+
+render();
+</script>
+
+<script>
+/* ---------- Offline-first storage ---------- */
+const LOCAL_POSTS_KEY="shokuzai_posts_v1";
+const OUTBOX_KEY="shokuzai_outbox_v1";
+const CLIENT_KEY="shokuzai_client_id_v1";
+const clientId=localStorage.getItem(CLIENT_KEY)||("c_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2));
+localStorage.setItem(CLIENT_KEY,clientId);
+
+const USER_NAME_KEY="shokuzai_user_name_v1";
+const LIKED_KEY="shokuzai_liked_by_name_v1";
+let userName=(localStorage.getItem(USER_NAME_KEY)||"").trim();
+
+function likedMap(){ return readJSON(LIKED_KEY,{}); }
+function likeKey(postId){ return userName+"::"+postId; }
+function hasLiked(postId){ return !!likedMap()[likeKey(postId)]; }
+function rememberLike(postId){
+ const m=likedMap();
+ m[likeKey(postId)]=true;
+ writeJSON(LIKED_KEY,m);
+}
+
+function openNameModal(){
+ const modal=document.getElementById("nameModal");
+ const input=document.getElementById("userNameInput");
+ if(input) input.value=userName;
+ modal.classList.remove("hidden");
+ setTimeout(()=>{
+   if(input){
+     input.focus();
+     input.select();
+   }
+ },50);
+}
+function saveUserName(){
+ const input=document.getElementById("userNameInput");
+ const name=(input.value||"").trim();
+ if(!name){input.focus();return}
+ userName=name;
+ localStorage.setItem(USER_NAME_KEY,userName);
+ document.getElementById("nameModal").classList.add("hidden");
+ Object.values(postsById)
+   .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))
+   .forEach(p=>renderPost(p,false));
+}
+document.getElementById("userNameInput")?.addEventListener("keydown",e=>{
+ if(e.key==="Enter")saveUserName();
+});
+
+let postsById={};
+let firebaseConnected=false;
+let firebaseAPI=null;
+
+function makeId(){
+ return clientId+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);
+}
+function readJSON(key,fallback){
+ try{return JSON.parse(localStorage.getItem(key))||fallback}catch{return fallback}
+}
+function writeJSON(key,value){
+ try{localStorage.setItem(key,JSON.stringify(value))}catch{}
+}
+function saveLocalPost(post){
+ postsById[post.id]={...(postsById[post.id]||{}),...post};
+ writeJSON(LOCAL_POSTS_KEY,postsById);
+}
+function getOutbox(){return readJSON(OUTBOX_KEY,[])}
+function setOutbox(v){writeJSON(OUTBOX_KEY,[...new Set(v)])}
+function enqueue(id){
+ const q=getOutbox();
+ if(!q.includes(id))q.push(id);
+ setOutbox(q);
+ markPostState(id,false);
+}
+function dequeue(id){setOutbox(getOutbox().filter(x=>x!==id))}
+function renderHeart(item,count){
+ const el=item.querySelector(".heart-count");
+ el.textContent=count>0?"♥×"+count:"";
+}
+function markPostState(id,synced){
+ const el=document.querySelector(`.post[data-id="${CSS.escape(id)}"]`);
+ if(!el)return;
+ el.classList.toggle("synced",synced);
+ el.classList.toggle("pending",!synced);
+}
+function postHTML(post){
+ return `<div class="post-text">`+
+   `<span>${post.author?`（${esc(post.author)}）`:""}${esc(post.subject)} は</span>`+
+   postWord(post.s1,cnOf(ingredients,post.s1),"ing")+
+   (post.s2?`<span>と</span>${postWord(post.s2,cnOf(ingredients,post.s2),"ing")}`:"")+
+   `<span>の</span>${postWord(post.s3,cnOf(dishes,post.s3),"dish")}<span>です。</span>`+
+   `<span class="heart-count">${post.likes>0?"♥×"+post.likes:""}</span>`+
+   `</div><button class="like-btn${hasLiked(post.id)?" liked":""}" ${hasLiked(post.id)?"disabled":""} onclick="likePost(this)">♥ この料理がすきです</button>`;
+}
+function renderPost(post,scroll=false){
+ const feed=document.getElementById("feed");
+ const empty=document.getElementById("empty"); if(empty)empty.remove();
+
+ let item=document.querySelector(`.post[data-id="${CSS.escape(post.id)}"]`);
+ if(!item){
+   item=document.createElement("div");
+   item.className="post";
+   item.dataset.id=post.id;
+   feed.appendChild(item);
+ }
+ item.innerHTML=postHTML(post);
+ item.classList.toggle("pending",!!post.pending);
+ item.classList.toggle("synced",!post.pending);
+ attachLongPress(item);
+ if(scroll)feed.scrollTo({top:feed.scrollHeight,behavior:"smooth"});
+}
+function loadLocalPosts(){
+ postsById=readJSON(LOCAL_POSTS_KEY,{});
+ Object.values(postsById)
+  .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))
+  .forEach(p=>renderPost(p,false));
+}
+function setStatus(online){
+ const el=document.getElementById("syncStatus");
+ if(!el)return;
+ el.textContent=online?"● 接続中":"● オフライン";
+ el.style.color=online?"#5d9661":"#999";
+}
+async function flushQueue(){
+ if(!firebaseConnected||!firebaseAPI)return;
+ const q=getOutbox();
+ for(const id of q){
+   const post=postsById[id];
+   if(!post){dequeue(id);continue}
+   try{
+     await firebaseAPI.sendPost({...post,pending:false});
+     post.pending=false;
+     saveLocalPost(post);
+     dequeue(id);
+     markPostState(id,true);
+   }catch(e){
+     console.warn("sync pending",e);
+     break;
+   }
+ }
+}
+async function queueLikeSync(post){
+ saveLocalPost(post);
+ if(firebaseConnected&&firebaseAPI){
+   try{await firebaseAPI.setLikes(post.id,post.likes)}
+   catch{enqueue(post.id)}
+ }else enqueue(post.id);
+}
+
+/* Called by Firebase module when remote data arrives */
+window.receiveRemotePost=function(remote){
+ if(!remote||!remote.id)return;
+ const local=postsById[remote.id];
+ const merged={
+   ...(local||{}),
+   ...remote,
+   likes:Math.max(local?.likes||0,remote.likes||0),
+   pending:false
+ };
+ postsById[merged.id]=merged;
+ saveLocalPost(merged);
+ dequeue(merged.id);
+ renderPost(merged,false);
+ markPostState(merged.id,true);
+};
+window.firebaseConnectionChanged=function(connected,api){
+ firebaseConnected=connected;
+ if(api)firebaseAPI=api;
+ setStatus(connected);
+ if(connected)flushQueue();
+};
+
+
+let deleteTargetId=null;
+let pressTimer=null;
+let pressStartX=0, pressStartY=0;
+
+function isAdminName(){
+ return userName==="あさの";
+}
+function attachLongPress(item){
+ if(item.dataset.longPressReady==="1")return;
+ item.dataset.longPressReady="1";
+
+ const start=e=>{
+   if(!isAdminName())return;
+   if(e.target.closest("button"))return;
+   const point=e.touches?e.touches[0]:e;
+   pressStartX=point.clientX; pressStartY=point.clientY;
+   clearTimeout(pressTimer);
+   pressTimer=setTimeout(()=>{
+     deleteTargetId=item.dataset.id;
+     document.getElementById("deleteModal").classList.remove("hidden");
+   },1000);
+ };
+ const move=e=>{
+   if(!pressTimer)return;
+   const point=e.touches?e.touches[0]:e;
+   if(Math.abs(point.clientX-pressStartX)>12 || Math.abs(point.clientY-pressStartY)>12){
+     clearTimeout(pressTimer); pressTimer=null;
+   }
+ };
+ const end=()=>{clearTimeout(pressTimer);pressTimer=null};
+
+ item.addEventListener("mousedown",start);
+ item.addEventListener("mousemove",move);
+ item.addEventListener("mouseup",end);
+ item.addEventListener("mouseleave",end);
+ item.addEventListener("touchstart",start,{passive:true});
+ item.addEventListener("touchmove",move,{passive:true});
+ item.addEventListener("touchend",end);
+ item.addEventListener("touchcancel",end);
+}
+function cancelDeletePost(){
+ deleteTargetId=null;
+ document.getElementById("deleteModal").classList.add("hidden");
+}
+async function confirmDeletePost(){
+ const id=deleteTargetId;
+ cancelDeletePost();
+ if(!id || !isAdminName())return;
+
+ delete postsById[id];
+ writeJSON(LOCAL_POSTS_KEY,postsById);
+ dequeue(id);
+ document.querySelector(`.post[data-id="${CSS.escape(id)}"]`)?.remove();
+
+ if(firebaseConnected && firebaseAPI){
+   try{await firebaseAPI.deletePost(id)}
+   catch(e){console.warn("delete sync failed",e)}
+ }
+}
+loadLocalPosts();
+setStatus(false);
+openNameModal();
+</script>
+
+<script type="module">
+/* ---------- Firebase Realtime Database ---------- */
+try{
+ const {initializeApp}=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js");
+ const {getDatabase,ref,onValue,set,update,remove}=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js");
+
+ const firebaseConfig={
+   apiKey:"AIzaSyCaLCM4TXURROKyDKD_Mga8ZnWr1-Wk9Wg",
+   authDomain:"database-s-9e4b3.firebaseapp.com",
+   databaseURL:"https://database-s-9e4b3-default-rtdb.asia-southeast1.firebasedatabase.app",
+   projectId:"database-s-9e4b3",
+   storageBucket:"database-s-9e4b3.firebasestorage.app",
+   messagingSenderId:"13648984683",
+   appId:"1:13648984683:web:c782d2963c253df69b8f2e",
+   measurementId:"G-FV2NMNQW4C"
+ };
+
+ const app=initializeApp(firebaseConfig);
+ const db=getDatabase(app);
+ const postsRef=ref(db,"shokuzaiSentence/posts");
+
+ const api={
+   sendPost:post=>set(ref(db,"shokuzaiSentence/posts/"+post.id),{
+     id:post.id,subject:post.subject,s1:post.s1,s2:post.s2||"",s3:post.s3,
+     likes:post.likes||0,createdAt:post.createdAt||Date.now(),clientId:post.clientId||"",author:post.author||""
+   }),
+   setLikes:(id,likes)=>update(ref(db,"shokuzaiSentence/posts/"+id),{likes}),
+   deletePost:id=>remove(ref(db,"shokuzaiSentence/posts/"+id))
+ };
+
+ onValue(ref(db,".info/connected"),snap=>{
+   window.firebaseConnectionChanged?.(snap.val()===true,api);
+ });
+
+ onValue(postsRef,snap=>{
+   const data=snap.val()||{};
+   Object.values(data).forEach(post=>window.receiveRemotePost?.(post));
+
+   const remoteIds=new Set(Object.keys(data));
+   Object.values(postsById).forEach(post=>{
+     if(!post.pending && !remoteIds.has(post.id)){
+       delete postsById[post.id];
+       document.querySelector(`.post[data-id="${CSS.escape(post.id)}"]`)?.remove();
+     }
+   });
+   writeJSON(LOCAL_POSTS_KEY,postsById);
+ });
+}catch(err){
+ console.warn("Firebase unavailable; local mode continues.",err);
+ window.firebaseConnectionChanged?.(false,null);
+}
+</script>
+
+</body>
+</html>
