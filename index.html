@@ -328,6 +328,151 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
     min-height:26px !important;
   }
 }
+
+/* ===== スマホ・縦コンパクト最終調整 ===== */
+@media(max-width:700px){
+  .app{width:96vw;padding-top:8px;padding-bottom:20px}
+  .board-title{margin-bottom:3px}
+  .feed{height:110px !important;padding:4px !important;gap:3px !important;border-radius:12px}
+  .post{min-height:66px !important;padding:3px 4px !important;border-radius:9px;font-size:14px}
+  .post-main{min-height:0}
+  .post-text{gap:2px !important}
+  .post-word{padding:4px 5px}
+  .post-cn{top:calc(100% + 2px);font-size:11px}
+  .post-actions{margin-top:2px !important;min-height:22px !important;gap:4px !important;padding:0 !important}
+  .post-actions .heart-count{font-size:12px !important}
+  .post-actions .like-btn{font-size:12px !important;padding:4px 7px !important;border-radius:7px}
+  .drawer{margin-top:10px}
+  .composer{padding:7px 8px 8px;border-radius:13px}
+  .subject-guide{font-size:14px;margin:0 0 3px 0}
+  .sentence-row{gap:5px}
+  .sentence{min-height:44px;font-size:14px;gap:3px}
+  .subject{width:90px !important;min-width:90px !important;height:34px !important;font-size:16px !important;padding:2px 5px !important}
+  .token{padding:4px 5px;border-radius:7px}
+  .token-cn{top:calc(100% + 2px);font-size:11px}
+  .post-btn{height:34px;padding:0 9px;font-size:12px}
+  .pickers{margin-top:7px;gap:4px}
+  .group{padding:5px 7px;border-radius:10px}
+  .group-head{font-size:17px;margin-bottom:3px;line-height:1}
+  .group-head-two{gap:1px}
+  .group-head .cn-note{font-size:12px;line-height:1.1}
+  .choices{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:4px !important}
+  .choice{min-height:37px !important;padding:3px 2px !important;border-radius:7px}
+  .choice .jp{font-size:14px !important;line-height:1}
+  .choice .cn{font-size:11px !important;line-height:1;margin-top:2px !important}
+  input,textarea,select{font-size:16px !important}
+}
+
+
+/* ===== スマホ・さらに縦圧縮 ===== */
+@media(max-width:700px){
+  .app{padding-top:4px!important;padding-bottom:8px!important}
+  .board-title{margin:0 0 1px 3px!important;line-height:1.05!important;font-size:12px!important}
+
+  .feed{
+    height:86px!important;
+    padding:2px!important;
+    gap:2px!important;
+    border-radius:9px!important;
+  }
+  .post{
+    min-height:58px!important;
+    padding:2px 3px!important;
+    border-radius:7px!important;
+    line-height:1!important;
+  }
+  .post-text{gap:1px!important}
+  .post-word{padding:3px 4px!important;border-radius:6px!important}
+  .post-cn{top:calc(100% + 1px)!important;font-size:10px!important}
+  .post-actions{
+    margin-top:1px!important;
+    min-height:20px!important;
+    height:20px!important;
+    gap:3px!important;
+  }
+  .post-actions .like-btn{
+    padding:2px 6px!important;
+    height:20px!important;
+    min-height:20px!important;
+    line-height:1!important;
+  }
+
+  .drawer{margin-top:5px!important}
+  .composer{
+    padding:4px 6px 5px!important;
+    border-radius:10px!important;
+  }
+  .subject-guide{
+    font-size:13px!important;
+    line-height:1!important;
+    margin:0 0 1px 0!important;
+  }
+  .sentence-row{gap:3px!important}
+  .sentence{
+    min-height:38px!important;
+    height:38px!important;
+    gap:2px!important;
+    line-height:1!important;
+  }
+  .subject{
+    height:30px!important;
+    padding:1px 4px!important;
+    border-radius:7px!important;
+  }
+  .token{
+    padding:3px 4px!important;
+    border-radius:6px!important;
+  }
+  .token-cn{
+    top:calc(100% + 1px)!important;
+    font-size:10px!important;
+  }
+  .post-btn{
+    height:30px!important;
+    padding:0 7px!important;
+    border-radius:7px!important;
+  }
+
+  .pickers{
+    margin-top:3px!important;
+    gap:2px!important;
+  }
+  .group{
+    padding:3px 5px!important;
+    border-radius:8px!important;
+  }
+  .group-head{
+    font-size:16px!important;
+    margin:0 0 1px 0!important;
+    line-height:.95!important;
+  }
+  .group-head-two{gap:0!important}
+  .group-head .cn-note{
+    font-size:11px!important;
+    line-height:1!important;
+  }
+
+  .choices{
+    gap:3px!important;
+    row-gap:2px!important;
+  }
+  .choice{
+    min-height:31px!important;
+    height:31px!important;
+    padding:1px 2px!important;
+    border-radius:6px!important;
+  }
+  .choice .jp{
+    font-size:13px!important;
+    line-height:1!important;
+  }
+  .choice .cn{
+    font-size:10px!important;
+    line-height:1!important;
+    margin-top:1px!important;
+  }
+}
+
 </style>
 </head>
 <body>
