@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>食材の文を作ろう</title>
 <style>
 *{box-sizing:border-box}
@@ -19,7 +19,7 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
 /* 投稿一覧 */
 .board-title{font-size:14px;color:#777;margin:0 0 7px 4px}
 .feed{
- height:350px; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth;
+ height:235px; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth;
  background:rgba(255,255,255,.68); border:1px solid var(--line);
  border-radius:18px; padding:10px; display:flex; flex-direction:column; gap:8px;
 }
@@ -171,7 +171,30 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
 .delete-no{background:#eee;color:#444}
 .post{touch-action:pan-y}
 
-.subject-guide{font-size:14px;color:#666;white-space:nowrap;flex:0 0 auto;transform:translateX(-18px);margin-right:-18px}
+.subject-guide{width:100%;box-sizing:border-box;font-size:15px;color:#666;white-space:nowrap;margin:0 0 8px 0;text-align:left}
+
+@media(max-width:700px){
+  input, textarea, select{font-size:16px !important}
+  .subject{font-size:16px !important}
+}
+
+.group-title-two{display:block;text-align:center}
+.two-note,.optional-note{display:block;margin-top:4px}
+
+@media(max-width:700px){
+  .choices{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:5px !important;
+  }
+  .choice{
+    padding:6px 2px !important;
+    min-height:42px !important;
+    border-radius:9px !important;
+  }
+  .choice .jp{font-size:14px !important;line-height:1.1 !important}
+  .choice .cn{font-size:11px !important;line-height:1.1 !important;margin-top:2px !important}
+  .group{padding-left:8px !important;padding-right:8px !important}
+}
 </style>
 </head>
 <body>
@@ -204,9 +227,10 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
 
   <section class="drawer" id="drawer">
     <div class="composer">
-      <div class="sentence-row">
+      <div class="subject-guide">介绍一下中国料理吧：</div>
+<div class="sentence-row">
         <div class="sentence">
-          <span class="subject-guide">介绍一下中国料理吧：</span><input class="subject" id="subject" type="text" autocomplete="off" placeholder="请输入料理名">
+          <input class="subject" id="subject" type="text" autocomplete="off" placeholder="请输入料理名">
           <span>は</span>
           <span class="token ing empty-token" id="t1"><span id="t1jp">＿＿</span><span class="token-cn" id="t1cn"></span></span>
           <span id="and" style="display:none">と</span>
@@ -481,9 +505,14 @@ function loadLocalPosts(){
   .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))
   .forEach(p=>renderPost(p,false));
 }
-function setStatus(online){
+function setStatus(online,label=""){
  const el=document.getElementById("syncStatus");
  if(!el)return;
+ if(label){
+   el.textContent="● "+label;
+   el.style.color="#b1843f";
+   return;
+ }
  el.textContent=online?"● 接続中":"● オフライン";
  el.style.color=online?"#5d9661":"#999";
 }
@@ -500,7 +529,11 @@ async function flushQueue(){
      dequeue(id);
      markPostState(id,true);
    }catch(e){
-     console.warn("sync pending",e);
+     console.warn("Firebase write failed; keeping local post pending.",e);
+     post.pending=true;
+     saveLocalPost(post);
+     markPostState(id,false);
+     setStatus(false,"送信待ち");
      break;
    }
  }
@@ -638,15 +671,9 @@ try{
  onValue(postsRef,snap=>{
    const data=snap.val()||{};
    Object.values(data).forEach(post=>window.receiveRemotePost?.(post));
-
-   const remoteIds=new Set(Object.keys(data));
-   Object.values(postsById).forEach(post=>{
-     if(!post.pending && !remoteIds.has(post.id)){
-       delete postsById[post.id];
-       document.querySelector(`.post[data-id="${CSS.escape(post.id)}"]`)?.remove();
-     }
-   });
-   writeJSON(LOCAL_POSTS_KEY,postsById);
+ },err=>{
+   console.warn("Firebase read denied/unavailable; local mode continues.",err);
+   setStatus(false,"DB未接続");
  });
 }catch(err){
  console.warn("Firebase unavailable; local mode continues.",err);
