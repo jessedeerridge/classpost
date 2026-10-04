@@ -195,6 +195,139 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
   .choice .cn{font-size:11px !important;line-height:1.1 !important;margin-top:2px !important}
   .group{padding-left:8px !important;padding-right:8px !important}
 }
+
+/* latest layout adjustments */
+.feed{height:165px !important}
+.subject{width:135px !important}
+
+@media(max-width:700px){
+  .feed{height:135px !important;padding:7px !important;gap:5px !important}
+  .subject{width:90px !important;min-width:90px !important}
+}
+
+.post{display:block !important;padding-left:5px !important;padding-right:6px !important}
+.post-main{width:100%;min-width:0}
+.post-text{
+  display:flex !important;
+  justify-content:flex-start !important;
+  align-items:center !important;
+  gap:3px !important;
+  width:100%;
+  margin:0 !important;
+  padding:0 !important;
+}
+.post-lead{margin-left:0 !important;padding-left:0 !important}
+.post-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  margin-top:8px;
+  min-height:28px;
+}
+.post-actions .heart-count{margin:0 !important}
+.post-actions .like-btn{margin:0 !important}
+
+@media(max-width:700px){
+  .post{padding-left:3px !important}
+  .post-actions{margin-top:6px}
+}
+
+
+.group-head-two{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:3px !important;
+}
+.group-head-two .cn-note{
+  display:block !important;
+  margin:0 !important;
+}
+
+.subject{
+  width:135px !important;
+  height:42px !important;
+  box-sizing:border-box !important;
+  background:#fff !important;
+  border:1.5px solid #bdbdbd !important;
+  border-radius:9px !important;
+  box-shadow:none !important;
+  outline:none !important;
+  text-align:center !important;
+  padding:4px 7px !important;
+}
+@media(max-width:700px){
+  .subject{
+    width:90px !important;
+    min-width:90px !important;
+    height:36px !important;
+    font-size:16px !important;
+  }
+}
+
+/* keep like controls inside each post */
+.post-main{max-width:100%;box-sizing:border-box;overflow:hidden}
+.post-actions{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  padding:0 2px;
+}
+.post-actions .like-btn{
+  max-width:100%;
+  box-sizing:border-box;
+  white-space:nowrap;
+  flex:0 1 auto;
+}
+@media(max-width:700px){
+  .post-actions{
+    gap:4px !important;
+    padding:0 !important;
+  }
+  .post-actions .like-btn{
+    font-size:12px !important;
+    padding:6px 8px !important;
+  }
+  .post-actions .heart-count{
+    font-size:12px !important;
+    flex:0 0 auto;
+  }
+}
+
+.post{
+  height:auto !important;
+  min-height:82px !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+  padding-top:7px !important;
+  padding-bottom:7px !important;
+}
+.post-main{
+  display:flex !important;
+  flex-direction:column !important;
+  width:100% !important;
+  height:auto !important;
+}
+.post-actions{
+  position:static !important;
+  margin-top:7px !important;
+  margin-bottom:0 !important;
+  min-height:28px !important;
+  flex-wrap:nowrap !important;
+}
+@media(max-width:700px){
+  .post{
+    min-height:78px !important;
+    padding-top:5px !important;
+    padding-bottom:5px !important;
+  }
+  .post-actions{
+    margin-top:5px !important;
+    min-height:26px !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -248,7 +381,7 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
         </div>
 
         <div class="group two waiting" id="group2">
-          <div class="group-head"><span>と</span><span class="cn-note">如果还要选一种食材，请点击。</span></div>
+          <div class="group-head group-head-two"><span>と</span><span class="cn-note">如果还要选一种食材，请点击。</span></div>
           <div class="choices" id="row2"></div>
         </div>
 
@@ -474,13 +607,13 @@ function markPostState(id,synced){
  el.classList.toggle("pending",!synced);
 }
 function postHTML(post){
- return `<div class="post-text">`+
-   `<span>${post.author?`（${esc(post.author)}）`:""}${esc(post.subject)} は</span>`+
+ return `<div class="post-main"><div class="post-text">`+
+   `<span class="post-lead">${post.author?`（${esc(post.author)}）`:""}${esc(post.subject)} は</span>`+
    postWord(post.s1,cnOf(ingredients,post.s1),"ing")+
    (post.s2?`<span>と</span>${postWord(post.s2,cnOf(ingredients,post.s2),"ing")}`:"")+
    `<span>の</span>${postWord(post.s3,cnOf(dishes,post.s3),"dish")}<span>です。</span>`+
-   `<span class="heart-count">${post.likes>0?"♥×"+post.likes:""}</span>`+
-   `</div><button class="like-btn${hasLiked(post.id)?" liked":""}" ${hasLiked(post.id)?"disabled":""} onclick="likePost(this)">♥ この料理がすきです</button>`;
+   `</div><div class="post-actions"><span class="heart-count">${post.likes>0?"♥×"+post.likes:""}</span>`+
+   `<button class="like-btn${hasLiked(post.id)?" liked":""}" ${hasLiked(post.id)?"disabled":""} onclick="likePost(this)">♥ この料理がすきです</button></div></div>`;
 }
 function renderPost(post,scroll=false){
  const feed=document.getElementById("feed");
