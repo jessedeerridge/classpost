@@ -941,6 +941,23 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  pointer-events:none!important;
 }
 
+
+/* ===== v109：✋×N 最終固定 ===== */
+.post{position:relative!important}
+.post > .me-too-count{
+ position:absolute!important;
+ right:6px!important;
+ left:auto!important;
+ bottom:auto!important;
+ margin:0!important;
+ transform:none!important;
+ display:block!important;
+ width:max-content!important;
+ white-space:nowrap!important;
+ z-index:99!important;
+ pointer-events:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -1580,7 +1597,8 @@ function postWeekend(){
    noun:selectedNoun, verb:selectedVerb, pattern:selectedPattern, meTooCount:0
  });
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- renderPosts(); layoutMeTooButtons();
+ syncPostToDB(posts[posts.length-1]);
+ renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
@@ -1600,8 +1618,9 @@ function toggleMeToo(id){
  if(!unlimited)rememberMeToo(id);
  if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
  p.meTooCount++;
+ incrementMeTooDB(id);
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- renderPosts(); layoutMeTooButtons();
+ renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 }
 function enableAdminLongPress(el,postId){
  let timer=null, startX=0,startY=0;
@@ -1615,8 +1634,9 @@ function enableAdminLongPress(el,postId){
      if(userName!=="あさの")return;
      if(confirm("この投稿を削除しますか？（确定删除这条投稿吗？）")){
        posts=posts.filter(p=>p.id!==postId);
+       syncDeleteFromDB(postId);
        localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
-       renderPosts(); layoutMeTooButtons();
+       renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
      }
    },750);
  });
@@ -1697,10 +1717,239 @@ function renderPosts(){
 document.getElementById("nameInput").value=userName;
 document.getElementById("nameModal").style.display="flex";
 document.getElementById("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")saveName()});
-renderPlaces();updatePatterns();updatePreview();renderSecondStage();renderPosts(); layoutMeTooButtons();
+renderPlaces();updatePatterns();updatePreview();renderSecondStage();renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 refreshPostButton();
 
 if(document.fonts&&document.fonts.ready){document.fonts.ready.then(layoutMeTooButtons);}
+
+function forceMeTooCountTopRight(){
+ requestAnimationFrame(()=>{
+  document.querySelectorAll(".post").forEach(post=>{
+   const firstRow=post.querySelector(".posted-row");
+   if(!firstRow)return;
+
+   // wrap内・行内・post直下のどこにいても拾う
+   const count=post.querySelector(".me-too-count");
+   if(!count || !count.textContent.trim())return;
+
+   // 必ず投稿カード直下へ移動
+   if(count.parentElement!==post) post.appendChild(count);
+
+   const pr=post.getBoundingClientRect();
+   const fr=firstRow.getBoundingClientRect();
+   const ch=count.getBoundingClientRect().height || 16;
+
+   count.style.setProperty("position","absolute","important");
+   count.style.setProperty("right","6px","important");
+   count.style.setProperty("left","auto","important");
+   count.style.setProperty("top",(fr.top-pr.top+(fr.height-ch)/2)+"px","important");
+   count.style.setProperty("bottom","auto","important");
+   count.style.setProperty("margin","0","important");
+   count.style.setProperty("transform","none","important");
+   count.style.setProperty("display","block","important");
+   count.style.setProperty("width","max-content","important");
+   count.style.setProperty("white-space","nowrap","important");
+   count.style.setProperty("z-index","99","important");
+  });
+ });
+}
+
+window.addEventListener("load",forceMeTooCountTopRight);
+window.addEventListener("resize",forceMeTooCountTopRight);
+window.addEventListener("orientationchange",forceMeTooCountTopRight);
+
+/* ===== v110 Firebase Realtime Database 同期 ===== */
+const firebaseConfig={
+ apiKey:"AIzaSyCaLCM4TXURROKyDKD_Mga8ZnWr1-Wk9Wg",
+ authDomain:"database-s-9e4b3.firebaseapp.com",
+ databaseURL:"https://database-s-9e4b3-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"database-s-9e4b3",
+ storageBucket:"database-s-9e4b3.firebasestorage.app",
+ messagingSenderId:"13648984683",
+ appId:"1:13648984683:web:c782d2963c253df69b8f2e",
+ measurementId:"G-FV2NMNQW4C"
+};
+let db=null, dbRef=null, dbSet=null, dbRemove=null, dbOnValue=null, dbRunTransaction=null;
+let firebaseReady=false;
+const DB_POSTS_PATH="weekendSentence/posts";
+
+async function initFirebaseSync(){
+ try{
+  const appMod=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js");
+  const dbMod=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js");
+  const app=appMod.initializeApp(firebaseConfig);
+  db=dbMod.getDatabase(app);
+  dbRef=dbMod.ref;
+  dbSet=dbMod.set;
+  dbRemove=dbMod.remove;
+  dbOnValue=dbMod.onValue;
+  dbRunTransaction=dbMod.runTransaction;
+  firebaseReady=true;
+
+  let firstDbLoad=true;
+  dbOnValue(dbRef(db,DB_POSTS_PATH),async(snap)=>{
+   const val=snap.val()||{};
+   const remote=Object.entries(val).map(([id,p])=>({
+    ...p,
+    id:p.id ?? id,
+    meTooCount:Number(p.meTooCount||0)
+   }));
+
+   if(firstDbLoad){
+    firstDbLoad=false;
+    const remoteIds=new Set(remote.map(p=>String(p.id)));
+    const localOnly=posts.filter(p=>!remoteIds.has(String(p.id)));
+    for(const p of localOnly){
+     try{
+      await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(p.id)),{
+       ...p, createdAt:p.createdAt||Number(p.id)||Date.now()
+      });
+     }catch(e){console.error("local migration error",e)}
+    }
+    if(localOnly.length)return;
+   }
+
+   posts=remote.sort((a,b)=>Number(a.createdAt||a.id||0)-Number(b.createdAt||b.id||0));
+   localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
+   renderPosts();
+   layoutMeTooButtons();
+   forceMeTooCountTopRight();
+  });
+ }catch(err){
+  console.error("Firebase sync error:",err);
+ }
+}
+initFirebaseSync();
+
+async function syncPostToDB(post){
+ if(!firebaseReady||!post)return;
+ try{
+  await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(post.id)),{
+   ...post,
+   createdAt:post.createdAt||Date.now()
+  });
+ }catch(e){console.error("post sync error",e)}
+}
+
+async function syncDeleteFromDB(id){
+ if(!firebaseReady)return;
+ try{await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(id)));}
+ catch(e){console.error("delete sync error",e)}
+}
+
+async function incrementMeTooDB(id){
+ if(!firebaseReady)return false;
+ try{
+  const r=dbRef(db,DB_POSTS_PATH+"/"+String(id)+"/meTooCount");
+  await dbRunTransaction(r,v=>Number(v||0)+1);
+  return true;
+ }catch(e){
+  console.error("reaction sync error",e);
+  return false;
+ }
+}
+
+/* ===== v112 オフライン操作キュー ===== */
+const OFFLINE_QUEUE_KEY="weekend_offline_queue_v1";
+function readOfflineQueue(){
+ try{return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY))||[]}
+ catch{return []}
+}
+function writeOfflineQueue(q){
+ localStorage.setItem(OFFLINE_QUEUE_KEY,JSON.stringify(q));
+}
+function queueOfflineOp(op){
+ const q=readOfflineQueue();
+ q.push({...op,qid:Date.now()+"_"+Math.random().toString(36).slice(2)});
+ writeOfflineQueue(q);
+}
+async function flushOfflineQueue(){
+ if(!firebaseReady || !navigator.onLine)return;
+ const q=readOfflineQueue();
+ if(!q.length)return;
+ const remain=[];
+ for(const op of q){
+  try{
+   if(op.type==="post"){
+    await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(op.post.id)),{
+     ...op.post,createdAt:op.post.createdAt||Number(op.post.id)||Date.now()
+    });
+   }else if(op.type==="delete"){
+    await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(op.id)));
+   }else if(op.type==="metoo"){
+    await dbRunTransaction(
+     dbRef(db,DB_POSTS_PATH+"/"+String(op.id)+"/meTooCount"),
+     v=>Number(v||0)+Number(op.amount||1)
+    );
+   }
+  }catch(e){
+   remain.push(op);
+  }
+ }
+ writeOfflineQueue(remain);
+}
+
+/* 既存DB関数をオフライン対応版へ上書き */
+syncPostToDB=async function(post){
+ if(!post)return;
+ if(!firebaseReady || !navigator.onLine){
+  queueOfflineOp({type:"post",post});
+  return;
+ }
+ try{
+  await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(post.id)),{
+   ...post,createdAt:post.createdAt||Number(post.id)||Date.now()
+  });
+ }catch(e){
+  queueOfflineOp({type:"post",post});
+ }
+};
+
+syncDeleteFromDB=async function(id){
+ if(!firebaseReady || !navigator.onLine){
+  queueOfflineOp({type:"delete",id});
+  return;
+ }
+ try{
+  await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(id)));
+ }catch(e){
+  queueOfflineOp({type:"delete",id});
+ }
+};
+
+incrementMeTooDB=async function(id){
+ if(!firebaseReady || !navigator.onLine){
+  queueOfflineOp({type:"metoo",id,amount:1});
+  return false;
+ }
+ try{
+  await dbRunTransaction(
+   dbRef(db,DB_POSTS_PATH+"/"+String(id)+"/meTooCount"),
+   v=>Number(v||0)+1
+  );
+  return true;
+ }catch(e){
+  queueOfflineOp({type:"metoo",id,amount:1});
+  return false;
+ }
+};
+
+/* ネット復帰時は、ページを開いたままでも自動送信 */
+window.addEventListener("online",()=>{
+ setTimeout(flushOfflineQueue,300);
+});
+
+/* Firebase接続成功後にも未送信キューを送る */
+const _originalInitFirebaseSync=initFirebaseSync;
+initFirebaseSync=async function(){
+ await _originalInitFirebaseSync();
+ if(firebaseReady)await flushOfflineQueue();
+};
+
+setTimeout(flushOfflineQueue,1200);
+setInterval(()=>{
+ if(firebaseReady && navigator.onLine && readOfflineQueue().length)flushOfflineQueue();
+},5000);
 </script>
 </body>
 </html>
