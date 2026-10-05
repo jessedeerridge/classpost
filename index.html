@@ -2377,6 +2377,70 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  border-left-color:#d8eef8 !important;
 }
 
+
+/* v92: 質問・回答の重なり防止／名称は必ず次行／反応ボタンは本文の次行 */
+.qa-grid{
+ grid-template-columns:185px minmax(0,1fr) !important;
+ column-gap:12px !important;
+ row-gap:7px !important;
+ align-items:start !important;
+}
+.q-cell{
+ min-width:0 !important;
+ overflow:visible !important;
+}
+.a-cell{
+ min-width:0 !important;
+ position:relative !important;
+}
+.a3{
+ display:flex !important;
+ flex-wrap:wrap !important;
+ align-items:flex-start !important;
+}
+.a3 .name-inline,
+.a3 .name-next-line{
+ flex-basis:100% !important;
+ width:100% !important;
+ margin-top:17px !important;
+ margin-left:0 !important;
+ padding-left:0 !important;
+ display:flex !important;
+ align-items:center !important;
+}
+
+/* 投稿本文はハートボタンの幅を予約しない */
+.posted-row{
+ padding-right:8px !important;
+}
+.post{
+ padding-bottom:10px !important;
+}
+/* ハートボタンは絶対配置をやめ、最後の文の次の行へ */
+.post .me-too-wrap{
+ position:static !important;
+ right:auto !important;
+ bottom:auto !important;
+ transform:none !important;
+ display:flex !important;
+ justify-content:flex-end !important;
+ width:100% !important;
+ box-sizing:border-box !important;
+ margin:8px 0 0 !important;
+ padding:0 6px 0 0 !important;
+}
+.post > .me-too-count{
+ position:static !important;
+ float:right !important;
+ margin:5px 6px 0 0 !important;
+}
+@media(max-width:600px){
+ .qa-grid{
+  grid-template-columns:145px minmax(0,1fr) !important;
+  column-gap:9px !important;
+ }
+}
+
 </style>
 </head>
 <body>
@@ -2834,8 +2898,8 @@ function renderPosts(){
   btn.textContent="♥ いい ところ ですね。";
   btn.onclick=()=>toggleMeToo(p.id);
   wrap.append(btn);
-  d.appendChild(count);
   d.appendChild(wrap);
+  d.appendChild(count);
 
   let timer=null;
   const start=()=>{if(userName!=="あさの")return;timer=setTimeout(()=>deletePost(p.id),750)};
