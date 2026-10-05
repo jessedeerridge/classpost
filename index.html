@@ -2659,6 +2659,129 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  flex:0 0 125px !important;
 }
 
+
+/* v101: 回答を少し右へ／未表示の質問・回答ぶんの空き行を作らない */
+.q1,.a1,.q2,.a2,.q3,.a3,.q5,.a5{
+ grid-row:auto !important;
+}
+.a1,.a2,.a3,.a5{
+ padding-left:3.5em !important;
+}
+@media(max-width:600px){
+ .a1,.a2,.a3,.a5{
+  padding-left:2.5em !important;
+ }
+}
+
+
+/* v102: 投稿本文の折返し幅は常に投稿欄いっぱい。いいねボタンは本文幅に一切影響させない */
+.post .posted-row,
+.post.me-too-inline .posted-row,
+.post:not(.me-too-inline) .posted-row{
+ display:grid !important;
+ width:100% !important;
+ max-width:100% !important;
+ min-width:0 !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+ box-sizing:border-box !important;
+ vertical-align:initial !important;
+}
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ width:auto !important;
+ max-width:100% !important;
+ min-width:0 !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+ box-sizing:border-box !important;
+}
+
+/* ボタンは本文レイアウトから独立。JSで「最後の実表示行に空きがある」ときだけ重ねる */
+.post{
+ position:relative !important;
+}
+.post .me-too-wrap,
+.post.me-too-inline .me-too-wrap,
+.post:not(.me-too-inline) .me-too-wrap{
+ position:static !important;
+ display:flex !important;
+ width:100% !important;
+ justify-content:flex-end !important;
+ clear:both !important;
+ margin:7px 0 0 !important;
+ padding:0 !important;
+ box-sizing:border-box !important;
+}
+.post.reaction-on-last-line .me-too-wrap{
+ position:absolute !important;
+ right:7px !important;
+ bottom:7px !important;
+ width:auto !important;
+ margin:0 !important;
+ z-index:4 !important;
+}
+
+
+/* v105: 投稿文を1文目・2文目・3文目として確実に表示 */
+.posted-row{
+ display:grid !important;
+ grid-template-columns:max-content minmax(0,1fr) !important;
+ grid-template-rows:auto auto auto !important;
+ column-gap:7px !important;
+ row-gap:7px !important;
+ width:100% !important;
+ max-width:100% !important;
+ padding-right:0 !important;
+ box-sizing:border-box !important;
+}
+.posted-row > .posted-name{
+ grid-column:1 !important;
+ grid-row:1 !important;
+}
+.posted-row > .post-origin-line{
+ grid-column:2 !important;
+ grid-row:1 !important;
+ display:flex !important;
+ flex-wrap:wrap !important;
+ min-width:0 !important;
+ max-width:100% !important;
+}
+.posted-row > .post-third-line:not(.post-final-line){
+ grid-column:2 !important;
+ grid-row:2 !important;
+ display:flex !important;
+ flex-wrap:wrap !important;
+ min-width:0 !important;
+ max-width:100% !important;
+}
+.posted-row > .post-final-line{
+ grid-column:2 !important;
+ grid-row:3 !important;
+ display:flex !important;
+ flex-wrap:wrap !important;
+ min-width:0 !important;
+ max-width:100% !important;
+}
+/* いいねボタンは投稿文の幅を縮めない */
+.post .posted-row,
+.post.me-too-inline .posted-row,
+.post:not(.me-too-inline) .posted-row{
+ width:100% !important;
+ max-width:100% !important;
+}
+
+
+
+
+/* v107: 未選択の回答文を先に出さない */
+.a2:not([style*="display: flex"]),
+.a3:not([style*="display: flex"]){
+ display:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -2869,18 +2992,21 @@ function updateComposer(){
  const subjectHtml=v?`<span>${esc(v)}</span>`:"";
  document.getElementById("shusshinSubject").innerHTML=subjectHtml;
  const a2Cell=document.getElementById("shusshinSubjectAnswer").parentElement;
+ a2Cell.style.display=selectedAdjs.length?"flex":"none";
  a2Cell.style.visibility=selectedAdjs.length?"visible":"hidden";
  document.getElementById("shusshinSubjectAnswer").textContent=v;
  const showThird=!!(v&&(selectedAdjs.length || selectedThing));
  const thingTable=document.getElementById("thingTable");
  if(thingTable) thingTable.style.display=showThird?"block":"none";
  document.getElementById("q3Cell").style.display=showThird?"block":"none";
- document.getElementById("a3Cell").style.display=showThird?"flex":"none";
  document.getElementById("shusshinSubject3").textContent=v;
  document.getElementById("shusshinSubjectAnswer3").textContent=v;
  const thingBox=document.getElementById("thingPreview");
  const a3Cell=document.getElementById("a3Cell");
- if(a3Cell) a3Cell.style.visibility=selectedThing?"visible":"hidden";
+ if(a3Cell){
+   a3Cell.style.display=selectedThing?"flex":"none";
+   a3Cell.style.visibility=selectedThing?"visible":"hidden";
+ }
  const nameInline=document.getElementById("nameInline");
  if(nameInline){
    nameInline.style.display=selectedThing?"inline-flex":"none";
@@ -3255,6 +3381,17 @@ if(_thingNameInput && _dontKnowNameBtn){
    expanded=!expanded;
    applyState();
  });
+
+ /* 投稿欄が広がっている時、地名入力欄を押したら元の高さへ戻す */
+ const placeInput=document.getElementById("shusshinInput");
+ if(placeInput){
+   placeInput.addEventListener("focus",()=>{
+     if(expanded){
+       expanded=false;
+       applyState();
+     }
+   });
+ }
  const setExpandedIfPosted=()=>{
    const hasPosted=feed.querySelector(".post");
    if(hasPosted && !expanded){
@@ -3377,6 +3514,50 @@ if(_thingNameInput && _dontKnowNameBtn){
 })();
 </script>
 
+<script>
+/* v102: 本文を100%幅で描画した後、最後の「実際の表示行」の空きだけを測る */
+(()=>{
+ function placeReaction(){
+   document.querySelectorAll(".post").forEach(post=>{
+     post.classList.remove("reaction-on-last-line");
+     const btnWrap=post.querySelector(".me-too-wrap");
+     const last=post.querySelector(".post-final-line") ||
+                post.querySelector(".post-third-line") ||
+                post.querySelector(".post-answer-line") ||
+                post.querySelector(".post-origin-line");
+     if(!btnWrap||!last)return;
+
+     /* 本文は100%幅のまま。まず自然な折返しを確定させる */
+     const postRect=post.getBoundingClientRect();
+     const range=document.createRange();
+     range.selectNodeContents(last);
+     const rects=[...range.getClientRects()].filter(r=>r.width>0 && r.height>0);
+     if(!rects.length)return;
+
+     const bottom=Math.max(...rects.map(r=>r.bottom));
+     const lastRects=rects.filter(r=>Math.abs(r.bottom-bottom)<2);
+     if(!lastRects.length)return;
+     const lineRight=Math.max(...lastRects.map(r=>r.right));
+
+     const buttonWidth=btnWrap.scrollWidth;
+     const rightEdge=postRect.right-7;
+     const gap=8;
+
+     /* 最終表示行の右端から投稿欄右端までにボタンが丸ごと入る時だけ同じ行 */
+     if(rightEdge-lineRight >= buttonWidth+gap){
+       post.classList.add("reaction-on-last-line");
+     }
+   });
+ }
+ const feed=document.getElementById("feed");
+ if(feed){
+   new MutationObserver(()=>requestAnimationFrame(placeReaction))
+     .observe(feed,{childList:true,subtree:true,characterData:true});
+ }
+ window.addEventListener("resize",()=>requestAnimationFrame(placeReaction));
+ requestAnimationFrame(placeReaction);
+})();
+</script>
 </body>
 </html>
 
