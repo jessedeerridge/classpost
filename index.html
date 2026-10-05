@@ -718,6 +718,60 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  .post-line,.posted-row{min-height:36px!important;padding-bottom:11px!important}
 }
 
+
+/* ===== v95 切替ボタンと疑問文の高さを統一 ===== */
+.mode-switch{
+ height:36px!important;
+ box-sizing:border-box!important;
+}
+.mode-switch-btn{
+ height:30px!important;
+ box-sizing:border-box!important;
+ padding:0 11px!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ line-height:1!important;
+}
+.question{
+ height:36px!important;
+ min-height:36px!important;
+ box-sizing:border-box!important;
+ display:flex!important;
+ align-items:center!important;
+ margin:3px 0 5px!important;
+ line-height:1!important;
+}
+@media(max-width:700px){
+ .mode-switch{height:34px!important}
+ .mode-switch-btn{height:28px!important}
+ .question{height:34px!important;min-height:34px!important}
+}
+
+
+/* ===== v96 切替と疑問文を横並び ===== */
+.mode-question-row{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:flex-start!important;
+ gap:10px!important;
+ margin:0 0 5px 0!important;
+}
+.mode-switch-wrap{
+ margin:0!important;
+ flex:0 0 auto!important;
+}
+.question{
+ margin:0!important;
+ flex:0 0 auto!important;
+}
+@media(max-width:700px){
+ .mode-question-row{
+   gap:8px!important;
+   flex-wrap:nowrap!important;
+ }
+}
+
 </style>
 </head>
 <body>
@@ -734,13 +788,15 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 
  <div class="composer">
   <div class="guide"><span id="modeGuideText">发布一下自己的周末安排吧。</span></div>
-  <div class="mode-switch-wrap">
+  <div class="mode-question-row">
+<div class="mode-switch-wrap">
   <div class="mode-switch" role="group" aria-label="時間帯切り替え">
     <button type="button" id="weekendModeBtn" class="mode-switch-btn active" onclick="setActivityMode('weekend')">周末</button>
     <button type="button" id="afternoonModeBtn" class="mode-switch-btn" onclick="setActivityMode('afternoon')">下午</button>
   </div>
 </div>
 <div class="question">しゅうまつ、なにをしますか。</div>
+</div>
 
   <div class="preview">
    <span id="previewPlace" class="preview-place"><span id="previewPlaceJp">＿＿</span><span id="previewPlaceCn" class="preview-cn"></span></span>
@@ -1311,6 +1367,27 @@ function toggleMeToo(id){
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
  renderPosts();
 }
+function enableAdminLongPress(el,postId){
+ let timer=null, startX=0,startY=0;
+ const clear=()=>{if(timer!==null){clearTimeout(timer);timer=null;}};
+ el.addEventListener("pointerdown",e=>{
+   if(userName!=="あさの" || e.target.closest("button"))return;
+   startX=e.clientX;startY=e.clientY;
+   clear();
+   timer=setTimeout(()=>{
+     timer=null;
+     if(userName!=="あさの")return;
+     if(confirm("この投稿を削除しますか？（确定删除这条投稿吗？）")){
+       posts=posts.filter(p=>p.id!==postId);
+       localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
+       renderPosts();
+     }
+   },750);
+ });
+ el.addEventListener("pointermove",e=>{if(Math.abs(e.clientX-startX)>12||Math.abs(e.clientY-startY)>12)clear();});
+ ["pointerup","pointercancel","pointerleave"].forEach(t=>el.addEventListener(t,clear));
+ el.addEventListener("contextmenu",e=>{if(userName==="あさの" && !e.target.closest("button"))e.preventDefault();});
+}
 function renderPosts(){
  const feed=document.getElementById("feed");
  feed.innerHTML="";
@@ -1368,7 +1445,7 @@ function renderPosts(){
      count.className="me-too-count";
      count.textContent=p.meTooCount>0?`✋×${p.meTooCount}`:"";
      const btn=document.createElement("button");
-     const done=hasMeToo(p.id);
+     const done=userName!=="あさの" && hasMeToo(p.id);
      btn.className="me-too-btn"+(done?" liked":"");
      btn.disabled=done;
      btn.textContent=verbText?`✋ 私も ${verbText}`:"✋ 私も";
@@ -1377,6 +1454,7 @@ function renderPosts(){
      wrap.appendChild(btn);
      d.appendChild(wrap);
    }
+   enableAdminLongPress(d,p.id);
    feed.appendChild(d);
  });
 }
