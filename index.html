@@ -2327,6 +2327,56 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  min-height:150px !important;
 }
 
+
+/* v86: 投稿欄の高さを上下ボタンで調整 */
+.feed{
+ height:300px !important;
+ min-height:150px !important;
+ overflow-y:auto !important;
+ box-sizing:border-box !important;
+}
+.feed-resizer{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ gap:7px;
+ height:24px;
+ margin:2px 0 4px;
+ user-select:none;
+}
+.feed-resizer button{
+ width:30px;
+ height:22px;
+ padding:0;
+ border:1px solid var(--line);
+ border-radius:6px;
+ background:var(--button);
+ color:var(--dark);
+ font-size:14px;
+ line-height:18px;
+ font-weight:700;
+ cursor:pointer;
+}
+.feed-resizer button:active{
+ transform:translateY(1px);
+}
+
+
+/* v87: 1ボタン切替式 */
+.feed-resizer button{width:42px !important;}
+
+/* v91: 投稿左帯を本人/他人で色分け */
+.post{
+ border-left-style:solid !important;
+ border-left-width:5px !important;
+}
+.post.own-post{
+ border-left-color:#286b8a !important;
+}
+.post.other-post{
+ border-left-color:#d8eef8 !important;
+}
+
 </style>
 </head>
 <body>
@@ -2342,8 +2392,12 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  <div class="board-title">发布</div>
  <div id="feed" class="feed"><div class="empty">まだ投稿がありません。</div></div>
 
+ <div class="feed-resizer" aria-label="投稿欄の高さ調整">
+   <button id="feedToggleBtn" type="button" title="投稿欄を広げる">▼</button>
+ </div>
+
  <div class="composer">
-  <div class="guide">发布一下自己的家乡吧。</div>
+  <div id="composerGuide" class="guide">发布一下自己的家乡吧。</div>
   <div class="qa-grid">
     <div class="q-cell q1">しゅっしん は どちらですか。</div>
     <div class="a-cell a1">
@@ -2636,8 +2690,10 @@ function updateComposer(){
  const buildingWithName =
    (selectedThing==="おおきい たてもの" || selectedThing==="きれいな たてもの") &&
    !!nameVal && nameVal!=="×";
+ const hasNameOrUnknown = !!nameVal;
  const canPost =
    !!v && selectedAdjs.length>0 && !!selectedThing && !!userName &&
+   hasNameOrUnknown &&
    (selectedNameAdjs.length>0 || buildingWithName);
  document.getElementById("postBtn").disabled=!canPost;
 
@@ -2661,7 +2717,8 @@ function postShusshin(){
  const buildingWithName =
    (selectedThing==="おおきい たてもの" || selectedThing==="きれいな たてもの") &&
    !!thingName && thingName!=="×";
- const canPost = selectedNameAdjs.length>0 || buildingWithName;
+ const hasNameOrUnknown = !!thingName;
+ const canPost = hasNameOrUnknown && (selectedNameAdjs.length>0 || buildingWithName);
  if(!place||!selectedAdjs.length||!selectedThing||!userName||!canPost)return;
  const p={
    id:Date.now(),author:userName,place,
@@ -2689,11 +2746,18 @@ async function toggleMeToo(id){
 }
 
 function renderPosts(){
+ const guide=document.getElementById("composerGuide");
+ if(guide){
+   guide.textContent=posts.length
+     ? "发布一下自己的家乡吧。（也可以再写一个哦）"
+     : "发布一下自己的家乡吧。";
+ }
+
  const feed=document.querySelector(".feed");
  if(!feed)return;
  feed.innerHTML="";
  posts.forEach(p=>{
-  const d=document.createElement("div");d.className="post";d.dataset.id=p.id;
+  const d=document.createElement("div");d.className="post "+(p.author===userName?"own-post":"other-post");d.dataset.id=p.id;
   const row=document.createElement("div");row.className="posted-row";
 
   const postAdjs=(Array.isArray(p.adjs)&&p.adjs.length?p.adjs:[p.adj]).filter(Boolean).slice(0,2);
@@ -2718,7 +2782,7 @@ function renderPosts(){
 
   let finalLine="";
   const nas=(Array.isArray(p.nameAdjs)?p.nameAdjs:[]).filter(Boolean).slice(0,2);
-  if(p.thingName && p.thingName!=="×" && nas.length){
+  if(p.thingName && nas.length){
     let ordered=[...nas], useGa=false;
     if(nas.length===2){
       if(nas.includes("ちいさい")){
@@ -2736,7 +2800,7 @@ function renderPosts(){
       const ending=(ordered.length===2&&i===0)?(useGa?"ですが、":"です。そして、"):"です。";
       return `<span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>${adj==="いい"?'<span>ところ</span>':""}<span>${ending}</span>`;
     }).join("");
-    finalLine=`<span class="post-third-line post-final-line"><span class="posted-place-plain">${esc(p.thingName)}</span><span>は</span>${parts}</span>`;
+    finalLine=`<span class="post-third-line post-final-line">${p.thingName!=="×"?`<span class="posted-place-plain">${esc(p.thingName)}</span><span>は</span>`:""}${parts}</span>`;
   }
 
   const firstAdj=postAdjs[0];
@@ -2892,6 +2956,34 @@ if(_thingNameInput && _dontKnowNameBtn){
  });
 }
 
+</script>
+<script>
+/* v87: 投稿欄高さ切替 */
+(()=>{
+ const feed=document.getElementById("feed");
+ const btn=document.getElementById("feedToggleBtn");
+ if(!feed||!btn)return;
+ let expanded=false;
+ const applyState=()=>{
+   feed.style.setProperty("height",expanded ? "72vh" : "300px","important");
+   btn.textContent=expanded ? "▲" : "▼";
+   btn.title=expanded ? "投稿欄を元に戻す" : "投稿欄を広げる";
+ };
+ btn.addEventListener("click",()=>{
+   expanded=!expanded;
+   applyState();
+ });
+ const setExpandedIfPosted=()=>{
+   const hasPosted=feed.querySelector(".post");
+   if(hasPosted && !expanded){
+     expanded=true;
+     applyState();
+   }
+ };
+ setTimeout(setExpandedIfPosted,0);
+ const observer=new MutationObserver(setExpandedIfPosted);
+ observer.observe(feed,{childList:true,subtree:true});
+})();
 </script>
 </body>
 </html>
