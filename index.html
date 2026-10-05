@@ -772,6 +772,15 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  }
 }
 
+
+/* v97 responsive 私も */
+.post{position:relative!important}
+.me-too-wrap{display:flex!important;align-items:center!important;gap:5px!important;width:max-content!important;max-width:100%!important}
+.post.metoo-inline .me-too-wrap{position:absolute!important;right:6px!important;bottom:4px!important;margin:0!important}
+.post.metoo-row2 .me-too-wrap,.post.metoo-row3 .me-too-wrap{position:static!important;margin-top:3px!important;margin-left:auto!important}
+.post.metoo-row2 .me-too-count{position:absolute!important;right:6px!important;top:4px!important}
+.post.metoo-row3 .me-too-count,.post.metoo-inline .me-too-count{position:static!important}
+
 </style>
 </head>
 <body>
@@ -1289,6 +1298,28 @@ function setActivityMode(mode){
    }
  });
 }
+
+function layoutMeTooButtons(){
+ requestAnimationFrame(()=>{
+  document.querySelectorAll(".post").forEach(post=>{
+   const wrap=post.querySelector(".me-too-wrap");
+   const rows=[...post.querySelectorAll(".posted-row")];
+   if(!wrap||!rows.length)return;
+   post.classList.remove("metoo-inline","metoo-row2","metoo-row3");
+   const last=rows[rows.length-1];
+   wrap.style.visibility="hidden";
+   const oldPos=wrap.style.position;
+   wrap.style.position="static";
+   const ww=wrap.getBoundingClientRect().width;
+   const pr=post.getBoundingClientRect(), lr=last.getBoundingClientRect();
+   wrap.style.position=oldPos;
+   if(pr.right-lr.right-12>=ww) post.classList.add("metoo-inline");
+   else post.classList.add(rows.length<=1?"metoo-row2":"metoo-row3");
+   wrap.style.visibility="";
+  });
+ });
+}
+window.addEventListener("resize",layoutMeTooButtons);
 function postWeekend(){
  if(!selectedPlace||!selectedPattern||!userName)return;
  const lastThree=posts.slice(-3);
@@ -1344,7 +1375,7 @@ function postWeekend(){
    noun:selectedNoun, verb:selectedVerb, pattern:selectedPattern, meTooCount:0
  });
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- renderPosts();
+ renderPosts(); layoutMeTooButtons();
 
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
@@ -1365,7 +1396,7 @@ function toggleMeToo(id){
  if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
  p.meTooCount++;
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- renderPosts();
+ renderPosts(); layoutMeTooButtons();
 }
 function enableAdminLongPress(el,postId){
  let timer=null, startX=0,startY=0;
@@ -1380,7 +1411,7 @@ function enableAdminLongPress(el,postId){
      if(confirm("この投稿を削除しますか？（确定删除这条投稿吗？）")){
        posts=posts.filter(p=>p.id!==postId);
        localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
-       renderPosts();
+       renderPosts(); layoutMeTooButtons();
      }
    },750);
  });
@@ -1461,7 +1492,7 @@ function renderPosts(){
 document.getElementById("nameInput").value=userName;
 document.getElementById("nameModal").style.display="flex";
 document.getElementById("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")saveName()});
-renderPlaces();updatePatterns();updatePreview();renderSecondStage();renderPosts();
+renderPlaces();updatePatterns();updatePreview();renderSecondStage();renderPosts(); layoutMeTooButtons();
 refreshPostButton();
 </script>
 </body>
