@@ -887,6 +887,60 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  white-space:nowrap!important;
 }
 
+
+/* ===== v106：✋×N は行レイアウトに一切参加させない ===== */
+.post.metoo-inline > .me-too-count,
+.post.metoo-row2 > .me-too-count{
+ position:absolute!important;
+ display:block!important;
+ width:max-content!important;
+ max-width:none!important;
+ right:6px!important;
+ left:auto!important;
+ bottom:auto!important;
+ margin:0!important;
+ padding:0!important;
+ transform:none!important;
+ z-index:30!important;
+ white-space:nowrap!important;
+ pointer-events:none!important;
+}
+.post.metoo-inline .posted-row,
+.post.metoo-row2 .posted-row{
+ flex-wrap:nowrap!important;
+}
+
+
+/* ===== v107：私もボタンは常に右詰め ===== */
+.me-too-wrap{
+ margin-left:auto!important;
+ margin-right:0!important;
+ justify-content:flex-end!important;
+}
+.post.metoo-inline .me-too-wrap{
+ left:auto!important;
+ right:6px!important;
+}
+.post.metoo-row2 .me-too-wrap,
+.post.metoo-row3 .me-too-wrap{
+ margin-left:auto!important;
+ margin-right:0!important;
+}
+
+
+/* ===== v108：✋×N は常に一段目の右端 ===== */
+.post > .me-too-count{
+ position:absolute!important;
+ right:6px!important;
+ left:auto!important;
+ bottom:auto!important;
+ margin:0!important;
+ transform:none!important;
+ z-index:40!important;
+ white-space:nowrap!important;
+ pointer-events:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -1413,77 +1467,57 @@ function layoutMeTooButtons(){
    if(!wrap||!rows.length)return;
 
    let count=wrap.querySelector(".me-too-count") || post.querySelector(":scope > .me-too-count");
-   if(count && count.parentElement!==wrap) wrap.insertBefore(count,wrap.firstChild);
-
    post.classList.remove("metoo-inline","metoo-row2","metoo-row3");
    wrap.removeAttribute("style");
-   if(count)count.removeAttribute("style");
+
+   // ✋×N は常に一段目右端。行レイアウトから完全に外す。
+   if(count && count.textContent){
+     if(count.parentElement!==post) post.appendChild(count);
+     count.removeAttribute("style");
+     const pr=post.getBoundingClientRect();
+     const first=rows[0].getBoundingClientRect();
+     const ch=count.getBoundingClientRect().height||16;
+     count.style.position="absolute";
+     count.style.right="6px";
+     count.style.left="auto";
+     count.style.top=(first.top-pr.top+(first.height-ch)/2)+"px";
+     count.style.bottom="auto";
+     count.style.margin="0";
+     count.style.transform="none";
+   }else if(count && count.parentElement!==wrap){
+     wrap.insertBefore(count,wrap.firstChild);
+   }
 
    const lastRow=rows[rows.length-1];
    const content=[...lastRow.children].filter(el=>{
-    const cs=getComputedStyle(el);
-    return !el.classList.contains("me-too-count") &&
-           cs.display!=="none" && cs.visibility!=="hidden";
+     const cs=getComputedStyle(el);
+     return !el.classList.contains("me-too-count") &&
+            !el.closest(".me-too-wrap") &&
+            cs.display!=="none" && cs.visibility!=="hidden";
    });
    const lastContent=content[content.length-1]||lastRow;
-
    const pr=post.getBoundingClientRect();
    const rr=lastRow.getBoundingClientRect();
    const cr=lastContent.getBoundingClientRect();
 
+   // countを含まないボタン幅だけ測る
    wrap.style.position="absolute";
    wrap.style.visibility="hidden";
    wrap.style.width="max-content";
    wrap.style.maxWidth="none";
    const wr=wrap.getBoundingClientRect();
    const ww=Math.ceil(wr.width), wh=Math.ceil(wr.height);
-   const gap=7;
    const available=Math.floor(pr.right-6-cr.right);
 
-   if(available>=ww+gap){
-    // 最後の文と同じ行
-    post.classList.add("metoo-inline");
-    wrap.style.left=(cr.right-pr.left+gap)+"px";
-    wrap.style.right="auto";
-    wrap.style.top=(rr.top-pr.top+(rr.height-wh)/2)+"px";
-    wrap.style.bottom="auto";
-
-    // 最後の文が2段目なら、私もも2段目。
-    // この場合だけ✋×Nをボタン左から外し、1段目右端へ。
-    if(rows.length>=2 && count && count.textContent){
-      post.appendChild(count);
-      const first=rows[0].getBoundingClientRect();
-      const ch=count.getBoundingClientRect().height||16;
-      count.style.position="absolute";
-      count.style.right="6px";
-      count.style.left="auto";
-      count.style.top=(first.top-pr.top+(first.height-ch)/2)+"px";
-      count.style.bottom="auto";
-      count.style.margin="0";
-      count.style.transform="none";
-    }
+   if(available>=ww+7){
+     post.classList.add("metoo-inline");
+     wrap.style.left="auto";
+     wrap.style.right="6px";
+     wrap.style.top=(rr.top-pr.top+(rr.height-wh)/2)+"px";
+     wrap.style.bottom="auto";
    }else{
-    // 横に入らない場合、私もは次の段
-    wrap.removeAttribute("style");
-    if(rows.length===1){
-      // 私もが2段目 → ✋×Nは1段目右端
-      post.classList.add("metoo-row2");
-      if(count && count.textContent){
-       post.appendChild(count);
-       const first=rows[0].getBoundingClientRect();
-       const ch=count.getBoundingClientRect().height||16;
-       count.style.position="absolute";
-       count.style.right="6px";
-       count.style.left="auto";
-       count.style.top=(first.top-pr.top+(first.height-ch)/2)+"px";
-       count.style.bottom="auto";
-       count.style.margin="0";
-       count.style.transform="none";
-      }
-    }else{
-      // 私もが3段目 → ✋×Nは従来どおりボタン左
-      post.classList.add("metoo-row3");
-    }
+     wrap.removeAttribute("style");
+     post.classList.add(rows.length===1?"metoo-row2":"metoo-row3");
    }
    wrap.style.visibility="";
   });
