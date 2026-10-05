@@ -3504,10 +3504,9 @@ if(_thingNameInput && _dontKnowNameBtn){
 
 
 <style>
-/* v111: 反応UIを一系統に統一。本文の折返し幅は絶対に縮めない */
-.post{
-  position:relative !important;
-}
+/* v112: ♥×N といいねボタンを「行」で正確に配置 */
+.post{position:relative !important;}
+
 .post > .me-too-count{
   position:static !important;
   display:block !important;
@@ -3516,6 +3515,7 @@ if(_thingNameInput && _dontKnowNameBtn){
   text-align:right !important;
   margin:4px 0 2px !important;
   padding:0 7px 0 0 !important;
+  white-space:nowrap !important;
   float:none !important;
 }
 .post > .me-too-wrap,
@@ -3534,25 +3534,33 @@ if(_thingNameInput && _dontKnowNameBtn){
   padding:0 !important;
   box-sizing:border-box !important;
   clear:both !important;
-  left:auto !important;
-  right:auto !important;
-  top:auto !important;
-  bottom:auto !important;
+  inset:auto !important;
 }
 
-/* 最終表示行の右側に本当に入る時だけ、本文とは独立して重ねる */
+/* ボタンが最終行に入る時 */
 .post.reaction-fit-last-line > .me-too-wrap{
   position:absolute !important;
   width:auto !important;
   max-width:none !important;
   right:7px !important;
-  top:var(--reaction-fit-top) !important;
+  top:var(--reaction-btn-top) !important;
   margin:0 !important;
-  padding:0 !important;
   z-index:6 !important;
 }
 
-/* インライン時も本文の幅・折返しには一切影響させない */
+/* ♥×N は、その一つ前の実表示行の右端 */
+.post.reaction-fit-last-line > .me-too-count{
+  position:absolute !important;
+  display:block !important;
+  width:auto !important;
+  right:7px !important;
+  top:var(--reaction-count-top) !important;
+  margin:0 !important;
+  padding:0 !important;
+  line-height:1 !important;
+  z-index:6 !important;
+}
+
 .post.reaction-fit-last-line .posted-row,
 .post.reaction-fit-last-line .post-origin-line,
 .post.reaction-fit-last-line .post-third-line,
@@ -3564,119 +3572,93 @@ if(_thingNameInput && _dontKnowNameBtn){
 </style>
 
 <script>
-/* v111: 本文を100%幅で確定 → 最後の実表示行を測定 → 入る場合だけ同じ行 */
+/* v112: 本文を先に100%幅で描画し、実際の各表示行を測って反応UIを置く */
 (()=>{
-  const GAP=10;
-  const RIGHT_INSET=7;
+ const GAP=10, RIGHT=7;
 
-  function visibleRects(root){
-    const out=[];
-    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
-    let n;
-    while((n=walker.nextNode())){
-      if(!n.nodeValue || !n.nodeValue.trim()) continue;
-      const p=n.parentElement;
-      if(!p) continue;
-      const cs=getComputedStyle(p);
-      if(cs.display==="none" || cs.visibility==="hidden") continue;
-      if(p.closest(".posted-cn")) continue;
-      const r=document.createRange();
-      r.selectNodeContents(n);
-      for(const x of r.getClientRects()){
-        if(x.width>0 && x.height>0) out.push(x);
-      }
-    }
-    /* カード本体は文字Rangeより実際の占有幅が広いのでカード矩形も採用 */
-    root.querySelectorAll(".posted-card,.na-card").forEach(el=>{
-      const cs=getComputedStyle(el);
-      if(cs.display==="none" || cs.visibility==="hidden") return;
-      const x=el.getBoundingClientRect();
-      if(x.width>0 && x.height>0) out.push(x);
-    });
-    return out;
-  }
+ function rectsOf(root){
+   const a=[];
+   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+   let n;
+   while((n=w.nextNode())){
+     if(!n.nodeValue?.trim())continue;
+     const e=n.parentElement;
+     if(!e || e.closest(".posted-cn"))continue;
+     const cs=getComputedStyle(e);
+     if(cs.display==="none"||cs.visibility==="hidden")continue;
+     const r=document.createRange(); r.selectNodeContents(n);
+     [...r.getClientRects()].forEach(x=>{if(x.width>0&&x.height>0)a.push(x)});
+   }
+   root.querySelectorAll(".posted-card,.na-card").forEach(e=>{
+     const x=e.getBoundingClientRect();
+     if(x.width>0&&x.height>0)a.push(x);
+   });
+   return a;
+ }
+ function rowsOf(rects){
+   const rows=[];
+   rects.sort((a,b)=>a.top-b.top||a.left-b.left).forEach(r=>{
+     let q=rows.find(x=>Math.abs(x.top-r.top)<=4);
+     if(!q) rows.push(q={top:r.top,bottom:r.bottom,right:r.right});
+     else {q.top=Math.min(q.top,r.top);q.bottom=Math.max(q.bottom,r.bottom);q.right=Math.max(q.right,r.right);}
+   });
+   return rows.sort((a,b)=>a.top-b.top);
+ }
+ function place(post){
+   const row=post.querySelector(".posted-row");
+   const wrap=post.querySelector(":scope > .me-too-wrap");
+   const btn=wrap?.querySelector(".me-too-btn");
+   const count=post.querySelector(":scope > .me-too-count");
+   if(!row||!wrap||!btn||!count)return;
 
-  function groupRows(rects){
-    const rows=[];
-    rects.sort((a,b)=>a.top-b.top || a.left-b.left).forEach(r=>{
-      let row=rows.find(x=>Math.abs(x.top-r.top)<=4);
-      if(!row){
-        row={top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height};
-        rows.push(row);
-      }else{
-        row.top=Math.min(row.top,r.top);
-        row.bottom=Math.max(row.bottom,r.bottom);
-        row.left=Math.min(row.left,r.left);
-        row.right=Math.max(row.right,r.right);
-        row.height=Math.max(row.height,r.height);
-      }
-    });
-    return rows.sort((a,b)=>a.top-b.top);
-  }
+   post.classList.remove("metoo-inline","metoo-row2","metoo-row3","reaction-inline",
+                         "reaction-on-last-line","reaction-fit-last-line");
+   post.style.removeProperty("--reaction-btn-top");
+   post.style.removeProperty("--reaction-count-top");
 
-  function layout(post){
-    const wrap=post.querySelector(":scope > .me-too-wrap");
-    const btn=wrap?.querySelector(".me-too-btn");
-    const row=post.querySelector(".posted-row");
-    if(!wrap || !btn || !row) return;
+   const rows=rowsOf(rectsOf(row));
+   if(!rows.length)return;
 
-    /* 旧クラスを完全に無効化して、まず通常の次行配置で本文を100%幅にする */
-    post.classList.remove("metoo-inline","metoo-row2","metoo-row3",
-                          "reaction-inline","reaction-on-last-line",
-                          "reaction-fit-last-line");
-    post.style.removeProperty("--reaction-fit-top");
+   const pr=post.getBoundingClientRect();
+   const cs=getComputedStyle(post);
+   const innerRight=pr.right-parseFloat(cs.borderRightWidth||0)-parseFloat(cs.paddingRight||0)-RIGHT;
+   const last=rows.at(-1);
+   const bw=btn.getBoundingClientRect().width;
 
-    const rects=visibleRects(row);
-    const rows=groupRows(rects);
-    if(!rows.length) return;
+   if(innerRight-last.right >= bw+GAP){
+     const br=btn.getBoundingClientRect();
+     const btnTop=(last.top+last.bottom-br.height)/2-pr.top;
+     post.style.setProperty("--reaction-btn-top",Math.max(0,btnTop)+"px");
 
-    const last=rows[rows.length-1];
-    const postRect=post.getBoundingClientRect();
-    const pcs=getComputedStyle(post);
-    const innerRight=postRect.right
-      - parseFloat(pcs.borderRightWidth||0)
-      - parseFloat(pcs.paddingRight||0)
-      - RIGHT_INSET;
-
-    /* 通常配置の状態でボタンそのものの実幅を測る */
-    const bw=btn.getBoundingClientRect().width;
-    const free=innerRight-last.right;
-
-    /* 「被らない」の判定は実測値のみ。余白10pxも確保できる時だけ同じ行 */
-    if(free >= bw + GAP){
-      const bh=btn.getBoundingClientRect().height;
-      const center=(last.top+last.bottom)/2;
-      const top=center-bh/2-postRect.top;
-      post.style.setProperty("--reaction-fit-top",Math.max(0,top)+"px");
-      post.classList.add("reaction-fit-last-line");
-    }
-  }
-
-  let raf=0;
-  function schedule(){
-    cancelAnimationFrame(raf);
-    raf=requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      document.querySelectorAll(".post").forEach(layout);
-    }));
-  }
-
-  const feed=document.getElementById("feed");
-  if(feed){
-    new MutationObserver(schedule).observe(feed,{
-      childList:true,subtree:true,characterData:true
-    });
-    if("ResizeObserver" in window){
-      new ResizeObserver(schedule).observe(feed);
-    }
-  }
-  window.addEventListener("resize",schedule);
-  
-  if(document.fonts?.ready) document.fonts.ready.then(schedule);
-  schedule();
+     /* 一つ前の表示行がある時だけ、その行に♥×Nを置く */
+     if(rows.length>=2 && count.textContent.trim()){
+       const prev=rows.at(-2);
+       const ch=count.getBoundingClientRect().height || 14;
+       const countTop=(prev.top+prev.bottom-ch)/2-pr.top;
+       post.style.setProperty("--reaction-count-top",Math.max(0,countTop)+"px");
+     }else{
+       /* 前の行がない場合は本文の上に重ねず、通常位置を維持 */
+       post.style.setProperty("--reaction-count-top",(last.top-pr.top-Math.max(14,count.getBoundingClientRect().height)-3)+"px");
+     }
+     post.classList.add("reaction-fit-last-line");
+   }
+ }
+ let id=0;
+ function run(){
+   cancelAnimationFrame(id);
+   id=requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".post").forEach(place)));
+ }
+ const feed=document.getElementById("feed");
+ if(feed){
+   new MutationObserver(run).observe(feed,{childList:true,subtree:true,characterData:true});
+   if("ResizeObserver" in window)new ResizeObserver(run).observe(feed);
+ }
+ window.addEventListener("resize",run);
+ document.fonts?.ready?.then(run);
+ run();
 })();
 </script>
 
-  
 </body>
 </html>
 
