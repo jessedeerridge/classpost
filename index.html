@@ -2659,6 +2659,190 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  flex:0 0 125px !important;
 }
 
+
+/* v101: 回答を少し右へ／未表示の質問・回答ぶんの空き行を作らない */
+.q1,.a1,.q2,.a2,.q3,.a3,.q5,.a5{
+ grid-row:auto !important;
+}
+.a1,.a2,.a3,.a5{
+ padding-left:3.5em !important;
+}
+@media(max-width:600px){
+ .a1,.a2,.a3,.a5{
+  padding-left:2.5em !important;
+ }
+}
+
+
+/* v102: 投稿本文の折返し幅は常に投稿欄いっぱい。いいねボタンは本文幅に一切影響させない */
+.post .posted-row,
+.post.me-too-inline .posted-row,
+.post:not(.me-too-inline) .posted-row{
+ display:grid !important;
+ width:100% !important;
+ max-width:100% !important;
+ min-width:0 !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+ box-sizing:border-box !important;
+ vertical-align:initial !important;
+}
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ width:auto !important;
+ max-width:100% !important;
+ min-width:0 !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+ box-sizing:border-box !important;
+}
+
+/* ボタンは本文レイアウトから独立。JSで「最後の実表示行に空きがある」ときだけ重ねる */
+.post{
+ position:relative !important;
+}
+.post .me-too-wrap,
+.post.me-too-inline .me-too-wrap,
+.post:not(.me-too-inline) .me-too-wrap{
+ position:static !important;
+ display:flex !important;
+ width:100% !important;
+ justify-content:flex-end !important;
+ clear:both !important;
+ margin:7px 0 0 !important;
+ padding:0 !important;
+ box-sizing:border-box !important;
+}
+.post.reaction-on-last-line .me-too-wrap{
+ position:absolute !important;
+ right:7px !important;
+ bottom:7px !important;
+ width:auto !important;
+ margin:0 !important;
+ z-index:4 !important;
+}
+
+
+/* v105: 投稿文を1文目・2文目・3文目として確実に表示 */
+.posted-row{
+ display:grid !important;
+ grid-template-columns:max-content minmax(0,1fr) !important;
+ grid-template-rows:auto auto auto !important;
+ column-gap:7px !important;
+ row-gap:7px !important;
+ width:100% !important;
+ max-width:100% !important;
+ padding-right:0 !important;
+ box-sizing:border-box !important;
+}
+.posted-row > .posted-name{
+ grid-column:1 !important;
+ grid-row:1 !important;
+}
+.posted-row > .post-origin-line{
+ grid-column:2 !important;
+ grid-row:1 !important;
+ display:flex !important;
+ flex-wrap:wrap !important;
+ min-width:0 !important;
+ max-width:100% !important;
+}
+.posted-row > .post-third-line:not(.post-final-line){
+ grid-column:2 !important;
+ grid-row:2 !important;
+ display:flex !important;
+ flex-wrap:wrap !important;
+ min-width:0 !important;
+ max-width:100% !important;
+}
+.posted-row > .post-final-line{
+ grid-column:2 !important;
+ grid-row:3 !important;
+ display:flex !important;
+ flex-wrap:wrap !important;
+ min-width:0 !important;
+ max-width:100% !important;
+}
+/* いいねボタンは投稿文の幅を縮めない */
+.post .posted-row,
+.post.me-too-inline .posted-row,
+.post:not(.me-too-inline) .posted-row{
+ width:100% !important;
+ max-width:100% !important;
+}
+
+
+
+
+/* v107: 未選択の回答文を先に出さない */
+.a2:not([style*="display: flex"]),
+.a3:not([style*="display: flex"]){
+ display:none !important;
+}
+
+
+/* v108: 質問・回答 → その質問に対応するボタン群 */
+.qa-stage-block{
+ width:100%;
+ box-sizing:border-box;
+ margin-top:8px;
+ margin-bottom:5px;
+}
+.qa-stage-block .q-cell{
+ display:block;
+ width:100%;
+ box-sizing:border-box;
+ margin-bottom:4px;
+}
+.qa-stage-block .a-cell{
+ width:100%;
+ box-sizing:border-box;
+}
+.qa-stage-block .a2,
+.qa-stage-block .a3,
+.qa-stage-block .a5{
+ padding-left:3.5em !important;
+}
+@media(max-width:600px){
+ .qa-stage-block .a2,
+ .qa-stage-block .a3,
+ .qa-stage-block .a5{
+  padding-left:2.5em !important;
+ }
+}
+
+
+/* v109: 地名未入力では「〜は どんな ところですか。」を表示しない */
+.q2{display:none;}
+
+
+/* v110: ♥×N は「いいところですね。」ボタンの一つ前の行の右端 */
+.post > .me-too-count{
+ position:static !important;
+ display:block !important;
+ width:100% !important;
+ box-sizing:border-box !important;
+ text-align:right !important;
+ margin:4px 0 2px !important;
+ padding:0 7px 0 0 !important;
+ float:none !important;
+}
+.post .me-too-wrap,
+.post.me-too-inline .me-too-wrap,
+.post:not(.me-too-inline) .me-too-wrap,
+.post.reaction-on-last-line .me-too-wrap{
+ position:static !important;
+ display:flex !important;
+ width:100% !important;
+ justify-content:flex-end !important;
+ clear:both !important;
+ margin:0 !important;
+ padding:0 !important;
+ box-sizing:border-box !important;
+}
+
 </style>
 </head>
 <body>
@@ -2868,19 +3052,24 @@ function updateComposer(){
  second.style.display=v?"contents":"none";
  const subjectHtml=v?`<span>${esc(v)}</span>`:"";
  document.getElementById("shusshinSubject").innerHTML=subjectHtml;
- const a2Cell=document.getElementById("shusshinSubjectAnswer").parentElement;
+ const q2Cell=document.querySelector(".q2");
+if(q2Cell) q2Cell.style.display=v?"block":"none";
+const a2Cell=document.getElementById("shusshinSubjectAnswer").parentElement;
+ a2Cell.style.display=selectedAdjs.length?"flex":"none";
  a2Cell.style.visibility=selectedAdjs.length?"visible":"hidden";
  document.getElementById("shusshinSubjectAnswer").textContent=v;
  const showThird=!!(v&&(selectedAdjs.length || selectedThing));
  const thingTable=document.getElementById("thingTable");
  if(thingTable) thingTable.style.display=showThird?"block":"none";
  document.getElementById("q3Cell").style.display=showThird?"block":"none";
- document.getElementById("a3Cell").style.display=showThird?"flex":"none";
  document.getElementById("shusshinSubject3").textContent=v;
  document.getElementById("shusshinSubjectAnswer3").textContent=v;
  const thingBox=document.getElementById("thingPreview");
  const a3Cell=document.getElementById("a3Cell");
- if(a3Cell) a3Cell.style.visibility=selectedThing?"visible":"hidden";
+ if(a3Cell){
+   a3Cell.style.display=selectedThing?"flex":"none";
+   a3Cell.style.visibility=selectedThing?"visible":"hidden";
+ }
  const nameInline=document.getElementById("nameInline");
  if(nameInline){
    nameInline.style.display=selectedThing?"inline-flex":"none";
@@ -3255,6 +3444,17 @@ if(_thingNameInput && _dontKnowNameBtn){
    expanded=!expanded;
    applyState();
  });
+
+ /* 投稿欄が広がっている時、地名入力欄を押したら元の高さへ戻す */
+ const placeInput=document.getElementById("shusshinInput");
+ if(placeInput){
+   placeInput.addEventListener("focus",()=>{
+     if(expanded){
+       expanded=false;
+       applyState();
+     }
+   });
+ }
  const setExpandedIfPosted=()=>{
    const hasPosted=feed.querySelector(".post");
    if(hasPosted && !expanded){
@@ -3269,111 +3469,209 @@ if(_thingNameInput && _dontKnowNameBtn){
 </script>
 
 <script>
-/* v96: 最後の「実際に表示されている行」の空き幅を測り、十分な時だけ反応ボタンを同じ行へ置く */
+/* v108: 各質問・回答を対応するボタン群の直前に配置 */
 (()=>{
- const GAP=10;
- const RIGHT_INSET=7;
+ function arrangeQuestionBlocks(){
+   const adjTable=document.getElementById("adjTable");
+   const thingTable=document.getElementById("thingTable");
+   const nameAdjTable=document.getElementById("nameAdjTable");
+   const q2=document.querySelector(".q2");
+   const a2=document.querySelector(".a2");
+   const q3=document.getElementById("q3Cell");
+   const a3=document.getElementById("a3Cell");
+   const q5=document.getElementById("q5Cell");
+   const a5=document.getElementById("a5Cell");
 
- function rectsForLastVisualLine(line){
-   const rects=[];
-   const collect=(el)=>{
-     if(!(el instanceof Element))return;
-     const cs=getComputedStyle(el);
-     if(cs.display==='none' || cs.visibility==='hidden')return;
-     if(el.classList.contains('posted-cn'))return; // 中国語訳は下側の注記なので本文行判定から除外
-     if(el.classList.contains('posted-card') || el.classList.contains('na-card')){
-       const r=el.getBoundingClientRect();
-       if(r.width>0 && r.height>0)rects.push(r);
-       return;
+   function block(id,q,a,before){
+     if(!before||!q||!a)return;
+     let wrap=document.getElementById(id);
+     if(!wrap){
+       wrap=document.createElement("div");
+       wrap.id=id;
+       wrap.className="qa-stage-block";
+       before.parentNode.insertBefore(wrap,before);
      }
-     if(el.children.length){
-       [...el.children].forEach(collect);
-       return;
-     }
-     const text=(el.textContent||'').trim();
-     if(text){
-       try{
-         const range=document.createRange();
-         range.selectNodeContents(el);
-         [...range.getClientRects()].forEach(r=>{
-           if(r.width>0 && r.height>0)rects.push(r);
-         });
-       }catch(_){
-         const r=el.getBoundingClientRect();
-         if(r.width>0 && r.height>0)rects.push(r);
-       }
-     }
-   };
-   [...line.children].forEach(collect);
-   if(!rects.length){
-     const r=line.getBoundingClientRect();
-     if(r.width>0 && r.height>0)rects.push(r);
+     wrap.appendChild(q);
+     wrap.appendChild(a);
    }
-   if(!rects.length)return null;
-
-   const maxTop=Math.max(...rects.map(r=>r.top));
-   const tolerance=4;
-   const lastRow=rects.filter(r=>Math.abs(r.top-maxTop)<=tolerance);
-   return {
-     top:Math.min(...lastRow.map(r=>r.top)),
-     right:Math.max(...lastRow.map(r=>r.right)),
-     bottom:Math.max(...lastRow.map(r=>r.bottom)),
-     height:Math.max(...lastRow.map(r=>r.height))
-   };
+   block("stage2QA",q2,a2,adjTable);
+   block("stage3QA",q3,a3,thingTable);
+   block("stage5QA",q5,a5,nameAdjTable);
  }
+ arrangeQuestionBlocks();
+})();
+</script>
 
- function layoutPost(post){
-   const wrap=post.querySelector('.me-too-wrap');
-   const btn=wrap?.querySelector('.me-too-btn');
-   const last=post.querySelector('.post-final-line') ||
-              post.querySelector('.post-third-line') ||
-              post.querySelector('.post-answer-line') ||
-              post.querySelector('.post-origin-line');
-   if(!wrap || !btn || !last)return;
 
-   // まず必ず「次の行」状態に戻す。これで本文は常に100%幅で先に確定する。
-   post.classList.remove('reaction-inline');
-   post.style.removeProperty('--reaction-top');
+<style>
+/* v111: 反応UIを一系統に統一。本文の折返し幅は絶対に縮めない */
+.post{
+  position:relative !important;
+}
+.post > .me-too-count{
+  position:static !important;
+  display:block !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  text-align:right !important;
+  margin:4px 0 2px !important;
+  padding:0 7px 0 0 !important;
+  float:none !important;
+}
+.post > .me-too-wrap,
+.post.metoo-inline > .me-too-wrap,
+.post.metoo-row2 > .me-too-wrap,
+.post.metoo-row3 > .me-too-wrap,
+.post.reaction-inline > .me-too-wrap,
+.post.reaction-on-last-line > .me-too-wrap{
+  position:static !important;
+  display:flex !important;
+  width:100% !important;
+  max-width:100% !important;
+  justify-content:flex-end !important;
+  align-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+  clear:both !important;
+  left:auto !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:auto !important;
+}
 
-   const info=rectsForLastVisualLine(last);
-   if(!info)return;
-   const postRect=post.getBoundingClientRect();
-   const cs=getComputedStyle(post);
-   const innerRight=postRect.right
-      - parseFloat(cs.borderRightWidth||0)
-      - parseFloat(cs.paddingRight||0)
+/* 最終表示行の右側に本当に入る時だけ、本文とは独立して重ねる */
+.post.reaction-fit-last-line > .me-too-wrap{
+  position:absolute !important;
+  width:auto !important;
+  max-width:none !important;
+  right:7px !important;
+  top:var(--reaction-fit-top) !important;
+  margin:0 !important;
+  padding:0 !important;
+  z-index:6 !important;
+}
+
+/* インライン時も本文の幅・折返しには一切影響させない */
+.post.reaction-fit-last-line .posted-row,
+.post.reaction-fit-last-line .post-origin-line,
+.post.reaction-fit-last-line .post-third-line,
+.post.reaction-fit-last-line .post-final-line{
+  padding-right:0 !important;
+  margin-right:0 !important;
+  max-width:100% !important;
+}
+</style>
+
+<script>
+/* v111: 本文を100%幅で確定 → 最後の実表示行を測定 → 入る場合だけ同じ行 */
+(()=>{
+  const GAP=10;
+  const RIGHT_INSET=7;
+
+  function visibleRects(root){
+    const out=[];
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    let n;
+    while((n=walker.nextNode())){
+      if(!n.nodeValue || !n.nodeValue.trim()) continue;
+      const p=n.parentElement;
+      if(!p) continue;
+      const cs=getComputedStyle(p);
+      if(cs.display==="none" || cs.visibility==="hidden") continue;
+      if(p.closest(".posted-cn")) continue;
+      const r=document.createRange();
+      r.selectNodeContents(n);
+      for(const x of r.getClientRects()){
+        if(x.width>0 && x.height>0) out.push(x);
+      }
+    }
+    /* カード本体は文字Rangeより実際の占有幅が広いのでカード矩形も採用 */
+    root.querySelectorAll(".posted-card,.na-card").forEach(el=>{
+      const cs=getComputedStyle(el);
+      if(cs.display==="none" || cs.visibility==="hidden") return;
+      const x=el.getBoundingClientRect();
+      if(x.width>0 && x.height>0) out.push(x);
+    });
+    return out;
+  }
+
+  function groupRows(rects){
+    const rows=[];
+    rects.sort((a,b)=>a.top-b.top || a.left-b.left).forEach(r=>{
+      let row=rows.find(x=>Math.abs(x.top-r.top)<=4);
+      if(!row){
+        row={top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height};
+        rows.push(row);
+      }else{
+        row.top=Math.min(row.top,r.top);
+        row.bottom=Math.max(row.bottom,r.bottom);
+        row.left=Math.min(row.left,r.left);
+        row.right=Math.max(row.right,r.right);
+        row.height=Math.max(row.height,r.height);
+      }
+    });
+    return rows.sort((a,b)=>a.top-b.top);
+  }
+
+  function layout(post){
+    const wrap=post.querySelector(":scope > .me-too-wrap");
+    const btn=wrap?.querySelector(".me-too-btn");
+    const row=post.querySelector(".posted-row");
+    if(!wrap || !btn || !row) return;
+
+    /* 旧クラスを完全に無効化して、まず通常の次行配置で本文を100%幅にする */
+    post.classList.remove("metoo-inline","metoo-row2","metoo-row3",
+                          "reaction-inline","reaction-on-last-line",
+                          "reaction-fit-last-line");
+    post.style.removeProperty("--reaction-fit-top");
+
+    const rects=visibleRects(row);
+    const rows=groupRows(rects);
+    if(!rows.length) return;
+
+    const last=rows[rows.length-1];
+    const postRect=post.getBoundingClientRect();
+    const pcs=getComputedStyle(post);
+    const innerRight=postRect.right
+      - parseFloat(pcs.borderRightWidth||0)
+      - parseFloat(pcs.paddingRight||0)
       - RIGHT_INSET;
-   const buttonRect=btn.getBoundingClientRect();
-   const free=innerRight-info.right;
 
-   // 右端まで本文を使ってレイアウトした結果、最後の実表示行の右側に
-   // ボタン幅＋余白が本当に残っている場合だけ同じ行にする。
-   if(free >= buttonRect.width + GAP){
-     const rowCenter=info.top + info.height/2;
-     const top=rowCenter - buttonRect.height/2 - postRect.top;
-     post.style.setProperty('--reaction-top', Math.max(0,top)+'px');
-     post.classList.add('reaction-inline');
-   }
- }
+    /* 通常配置の状態でボタンそのものの実幅を測る */
+    const bw=btn.getBoundingClientRect().width;
+    const free=innerRight-last.right;
 
- function layoutAll(){
-   document.querySelectorAll('.post').forEach(layoutPost);
- }
+    /* 「被らない」の判定は実測値のみ。余白10pxも確保できる時だけ同じ行 */
+    if(free >= bw + GAP){
+      const bh=btn.getBoundingClientRect().height;
+      const center=(last.top+last.bottom)/2;
+      const top=center-bh/2-postRect.top;
+      post.style.setProperty("--reaction-fit-top",Math.max(0,top)+"px");
+      post.classList.add("reaction-fit-last-line");
+    }
+  }
 
- let raf=0;
- const schedule=()=>{
-   cancelAnimationFrame(raf);
-   raf=requestAnimationFrame(()=>requestAnimationFrame(layoutAll));
- };
+  let raf=0;
+  function schedule(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      document.querySelectorAll(".post").forEach(layout);
+    }));
+  }
 
- const feed=document.getElementById('feed');
- if(feed){
-   new MutationObserver(schedule).observe(feed,{childList:true,subtree:true});
-   if('ResizeObserver' in window)new ResizeObserver(schedule).observe(feed);
- }
- window.addEventListener('resize',schedule);
- if(document.fonts?.ready)document.fonts.ready.then(schedule);
- schedule();
+  const feed=document.getElementById("feed");
+  if(feed){
+    new MutationObserver(schedule).observe(feed,{
+      childList:true,subtree:true,characterData:true
+    });
+    if("ResizeObserver" in window){
+      new ResizeObserver(schedule).observe(feed);
+    }
+  }
+  window.addEventListener("resize",schedule);
+  if(document.fonts?.ready) document.fonts.ready.then(schedule);
+  schedule();
 })();
 </script>
 
