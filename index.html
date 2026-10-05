@@ -2441,6 +2441,118 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  }
 }
 
+
+/* v93: すべての回答を対応する質問の次の行に配置 */
+.qa-grid{
+ grid-template-columns:1fr !important;
+ column-gap:0 !important;
+ row-gap:4px !important;
+}
+.q1,.q2,.q3,.q5,
+.a1,.a2,.a3,.a5{
+ grid-column:1 !important;
+}
+.a1,.a2,.a3,.a5{
+ padding-left:2.2em !important;
+ margin-top:0 !important;
+}
+.q1{grid-row:1 !important;}
+.a1{grid-row:2 !important;}
+.q2{grid-row:3 !important;}
+.a2{grid-row:4 !important;}
+.q3{grid-row:5 !important;}
+.a3{grid-row:6 !important;}
+.q5{grid-row:7 !important;}
+.a5{grid-row:8 !important;}
+
+@media(max-width:600px){
+ .qa-grid{
+  grid-template-columns:1fr !important;
+  column-gap:0 !important;
+ }
+ .a1,.a2,.a3,.a5{
+  padding-left:1.5em !important;
+ }
+}
+
+
+/* v94: 投稿本文は右端まで使用。いいねボタンのための横幅予約を完全に解除 */
+.post{
+ display:block !important;
+}
+.posted-row{
+ width:100% !important;
+ max-width:none !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+ box-sizing:border-box !important;
+}
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ max-width:none !important;
+ width:auto !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+}
+.post .me-too-wrap{
+ position:static !important;
+ clear:both !important;
+ width:100% !important;
+ margin-top:8px !important;
+ padding:0 !important;
+ display:flex !important;
+ justify-content:flex-end !important;
+}
+
+
+/* v95: ♥×N は1行目右端。いいねは最後の行に入る時だけ同じ行 */
+.post{
+ position:relative !important;
+}
+.post > .me-too-count{
+ position:absolute !important;
+ top:6px !important;
+ right:7px !important;
+ float:none !important;
+ margin:0 !important;
+ z-index:3 !important;
+}
+.post .me-too-wrap{
+ position:static !important;
+ width:auto !important;
+ clear:none !important;
+ margin:6px 0 0 auto !important;
+ padding:0 !important;
+ display:flex !important;
+ justify-content:flex-end !important;
+}
+
+/* JSで同じ行に入ると判定した場合 */
+.post.me-too-inline .posted-row{
+ display:inline-grid !important;
+ width:auto !important;
+ max-width:calc(100% - 155px) !important;
+ vertical-align:bottom !important;
+}
+.post.me-too-inline .me-too-wrap{
+ display:inline-flex !important;
+ width:auto !important;
+ margin:0 0 0 8px !important;
+ vertical-align:bottom !important;
+}
+
+/* 入らない場合は必ず次の行 */
+.post:not(.me-too-inline) .posted-row{
+ width:100% !important;
+}
+.post:not(.me-too-inline) .me-too-wrap{
+ display:flex !important;
+ width:100% !important;
+ margin-top:7px !important;
+}
+
 </style>
 </head>
 <body>
@@ -2898,8 +3010,8 @@ function renderPosts(){
   btn.textContent="♥ いい ところ ですね。";
   btn.onclick=()=>toggleMeToo(p.id);
   wrap.append(btn);
-  d.appendChild(wrap);
   d.appendChild(count);
+  d.appendChild(wrap);
 
   let timer=null;
   const start=()=>{if(userName!=="あさの")return;timer=setTimeout(()=>deletePost(p.id),750)};
@@ -3047,6 +3159,33 @@ if(_thingNameInput && _dontKnowNameBtn){
  setTimeout(setExpandedIfPosted,0);
  const observer=new MutationObserver(setExpandedIfPosted);
  observer.observe(feed,{childList:true,subtree:true});
+})();
+</script>
+<script>
+/* v95: 最終行といいねボタンが重ならない時だけ同じ行 */
+(()=>{
+ function fitReactionButtons(){
+   document.querySelectorAll(".post").forEach(post=>{
+     post.classList.remove("me-too-inline");
+     const row=post.querySelector(".posted-row");
+     const btn=post.querySelector(".me-too-wrap");
+     const last=post.querySelector(".post-final-line") ||
+                post.querySelector(".post-third-line") ||
+                post.querySelector(".post-answer-line") ||
+                post.querySelector(".post-origin-line");
+     if(!row||!btn||!last)return;
+     const available=post.clientWidth-16;
+     const need=last.scrollWidth+btn.scrollWidth+18;
+     if(need<=available) post.classList.add("me-too-inline");
+   });
+ }
+ const feed=document.getElementById("feed");
+ if(feed){
+   new MutationObserver(()=>requestAnimationFrame(fitReactionButtons))
+     .observe(feed,{childList:true,subtree:true});
+ }
+ window.addEventListener("resize",fitReactionButtons);
+ requestAnimationFrame(fitReactionButtons);
 })();
 </script>
 </body>
