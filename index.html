@@ -3638,6 +3638,7 @@ if(_thingNameInput && _dontKnowNameBtn){
        post.style.setProperty("--reaction-count-top",Math.max(0,countTop)+"px");
      }else{
        /* 前の行がない場合は本文の上に重ねず、通常位置を維持 */
+       
        post.style.setProperty("--reaction-count-top",(last.top-pr.top-Math.max(14,count.getBoundingClientRect().height)-3)+"px");
      }
      post.classList.add("reaction-fit-last-line");
