@@ -2507,50 +2507,156 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 
-/* v95: ♥×N は1行目右端。いいねは最後の行に入る時だけ同じ行 */
+
+/* v96: 投稿本文は常に右端までレイアウトし、反応ボタンは後から重ならない時だけ同じ行へ */
 .post{
  position:relative !important;
+ display:block !important;
 }
+.posted-row{
+ display:grid !important;
+ width:100% !important;
+ max-width:none !important;
+ min-width:0 !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+ box-sizing:border-box !important;
+}
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ width:auto !important;
+ max-width:100% !important;
+ min-width:0 !important;
+ padding-right:0 !important;
+ margin-right:0 !important;
+ box-sizing:border-box !important;
+ flex-wrap:wrap !important;
+}
+.posted-place-plain,
+.post-origin-line > span:not(.posted-card),
+.post-answer-line > span:not(.posted-card),
+.post-third-line > span:not(.posted-card),
+.post-final-line > span:not(.posted-card){
+ overflow-wrap:anywhere;
+}
+
+/* ♥×N は常に1行目右端 */
 .post > .me-too-count{
  position:absolute !important;
  top:6px !important;
  right:7px !important;
- float:none !important;
+ left:auto !important;
+ bottom:auto !important;
  margin:0 !important;
- z-index:3 !important;
+ float:none !important;
+ z-index:6 !important;
+ white-space:nowrap !important;
+ pointer-events:none !important;
 }
+
+/* 通常は最後の文の次の行。本文幅には一切影響しない */
 .post .me-too-wrap{
  position:static !important;
- width:auto !important;
- clear:none !important;
- margin:6px 0 0 auto !important;
- padding:0 !important;
  display:flex !important;
+ width:100% !important;
  justify-content:flex-end !important;
+ align-items:center !important;
+ clear:both !important;
+ margin:7px 0 0 !important;
+ padding:0 !important;
+ box-sizing:border-box !important;
 }
 
-/* JSで同じ行に入ると判定した場合 */
-.post.me-too-inline .posted-row{
- display:inline-grid !important;
+/* 実測して余白がある時だけ、本文を再レイアウトせず同じ行の右端へ重ねる */
+.post.reaction-inline .me-too-wrap{
+ position:absolute !important;
+ right:7px !important;
+ top:var(--reaction-top, 0px) !important;
+ left:auto !important;
+ bottom:auto !important;
  width:auto !important;
- max-width:calc(100% - 155px) !important;
- vertical-align:bottom !important;
+ margin:0 !important;
+ padding:0 !important;
+ clear:none !important;
+ z-index:5 !important;
 }
-.post.me-too-inline .me-too-wrap{
+
+
+/* v97: 出身・名称入力欄の高さを揃えて少し低く／不知道を3px下へ */
+#shusshinInput,
+#thingNameInput{
+ height:30px !important;
+ min-height:30px !important;
+ padding:3px 8px !important;
+ line-height:20px !important;
+ box-sizing:border-box !important;
+ border-width:2px !important;
+ border-radius:8px !important;
+ font-size:16px !important;
+}
+.name-input-wrap .dont-know-name{
+ top:3px !important;
+}
+
+
+/* v98: 出身・名称入力欄の長さも統一 */
+#shusshinInput,
+#thingNameInput{
+ width:150px !important;
+ min-width:150px !important;
+ max-width:150px !important;
+ flex:0 0 150px !important;
+}
+
+/* 作成中のカードを、最後の段の正常なカードと同じ形に統一 */
+.a2 .posted-card,
+.a3 .posted-card,
+.a5 .posted-card,
+.a2 .shusshin-adj-card,
+.a3 .thing-card{
+ position:relative !important;
  display:inline-flex !important;
- width:auto !important;
- margin:0 0 0 8px !important;
- vertical-align:bottom !important;
+ align-items:center !important;
+ justify-content:center !important;
+ height:auto !important;
+ min-height:0 !important;
+ padding:5px 7px !important;
+ margin:0 !important;
+ box-sizing:border-box !important;
+ line-height:1 !important;
+ border-radius:7px !important;
+ overflow:visible !important;
+ vertical-align:middle !important;
+}
+.a2 .posted-cn,
+.a3 .posted-cn,
+.a5 .posted-cn{
+ position:absolute !important;
+ left:0 !important;
+ right:0 !important;
+ top:calc(100% + 2px) !important;
+ bottom:auto !important;
+ transform:none !important;
+ text-align:center !important;
+ line-height:1 !important;
+ white-space:nowrap !important;
 }
 
-/* 入らない場合は必ず次の行 */
-.post:not(.me-too-inline) .posted-row{
- width:100% !important;
+/* 不知道は前版からさらに崩さず、指定どおり3px下げた位置 */
+.name-input-wrap .dont-know-name{
+ top:3px !important;
 }
-.post:not(.me-too-inline) .me-too-wrap{
- display:flex !important;
- width:100% !important;
- margin-top:7px !important;
+
+
+/* v99: 出身・名称入力欄を短く */
+#shusshinInput,
+#thingNameInput{
+ width:125px !important;
+ min-width:125px !important;
+ max-width:125px !important;
+ flex:0 0 125px !important;
 }
 
 </style>
@@ -3161,33 +3267,116 @@ if(_thingNameInput && _dontKnowNameBtn){
  observer.observe(feed,{childList:true,subtree:true});
 })();
 </script>
+
 <script>
-/* v95: 最終行といいねボタンが重ならない時だけ同じ行 */
+/* v96: 最後の「実際に表示されている行」の空き幅を測り、十分な時だけ反応ボタンを同じ行へ置く */
 (()=>{
- function fitReactionButtons(){
-   document.querySelectorAll(".post").forEach(post=>{
-     post.classList.remove("me-too-inline");
-     const row=post.querySelector(".posted-row");
-     const btn=post.querySelector(".me-too-wrap");
-     const last=post.querySelector(".post-final-line") ||
-                post.querySelector(".post-third-line") ||
-                post.querySelector(".post-answer-line") ||
-                post.querySelector(".post-origin-line");
-     if(!row||!btn||!last)return;
-     const available=post.clientWidth-16;
-     const need=last.scrollWidth+btn.scrollWidth+18;
-     if(need<=available) post.classList.add("me-too-inline");
-   });
+ const GAP=10;
+ const RIGHT_INSET=7;
+
+ function rectsForLastVisualLine(line){
+   const rects=[];
+   const collect=(el)=>{
+     if(!(el instanceof Element))return;
+     const cs=getComputedStyle(el);
+     if(cs.display==='none' || cs.visibility==='hidden')return;
+     if(el.classList.contains('posted-cn'))return; // 中国語訳は下側の注記なので本文行判定から除外
+     if(el.classList.contains('posted-card') || el.classList.contains('na-card')){
+       const r=el.getBoundingClientRect();
+       if(r.width>0 && r.height>0)rects.push(r);
+       return;
+     }
+     if(el.children.length){
+       [...el.children].forEach(collect);
+       return;
+     }
+     const text=(el.textContent||'').trim();
+     if(text){
+       try{
+         const range=document.createRange();
+         range.selectNodeContents(el);
+         [...range.getClientRects()].forEach(r=>{
+           if(r.width>0 && r.height>0)rects.push(r);
+         });
+       }catch(_){
+         const r=el.getBoundingClientRect();
+         if(r.width>0 && r.height>0)rects.push(r);
+       }
+     }
+   };
+   [...line.children].forEach(collect);
+   if(!rects.length){
+     const r=line.getBoundingClientRect();
+     if(r.width>0 && r.height>0)rects.push(r);
+   }
+   if(!rects.length)return null;
+
+   const maxTop=Math.max(...rects.map(r=>r.top));
+   const tolerance=4;
+   const lastRow=rects.filter(r=>Math.abs(r.top-maxTop)<=tolerance);
+   return {
+     top:Math.min(...lastRow.map(r=>r.top)),
+     right:Math.max(...lastRow.map(r=>r.right)),
+     bottom:Math.max(...lastRow.map(r=>r.bottom)),
+     height:Math.max(...lastRow.map(r=>r.height))
+   };
  }
- const feed=document.getElementById("feed");
+
+ function layoutPost(post){
+   const wrap=post.querySelector('.me-too-wrap');
+   const btn=wrap?.querySelector('.me-too-btn');
+   const last=post.querySelector('.post-final-line') ||
+              post.querySelector('.post-third-line') ||
+              post.querySelector('.post-answer-line') ||
+              post.querySelector('.post-origin-line');
+   if(!wrap || !btn || !last)return;
+
+   // まず必ず「次の行」状態に戻す。これで本文は常に100%幅で先に確定する。
+   post.classList.remove('reaction-inline');
+   post.style.removeProperty('--reaction-top');
+
+   const info=rectsForLastVisualLine(last);
+   if(!info)return;
+   const postRect=post.getBoundingClientRect();
+   const cs=getComputedStyle(post);
+   const innerRight=postRect.right
+      - parseFloat(cs.borderRightWidth||0)
+      - parseFloat(cs.paddingRight||0)
+      - RIGHT_INSET;
+   const buttonRect=btn.getBoundingClientRect();
+   const free=innerRight-info.right;
+
+   // 右端まで本文を使ってレイアウトした結果、最後の実表示行の右側に
+   // ボタン幅＋余白が本当に残っている場合だけ同じ行にする。
+   if(free >= buttonRect.width + GAP){
+     const rowCenter=info.top + info.height/2;
+     const top=rowCenter - buttonRect.height/2 - postRect.top;
+     post.style.setProperty('--reaction-top', Math.max(0,top)+'px');
+     post.classList.add('reaction-inline');
+   }
+ }
+
+ function layoutAll(){
+   document.querySelectorAll('.post').forEach(layoutPost);
+ }
+
+ let raf=0;
+ const schedule=()=>{
+   cancelAnimationFrame(raf);
+   raf=requestAnimationFrame(()=>requestAnimationFrame(layoutAll));
+ };
+
+ const feed=document.getElementById('feed');
  if(feed){
-   new MutationObserver(()=>requestAnimationFrame(fitReactionButtons))
-     .observe(feed,{childList:true,subtree:true});
+   new MutationObserver(schedule).observe(feed,{childList:true,subtree:true});
+   if('ResizeObserver' in window)new ResizeObserver(schedule).observe(feed);
  }
- window.addEventListener("resize",fitReactionButtons);
- requestAnimationFrame(fitReactionButtons);
+ window.addEventListener('resize',schedule);
+ if(document.fonts?.ready)document.fonts.ready.then(schedule);
+ schedule();
 })();
 </script>
+
 </body>
 </html>
 
