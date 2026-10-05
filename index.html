@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>しゅうまつ、なにをしますか。</title>
+<title>しゅっしん｜しゅっしん は どちらですか。</title>
 <style>
 *{box-sizing:border-box}
 :root{
-  --bg:#dcebd4;--panel:#fff;--ink:#292929;--line:#9fbe91;
-  --area:#c7e2b9;--btn:#edf7e8;--sel:#79b85d;--dark:#3f7e2e;
+  --bg:#dff2fb;--panel:#fff;--ink:#292929;--line:#9bcbe0;
+  --area:#cfeaf6;--btn:#eef9fd;--sel:#6db9dc;--dark:#286b8a;
 }
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
 font-family:"Yu Kyokasho","YuKyokasho","BIZ UDPGothic","Noto Sans JP",sans-serif}
@@ -25,21 +25,21 @@ border-radius:9px;padding:6px;font-size:16px;flex:0 0 auto}
 .preview{display:flex;justify-content:center;align-items:center;gap:5px;min-height:40px;
 font-size:19px;font-weight:600;white-space:nowrap;margin-bottom:5px}
 .preview-place{
- position:relative;background:var(--area);color:#315f24;border-radius:8px;padding:5px 8px}
+ position:relative;background:var(--area);color:#234f63;border-radius:8px;padding:5px 8px}
 .post-btn{border:0;border-radius:9px;background:var(--dark);color:#fff;padding:8px 16px;font-weight:700;cursor:pointer}
 .post-btn:disabled{opacity:.28;cursor:default}
 .place-box{background:var(--area);border-radius:11px;padding:6px}
 .choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
-.choice{min-height:39px;border:1px solid #76a862;border-radius:7px;background:var(--btn);color:#315f24;
+.choice{min-height:39px;border:1px solid #76a862;border-radius:7px;background:var(--btn);color:#234f63;
 padding:3px 2px;cursor:pointer;font:inherit}
-.choice.selected{background:var(--sel);border-color:#3f7e2e}
+.choice.selected{background:var(--sel);border-color:#286b8a}
 .jp{display:block;font-size:14px;font-weight:600;line-height:1}
 .cn{display:block;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-size:10px;line-height:1;
 margin-top:3px;opacity:.75}
 .patterns{display:flex;justify-content:center;gap:8px;margin-top:5px}
-.pattern{min-width:120px;border:1px solid #76a862;border-radius:8px;background:var(--btn);color:#315f24;
+.pattern{min-width:120px;border:1px solid #76a862;border-radius:8px;background:var(--btn);color:#234f63;
 padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
-.pattern.selected{background:var(--sel);border-color:#3f7e2e}
+.pattern.selected{background:var(--sel);border-color:#286b8a}
 .pattern.disabled{opacity:.18;cursor:default;filter:grayscale(.5)}
 .name-modal{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:99;display:flex;align-items:center;justify-content:center}
 .name-box{background:#fff;border-radius:16px;padding:22px;width:min(340px,90vw);text-align:center}
@@ -64,7 +64,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 .post-line{display:flex;align-items:center;gap:3px;white-space:nowrap;min-height:34px}
 .post-place{display:inline-flex;align-items:center;justify-content:center;background:var(--area);
-  color:#315f24;border-radius:7px;padding:4px 6px}
+  color:#234f63;border-radius:7px;padding:4px 6px}
 @media(max-width:700px){
  .preview-cn,.post-cn{font-size:10px;top:calc(100% + 1px)}
  .preview-place,.post-place{margin-bottom:9px}
@@ -75,13 +75,13 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 .second-stage.show{display:block}
 .second-place-box{background:var(--area);border-radius:11px;padding:6px}
 .second-choice{min-height:39px;border:1px solid #76a862;border-radius:7px;background:var(--btn);
- color:#315f24;padding:3px 2px;font:inherit}
+ color:#234f63;padding:3px 2px;font:inherit}
 .second-choice.locked{opacity:.18}
-.second-choice.active{background:var(--sel);border-color:#3f7e2e}
+.second-choice.active{background:var(--sel);border-color:#286b8a}
 .second-patterns{display:flex;justify-content:center;margin-top:4px}
 .second-de{min-width:120px;border:1px solid #76a862;border-radius:8px;background:var(--btn);
- color:#315f24;padding:7px 10px;font:600 17px inherit;cursor:pointer}
-.second-de.selected{background:var(--sel);border-color:#3f7e2e}
+ color:#234f63;padding:7px 10px;font:600 17px inherit;cursor:pointer}
+.second-de.selected{background:var(--sel);border-color:#286b8a}
 
 /* 投稿の訳は日本語の下に固定。文の位置を上げない */
 .post{padding-bottom:13px}
@@ -137,7 +137,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
   align-items:center;
   justify-content:center;
   background:var(--area);
-  color:#315f24;
+  color:#234f63;
   border-radius:8px;
   padding:5px 8px;
   font-size:17px;
@@ -161,12 +161,12 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
   border:1px solid #76a862;
   border-radius:8px;
   background:var(--btn);
-  color:#315f24;
+  color:#234f63;
   padding:7px 10px;
   font:600 17px inherit;
   cursor:pointer;
 }
-.second-de.selected{background:var(--sel);border-color:#3f7e2e}
+.second-de.selected{background:var(--sel);border-color:#286b8a}
 
 @media(max-width:700px){
   .preview{
@@ -309,7 +309,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  transform:translateX(-50%);
  font-size:20px;
  font-weight:700;
- color:#315f24;
+ color:#234f63;
  line-height:1;
  pointer-events:none;
 }
@@ -333,7 +333,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  text-align:center;
  font-size:20px;
  font-weight:700;
- color:#315f24;
+ color:#234f63;
  line-height:1;
  pointer-events:none;
 }
@@ -412,7 +412,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  align-items:center;
  justify-content:center;
  background:var(--area);
- color:#315f24;
+ color:#234f63;
  border-radius:7px;
  padding:5px 7px;
  line-height:1;
@@ -495,7 +495,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 
 
 .me-too-wrap{display:flex;justify-content:flex-end;align-items:center;margin-top:4px}
-.me-too-btn{border:1px solid var(--line);background:var(--button);color:#315f24;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700;cursor:pointer}
+.me-too-btn{border:1px solid var(--line);background:var(--button);color:#234f63;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700;cursor:pointer}
 .me-too-btn.active{background:var(--sel);color:#fff;border-color:var(--sel)}
 
 
@@ -518,8 +518,8 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 .travel-destination-input{
  width:150px; min-width:110px; border:2px solid var(--line); border-radius:8px;
  padding:7px 9px; font-size:16px; font-family:inherit; outline:none; background:#fff;
- color:#315f24;
- -webkit-text-fill-color:#315f24;
+ color:#234f63;
+ -webkit-text-fill-color:#234f63;
  text-align:center;
  opacity:1;
 }
@@ -535,8 +535,8 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 #nameInput{
  background:#fff !important;
  background-color:#fff !important;
- color:#315f24 !important;
- -webkit-text-fill-color:#315f24 !important;
+ color:#234f63 !important;
+ -webkit-text-fill-color:#234f63 !important;
  opacity:1 !important;
 }
 #nameInput::placeholder{
@@ -558,7 +558,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  gap:3px;
  padding:3px;
  background:#fff;
- border:1.5px solid #9fbe91;
+ border:1.5px solid #9bcbe0;
  border-radius:999px;
  box-shadow:0 2px 7px rgba(63,126,46,.10);
 }
@@ -576,7 +576,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  transition:.15s ease;
 }
 .mode-switch-btn.active{
- background:#79b85d;
+ background:#6db9dc;
  color:#fff;
  box-shadow:0 1px 4px rgba(63,126,46,.18);
 }
@@ -958,14 +958,1384 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  pointer-events:none!important;
 }
 
+
+/* ===== 出身ページ ===== */
+.shusshin-answer{display:flex;align-items:center;gap:6px;font-size:20px;font-weight:700;margin:5px 0}
+.shusshin-input{width:190px!important}
+.shusshin-second{display:none;margin-top:8px}
+.shusshin-preview{display:flex!important;align-items:center!important;gap:5px!important;min-height:42px!important}
+.shusshin-choices{margin-top:5px}
+.post-btn{margin-top:8px}
+.name-modal{position:fixed;inset:0;background:rgba(30,70,90,.22);display:flex;align-items:center;justify-content:center;z-index:9999}
+.name-box{background:#f7fcff;border:2px solid #9bcbe0;border-radius:16px;padding:18px;min-width:280px;text-align:center;box-shadow:0 8px 25px rgba(40,107,138,.16)}
+.name-title{font-weight:700;margin-bottom:10px}
+#nameInput{width:100%;background:#fff!important;color:#234f63!important;-webkit-text-fill-color:#234f63!important;border:2px solid #9bcbe0;border-radius:9px;padding:9px;text-align:center;font:inherit}
+#nameOk{margin-top:10px;border:0;border-radius:9px;background:#6db9dc;color:#fff;padding:8px 22px;font:inherit;font-weight:700}
+
+
+/* v4: 質問・入力を前ページと同じ中央寄せ */
+.question{
+  text-align:center !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.shusshin-answer{
+  justify-content:center !important;
+  width:100% !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.shusshin-input{
+  text-align:center !important;
+}
+.shusshin-preview{
+  justify-content:center !important;
+  width:100% !important;
+}
+
+
+/* v5: 前サイトと同じ選択カード・投稿ボタン */
+#shusshinAdjPreview{
+ display:inline-flex;
+ align-items:center;
+ gap:3px;
+}
+.shusshin-adj-card{
+ position:relative;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ background:var(--area);
+ color:#234f63;
+ border-radius:7px;
+ padding:5px 7px;
+ line-height:1;
+ flex:0 0 auto;
+ margin-bottom:11px;
+}
+#postBtn{
+ display:block !important;
+ width:auto !important;
+ min-width:92px !important;
+ margin:10px auto 0 !important;
+}
+#postBtn:disabled{
+ opacity:.42 !important;
+ cursor:not-allowed !important;
+}
+
+
+/* v6: 前サイトと同じ完成文＋投稿ボタン配置 */
+.question{
+ text-align:center !important;
+}
+.shusshin-preview{
+ justify-content:center !important;
+ align-items:center !important;
+ padding-bottom:11px !important;
+}
+.shusshin-preview .preview-place,
+.shusshin-preview .posted-card{
+ margin-bottom:0 !important;
+}
+#postBtn{
+ display:inline-block !important;
+ width:auto !important;
+ min-width:0 !important;
+ margin:0 0 0 4px !important;
+ flex:0 0 auto !important;
+}
+/* 訳はレイアウト領域を取らない＝本文が上下左右にずれない */
+.shusshin-preview .preview-cn,
+.shusshin-preview .posted-cn,
+.posted-row .posted-cn{
+ position:absolute !important;
+ left:0 !important;
+ right:0 !important;
+ top:calc(100% + 2px) !important;
+ text-align:center !important;
+ line-height:1 !important;
+ white-space:nowrap !important;
+}
+.posted-row{
+ padding-bottom:11px !important;
+ align-items:center !important;
+}
+
+
+/* v8: 1行目＝疑問文＋入力＋です。／2行目＝どんなところ */
+.shusshin-question-row{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:7px;
+ width:100%;
+ font-size:20px;
+ font-weight:700;
+ margin:4px auto 8px;
+ white-space:nowrap;
+}
+.shusshin-question-row .question{
+ margin:0 !important;
+ width:auto !important;
+ flex:0 0 auto;
+}
+.shusshin-question-row .shusshin-input{
+ width:170px !important;
+ flex:0 1 170px;
+}
+.answer-desu{flex:0 0 auto}
+.second-question{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:5px;
+ min-height:40px;
+ font-size:20px;
+ font-weight:700;
+ margin:3px auto 4px;
+ padding-bottom:11px;
+}
+.second-question .preview-place{
+ position:relative;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ background:var(--area);
+ border-radius:7px;
+ padding:5px 7px;
+ line-height:1;
+}
+@media(max-width:600px){
+ .shusshin-question-row{font-size:17px;gap:4px}
+ .shusshin-question-row .shusshin-input{width:115px !important;flex-basis:115px}
+ .second-question{font-size:18px}
+}
+
+
+/* v9: 質問は左揃え／回答は端末幅に応じて同じ開始位置 */
+.shusshin-question-row,
+.second-question,
+.shusshin-preview{
+ width:min(100%, 720px) !important;
+ margin-left:auto !important;
+ margin-right:auto !important;
+ justify-content:flex-start !important;
+}
+
+/* 1行目・2行目の質問は左詰め */
+.shusshin-question-row{
+ text-align:left !important;
+}
+.shusshin-question-row .question{
+ text-align:left !important;
+}
+
+/* 2行目の手入力地名は質問なのでカード色なし */
+.second-question .preview-place{
+ background:transparent !important;
+ border-radius:0 !important;
+ padding:0 !important;
+ color:inherit !important;
+}
+
+/* 回答文の開始位置を質問文と共通化 */
+.shusshin-preview{
+ text-align:left !important;
+}
+
+/* 回答側の手入力地名はカードだが、訳は持たない */
+#shusshinSubjectAnswer{
+ position:relative;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ background:var(--area);
+ border-radius:7px;
+ padding:5px 7px;
+ line-height:1;
+}
+
+/* 端末幅に合わせて左右余白を自動調整 */
+@media(max-width:760px){
+ .shusshin-question-row,
+ .second-question,
+ .shusshin-preview{
+   width:100% !important;
+ }
+}
+
+
+/* v10: 左詰め＋端末ごとの共通開始位置／2文目Q&Aを同じ行 */
+.shusshin-question-row,
+.second-line{
+ width:min(100%,720px) !important;
+ margin-left:auto !important;
+ margin-right:auto !important;
+}
+.shusshin-question-row{
+ justify-content:flex-start !important;
+ text-align:left !important;
+}
+.second-line{
+ display:flex !important;
+ align-items:center !important;
+ justify-content:flex-start !important;
+ gap:18px !important;
+ flex-wrap:wrap !important;
+}
+.second-line .second-question,
+.second-line .shusshin-preview{
+ width:auto !important;
+ margin:0 !important;
+ justify-content:flex-start !important;
+ flex:0 0 auto;
+}
+.second-line .second-question{
+ padding-bottom:0 !important;
+}
+.second-line .shusshin-preview{
+ padding-bottom:11px !important;
+}
+@media(max-width:760px){
+ .shusshin-question-row,
+ .second-line{width:100% !important}
+ .second-line{gap:10px !important}
+}
+/* 投稿文が狭い端末でも自然に折り返す */
+.posted-row{
+ white-space:normal !important;
+ flex-wrap:wrap !important;
+ row-gap:3px !important;
+}
+
+
+/* v11: 疑問文をカード内の本当の左端へ固定 */
+.shusshin-question-row,
+.second-line{
+ width:100% !important;
+ max-width:none !important;
+ margin-left:0 !important;
+ margin-right:0 !important;
+ padding-left:0 !important;
+ justify-content:flex-start !important;
+ text-align:left !important;
+}
+.shusshin-question-row .question{
+ text-align:left !important;
+ margin-left:0 !important;
+ margin-right:0 !important;
+}
+.second-line{
+ align-items:center !important;
+}
+
+
+/* v12: な形容詞の「な」カード */
+.na-card{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ background:#f8dfe7;
+ color:#7a4053;
+ border-radius:7px;
+ padding:5px 7px;
+ line-height:1;
+ flex:0 0 auto;
+}
+
+
+/* v13: 「な」はさらに薄いピンク／形容詞は2個まで */
+.na-card{
+ background:#fff1f5 !important;
+ color:#7a5964 !important;
+}
+#shusshinAdjPreview{
+ display:flex !important;
+ flex-wrap:wrap !important;
+ align-items:center !important;
+}
+.adj-answer-line{
+ display:inline-flex;
+ align-items:center;
+ gap:3px;
+ flex:0 0 auto;
+}
+.adj-answer-line:nth-child(2){
+ flex-basis:100%;
+ margin-top:5px;
+}
+.repeat-subject{
+ display:inline-flex;
+ align-items:center;
+ gap:3px;
+ margin-right:3px;
+}
+.post-second-answer{
+ display:flex;
+ align-items:center;
+ gap:3px;
+ flex-basis:100%;
+ margin-top:4px;
+}
+
+
+/* v14: 2個目は主語なし。開始位置は1個目の形容詞と揃える */
+.adj-answer-line:nth-child(2),
+.post-second-answer{
+ box-sizing:border-box;
+}
+.repeat-subject{display:none !important;}
+
+
+/* v16: 2文目の位置をCSSグリッドで確実に揃える */
+.shusshin-preview{
+ display:grid !important;
+ grid-template-columns:max-content max-content 1fr max-content !important;
+ column-gap:3px !important;
+ align-items:center !important;
+}
+#shusshinSubjectAnswer{grid-column:1}
+.shusshin-preview > #shusshinSubjectAnswer + span{grid-column:2}
+#shusshinAdjPreview{
+ grid-column:3;
+ display:grid !important;
+ grid-template-columns:1fr !important;
+ row-gap:5px !important;
+ align-items:center !important;
+}
+#shusshinAdjPreview .adj-answer-line{
+ display:flex !important;
+ align-items:center !important;
+ gap:3px !important;
+ padding-left:0 !important;
+ margin:0 !important;
+}
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ grid-row:2;
+}
+#postBtn{
+ grid-column:4 !important;
+ grid-row:1 !important;
+ align-self:center !important;
+}
+
+/* 投稿後：2個目は1個目の形容詞開始位置に合わせる */
+.posted-row{
+ display:grid !important;
+ grid-template-columns:max-content max-content max-content max-content max-content max-content 1fr !important;
+ column-gap:3px !important;
+ align-items:center !important;
+}
+.posted-row .post-second-answer{
+ grid-column:7 !important;
+ display:flex !important;
+ align-items:center !important;
+ gap:3px !important;
+ padding-left:0 !important;
+ margin:4px 0 0 0 !important;
+}
+
+
+/* v17: 2個目の回答は完全に次の行へ */
+.shusshin-preview{
+ display:flex !important;
+ flex-wrap:wrap !important;
+ align-items:center !important;
+ gap:3px !important;
+}
+#shusshinSubjectAnswer,
+.shusshin-preview > #shusshinSubjectAnswer + span,
+#shusshinAdjPreview,
+#postBtn{
+ grid-column:auto !important;
+ grid-row:auto !important;
+}
+#shusshinAdjPreview{
+ display:contents !important;
+}
+#shusshinAdjPreview .adj-answer-line{
+ display:inline-flex !important;
+ align-items:center !important;
+ gap:3px !important;
+ padding-left:0 !important;
+ margin:0 !important;
+}
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ flex-basis:100% !important;
+ width:100% !important;
+ margin-top:5px !important;
+}
+/* 2個目は主語なしで、行頭から書く */
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ padding-left:0 !important;
+}
+/* 投稿後も2個目を完全に次行へ */
+.posted-row{
+ display:flex !important;
+ flex-wrap:wrap !important;
+ align-items:center !important;
+ gap:3px !important;
+}
+.posted-row .post-second-answer{
+ display:flex !important;
+ flex-basis:100% !important;
+ width:100% !important;
+ align-items:center !important;
+ gap:3px !important;
+ padding-left:0 !important;
+ margin-top:5px !important;
+}
+
+
+/* v18: 2個目の行頭＝1行目の入力欄の左端 */
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ width:auto !important;
+ padding-left:0 !important;
+}
+
+
+/* v19: 1段目の疑問文は絶対に改行させない */
+.shusshin-question-row{
+ display:flex !important;
+ flex-wrap:nowrap !important;
+ white-space:nowrap !important;
+ overflow:visible !important;
+ width:100% !important;
+}
+.shusshin-question-row .question,
+.shusshin-question-row .answer-desu{
+ flex:0 0 auto !important;
+ white-space:nowrap !important;
+}
+/* 入力欄だけ端末幅に応じて縮む。疑問文は落とさない */
+.shusshin-question-row .shusshin-input{
+ flex:1 1 auto !important;
+ min-width:70px !important;
+ max-width:190px !important;
+}
+
+/* 2文目は完全な次行。左端はJSで1段目入力欄と実測一致 */
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ flex-basis:100% !important;
+ width:max-content !important;
+ max-width:calc(100% - 4px) !important;
+ box-sizing:border-box !important;
+ white-space:nowrap !important;
+}
+@media(max-width:600px){
+ .shusshin-question-row{
+   font-size:15px !important;
+   gap:3px !important;
+ }
+ .shusshin-question-row .shusshin-input{
+   min-width:62px !important;
+ }
+}
+
+
+/* v20: 疑問文＋入力＋です。は必ず一段目 */
+.shusshin-question-row{
+ display:grid !important;
+ grid-template-columns:max-content minmax(55px,190px) max-content !important;
+ align-items:center !important;
+ justify-content:start !important;
+ column-gap:5px !important;
+ flex-wrap:nowrap !important;
+ white-space:nowrap !important;
+}
+.shusshin-question-row .question{
+ grid-column:1 !important;
+ white-space:nowrap !important;
+}
+.shusshin-question-row .shusshin-input{
+ grid-column:2 !important;
+ width:100% !important;
+ min-width:55px !important;
+ max-width:190px !important;
+}
+.shusshin-question-row .answer-desu{
+ grid-column:3 !important;
+ white-space:nowrap !important;
+}
+
+/* 画面が狭くても疑問文自体を次行へ落とさない */
+@media(max-width:520px){
+ .shusshin-question-row{
+   font-size:14px !important;
+   column-gap:3px !important;
+   grid-template-columns:max-content minmax(48px,1fr) max-content !important;
+ }
+}
+
+/* 2個目は必ず独立した次行。X位置だけJSで入力欄左端に一致 */
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ flex-basis:100% !important;
+ display:flex !important;
+ width:max-content !important;
+ margin-left:0 !important;
+ white-space:nowrap !important;
+}
+
+
+/* v21: 位置計算を廃止。全行を同じ2カラムで固定 */
+.qa-grid{
+ display:grid !important;
+ grid-template-columns:max-content minmax(0,1fr) !important;
+ column-gap:10px !important;
+ row-gap:8px !important;
+ align-items:center !important;
+ width:100% !important;
+}
+.q-cell{
+ grid-column:1 !important;
+ white-space:nowrap !important;
+ text-align:left !important;
+ font-size:20px !important;
+ font-weight:700 !important;
+ line-height:1.2 !important;
+}
+.a-cell{
+ grid-column:2 !important;
+ display:flex !important;
+ align-items:center !important;
+ justify-content:flex-start !important;
+ gap:4px !important;
+ min-width:0 !important;
+ white-space:nowrap !important;
+ font-size:20px !important;
+ font-weight:700 !important;
+}
+.q1{grid-row:1 !important}
+.a1{grid-row:1 !important}
+.qa-contents{display:contents}
+.q2{grid-row:2 !important}
+.a2{
+ grid-row:2 !important;
+ flex-wrap:wrap !important;
+}
+.a1 .shusshin-input{
+ width:min(190px,100%) !important;
+ min-width:60px !important;
+ flex:0 1 190px !important;
+}
+/* 選択回答：1個目は2文目疑問文と同じ行、2個目だけ次行。
+   どちらも入力欄と同じ第2カラム左端から開始 */
+#a2{}
+#shusshinAdjPreview{
+ display:contents !important;
+}
+.a2 .adj-answer-line{
+ display:inline-flex !important;
+ align-items:center !important;
+ gap:3px !important;
+ margin:0 !important;
+ transform:none !important;
+ padding:0 !important;
+}
+.a2 .adj-answer-line:nth-child(2){
+ flex-basis:100% !important;
+ width:100% !important;
+ margin-left:0 !important;
+ transform:none !important;
+}
+@media(max-width:600px){
+ .qa-grid{
+   column-gap:5px !important;
+ }
+ .q-cell,.a-cell{
+   font-size:15px !important;
+ }
+ .a1 .shusshin-input{
+   width:100% !important;
+   min-width:45px !important;
+ }
+}
+/* 1段目は絶対に折り返さない */
+.q1,.a1,.a1 *{
+ white-space:nowrap !important;
+}
+
+
+/* v22: 訳でカード本体が上に動かない */
+.a2{
+ align-items:center !important;
+ padding-bottom:12px !important;
+}
+.a2 .posted-card,
+.a2 .shusshin-adj-card,
+.a2 .na-card{
+ margin-top:0 !important;
+ margin-bottom:0 !important;
+ align-self:center !important;
+}
+.a2 .posted-cn{
+ position:absolute !important;
+ top:calc(100% + 2px) !important;
+ bottom:auto !important;
+ left:0 !important;
+ right:0 !important;
+ transform:none !important;
+ line-height:1 !important;
+ pointer-events:none !important;
+}
+/* 2個目もカード本体の高さを基準にする */
+.a2 .adj-answer-line{
+ min-height:29px !important;
+ align-items:center !important;
+}
+
+
+/* v23: 发布は1行目右／2行目疑問文は訳の余白で下げない */
+.a1{
+ position:relative !important;
+ padding-right:72px !important;
+}
+.a1 #postBtn{
+ position:absolute !important;
+ right:0 !important;
+ top:50% !important;
+ transform:translateY(-50%) !important;
+ margin:0 !important;
+ white-space:nowrap !important;
+}
+
+/* 2行目の疑問文は通常の行位置に固定 */
+.q2{
+ align-self:center !important;
+ margin:0 !important;
+ padding:0 !important;
+ transform:none !important;
+}
+/* 訳のための下余白は回答側だけ。疑問文の行位置には影響させない */
+.a2{
+ align-self:start !important;
+ padding-top:0 !important;
+ margin-top:0 !important;
+}
+
+
+/* v24: 2行目疑問文を上端固定。訳の高さに絶対引っ張られない */
+.q2{
+ align-self:start !important;
+ margin-top:0 !important;
+ padding-top:5px !important;
+ padding-bottom:0 !important;
+ line-height:1 !important;
+}
+.a2{
+ align-self:start !important;
+ margin-top:0 !important;
+}
+/* グリッド行自体も上揃え */
+.qa-grid{
+ align-items:start !important;
+}
+.q1,.a1{
+ align-self:center !important;
+}
+
+
+/* v25: 发布は「です。」のすぐ後ろ */
+.a1{
+ padding-right:0 !important;
+}
+.a1 #postBtn{
+ position:static !important;
+ right:auto !important;
+ top:auto !important;
+ transform:none !important;
+ margin:0 0 0 5px !important;
+ flex:0 0 auto !important;
+}
+
+
+/* v26: 3行目＋ボタン群をテーブルごとに色分け */
+.q3{grid-row:3 !important;align-self:start !important;padding-top:5px !important}
+.a3{
+ grid-row:3 !important;
+ align-self:start !important;
+ padding-bottom:12px !important;
+}
+#thingPreview{display:inline-flex;align-items:center}
+.thing-card{margin:0 !important}
+
+/* 選択肢グループを別色のテーブルに */
+.choice-table{
+ margin-top:10px;
+ padding:9px;
+ border-radius:13px;
+ border:2px solid;
+}
+.table-label{
+ font-size:14px;
+ font-weight:700;
+ margin:0 0 7px 2px;
+}
+.adjective-table{
+ background:#e8f6fc;
+ border-color:#9bcbe0;
+}
+.thing-table{
+ background:#fff4df;
+ border-color:#e8c98e;
+}
+.thing-table .choice{
+ background:#fffaf0;
+ border-color:#e8c98e;
+ color:#6d552a;
+}
+.thing-table .choice.selected{
+ background:#e8c98e;
+ border-color:#d9b66f;
+ color:#fff;
+}
+
+/* 投稿の3文目は必ず次行 */
+.post-third-line{
+ display:flex;
+ flex-basis:100%;
+ width:100%;
+ align-items:center;
+ gap:3px;
+ margin-top:5px;
+ padding-bottom:11px;
+}
+
+
+/* v28: 回答文は選択されるまで仮表示しない */
+.a2{visibility:hidden;}
+.a3{visibility:hidden;}
+
+
+/* v29: 手入力した地名は色カードにしない */
+.posted-place-plain,
+.preview-place{
+ background:transparent !important;
+ border:none !important;
+ box-shadow:none !important;
+ padding:0 !important;
+ border-radius:0 !important;
+ color:inherit !important;
+}
+
+
+/* v32: 3行目回答後に4行目の名称入力 */
+.q4{
+ grid-row:4 !important;
+ min-height:1px !important;
+}
+.a4{
+ grid-row:4 !important;
+ align-self:start !important;
+ white-space:nowrap !important;
+}
+.thing-name-input{
+ width:190px !important;
+ max-width:100% !important;
+}
+
+
+/* v36 安定修正版：カード構造は変えず、訳だけ重ならないようにする */
+.a2{
+ padding-bottom:18px !important;
+}
+.a3{
+ padding-bottom:18px !important;
+}
+.a2 .posted-card,
+.a3 .posted-card,
+.a3 .thing-card{
+ position:relative !important;
+ overflow:visible !important;
+ margin-top:0 !important;
+ margin-bottom:0 !important;
+ padding-bottom:0 !important;
+ vertical-align:middle !important;
+}
+.a2 .posted-cn,
+.a3 .posted-cn{
+ position:absolute !important;
+ top:calc(100% + 3px) !important;
+ bottom:auto !important;
+ left:50% !important;
+ right:auto !important;
+ transform:translateX(-50%) !important;
+ white-space:nowrap !important;
+ line-height:1 !important;
+ z-index:2 !important;
+}
+.a2 .adj-answer-line:nth-child(2){
+ margin-top:18px !important;
+}
+
+/* 名称欄は3行目が選択されるまでは確実に非表示 */
+.q4,.a4{display:none;}
+
+
+/* v37: 入力欄をコンパクトに。名称は前の回答文と同じ行 */
+.shusshin-input{
+ width:120px !important;
+ min-width:90px !important;
+ flex:0 0 120px !important;
+ padding:6px 9px !important;
+}
+.thing-name-input{
+ width:120px !important;
+ min-width:90px !important;
+ max-width:120px !important;
+ padding:6px 9px !important;
+}
+.name-inline{
+ display:none;
+ align-items:center;
+ gap:3px;
+ margin-left:7px;
+ white-space:nowrap;
+}
+/* 旧4行目は使わない */
+.q4,.a4{display:none !important;}
+@media(max-width:600px){
+ .shusshin-input,.thing-name-input{
+   width:105px !important;
+   min-width:80px !important;
+   max-width:105px !important;
+   flex-basis:105px !important;
+ }
+}
+
+
+/* v38: 回答文を5px右へ／出身地入力をさらに短く */
+.a1,.a2,.a3{
+ transform:translateX(5px) !important;
+}
+.shusshin-input{
+ width:95px !important;
+ min-width:75px !important;
+ max-width:95px !important;
+ flex:0 0 95px !important;
+}
+@media(max-width:600px){
+ .shusshin-input{
+   width:90px !important;
+   min-width:70px !important;
+   max-width:90px !important;
+   flex-basis:90px !important;
+ }
+}
+
+
+/* v39: 回答文の開始を約4文字分右へ。出身地入力は短すぎない長さへ */
+.a1,.a2,.a3{
+ transform:translateX(4em) !important;
+}
+.shusshin-input{
+ width:135px !important;
+ min-width:110px !important;
+ max-width:135px !important;
+ flex:0 0 135px !important;
+}
+@media(max-width:600px){
+ .shusshin-input{
+   width:125px !important;
+   min-width:105px !important;
+   max-width:125px !important;
+   flex-basis:125px !important;
+ }
+}
+
+
+/* v40: 回答文の開始位置を固定（出身入力欄の長さに依存させない） */
+.qa-grid{
+ grid-template-columns:240px minmax(0,1fr) !important;
+}
+.a1,.a2,.a3{
+ transform:none !important;
+ padding-left:4em !important;
+ box-sizing:border-box !important;
+}
+@media(max-width:600px){
+ .qa-grid{
+   grid-template-columns:185px minmax(0,1fr) !important;
+ }
+ .a1,.a2,.a3{
+   padding-left:4em !important;
+ }
+}
+
+
+/* v41: 名称入力後の3段目特徴 */
+.q5{grid-row:5 !important;}
+.a5{
+ grid-row:5 !important;
+ padding-left:4em !important;
+ align-self:start !important;
+ flex-wrap:wrap !important;
+ padding-bottom:18px !important;
+}
+#a5Cell .adj-answer-line{
+ display:inline-flex;
+ align-items:center;
+ gap:3px;
+}
+#a5Cell .adj-answer-line:nth-child(2){
+ flex-basis:100%;
+ width:100%;
+ margin-top:18px;
+}
+.name-adj-table{margin-top:10px;}
+
+
+/* v43: 名称入力前は最後の文（～は を含む）を完全に隠す */
+#a5Cell{
+ display:none;
+}
+
+
+/* v44: 名称未入力なら、その下は何も表示しない */
+#nameAdjTable,
+#a5Cell,
+#q5Cell{
+ display:none;
+}
+
+
+/* v45: hidden は必ず勝つ。名称未入力時「～は」行をDOMごと非表示 */
+[hidden]{
+ display:none !important;
+}
+
+
+/* v46: 建物2種だけ名称入力を次の行へ */
+.a3{
+ flex-wrap:wrap !important;
+}
+.name-inline.name-next-line{
+ flex-basis:100% !important;
+ width:100% !important;
+ margin-left:0 !important;
+ margin-top:7px !important;
+}
+
+
+/* v47: 2・3行目の出身地名表示を完全統一 */
+.origin-answer-text{
+ background:transparent !important;
+ border:none !important;
+ box-shadow:none !important;
+ padding:0 !important;
+ margin:0 !important;
+ border-radius:0 !important;
+ color:inherit !important;
+ font:inherit !important;
+ line-height:inherit !important;
+ white-space:nowrap !important;
+}
+
+
+/* v49: 3段目選択後の最後の回答行との間隔を詰める */
+.name-adj-table{
+ margin-bottom:4px !important;
+}
+.q5,.a5{
+ margin-top:0 !important;
+}
+.a5{
+ padding-top:0 !important;
+}
+#a5Cell .adj-answer-line{
+ margin-top:0 !important;
+}
+
+
+/* v50: 3段目→最後の回答行の間隔を最小化 */
+.name-adj-table{
+ margin-top:6px !important;
+ margin-bottom:0 !important;
+ padding-bottom:6px !important;
+}
+.qa-grid{
+ row-gap:5px !important;
+}
+.a5{
+ margin-top:-2px !important;
+ padding-top:0 !important;
+ padding-bottom:12px !important;
+}
+#a5Cell{
+ align-self:start !important;
+}
+#a5Cell .adj-answer-line{
+ margin-top:0 !important;
+}
+/* 名称入力後は「名称 は」まで見せる */
+#a5Cell[hidden]{
+ display:none !important;
+}
+
+
+/* v53: 最後の文は「です。そして、／ですが、」で接続 */
+#a5Cell .adj-answer-line:nth-child(2){
+ flex-basis:auto !important;
+ width:auto !important;
+ margin-top:0 !important;
+}
+
+
+/* v58: 3段目の使用不可ボタン */
+#nameAdjArea .choice.disabled-choice,
+#nameAdjArea .choice:disabled{
+ opacity:.32 !important;
+ cursor:not-allowed !important;
+ filter:grayscale(.25);
+}
+
+
+/* v59: 投稿文の訳が重ならないようにする */
+.post-row .posted-card{
+ display:inline-flex !important;
+ flex-direction:column !important;
+ align-items:center !important;
+ justify-content:center !important;
+ position:relative !important;
+ padding-bottom:0 !important;
+ margin-bottom:0 !important;
+ vertical-align:middle !important;
+}
+.post-row .posted-card .posted-cn{
+ position:static !important;
+ display:block !important;
+ transform:none !important;
+ left:auto !important;
+ right:auto !important;
+ top:auto !important;
+ bottom:auto !important;
+ white-space:nowrap !important;
+ line-height:1.05 !important;
+ margin-top:2px !important;
+}
+.post-row{
+ row-gap:5px !important;
+}
+.post-row .post-second-answer,
+.post-row .post-third-line{
+ align-items:center !important;
+}
+
+
+/* v60: 投稿文3行目の訳重なりを完全修正 */
+.post-row .post-third-line{
+ display:flex !important;
+ flex-wrap:nowrap !important;
+ align-items:flex-start !important;
+ min-height:46px !important;
+ padding-top:2px !important;
+ padding-bottom:2px !important;
+ margin-top:6px !important;
+ overflow:visible !important;
+}
+
+.post-row .post-third-line .posted-card{
+ position:relative !important;
+ display:inline-grid !important;
+ grid-template-rows:auto 13px !important;
+ align-items:start !important;
+ justify-items:center !important;
+ height:auto !important;
+ min-height:36px !important;
+ padding:3px 7px 2px !important;
+ margin:0 3px !important;
+ overflow:visible !important;
+}
+
+.post-row .post-third-line .posted-card .posted-cn{
+ position:static !important;
+ display:block !important;
+ grid-row:2 !important;
+ width:max-content !important;
+ max-width:none !important;
+ height:13px !important;
+ margin:1px 0 0 !important;
+ padding:0 !important;
+ transform:none !important;
+ line-height:12px !important;
+ white-space:nowrap !important;
+}
+
+.post-row .post-third-line > span:not(.posted-card){
+ padding-top:5px !important;
+}
+
+
+/* v62: 1段目・3段目ボタン群の右上注記 */
+.choice-note{
+ text-align:right;
+ font-size:12px;
+ color:#5f7f8d;
+ margin:0 5px 3px 0;
+ line-height:1.25;
+}
+
+
+/* v63: 投稿の「いいところ」ボタンは最終行と同じ高さ、♥×Nはその前の行の右上 */
+.post{
+ position:relative !important;
+}
+.post .me-too-wrap{
+ position:absolute !important;
+ right:6px !important;
+ bottom:6px !important;
+ top:auto !important;
+ left:auto !important;
+ margin:0 !important;
+ z-index:50 !important;
+}
+.post > .me-too-count{
+ position:absolute !important;
+ right:6px !important;
+ top:6px !important;
+ bottom:auto !important;
+ left:auto !important;
+ margin:0 !important;
+ transform:none !important;
+ z-index:60 !important;
+ white-space:nowrap !important;
+ pointer-events:none !important;
+}
+.post .posted-row{
+ padding-right:150px !important;
+}
+
+
+/* v64: いいところですね を最後行にぴったり揃える */
+.post .me-too-wrap{
+ bottom:11px !important;
+ display:flex !important;
+ align-items:center !important;
+}
+
+
+/* v65: 選択数の注記をボックス群の内側・左上へ */
+.choice-note{
+ text-align:left !important;
+ margin:0 0 5px 2px !important;
+ padding:0 !important;
+ align-self:flex-start !important;
+ width:100% !important;
+ box-sizing:border-box !important;
+}
+
+
+/* v66: 投稿には作成した全文を表示 */
+.posted-row{
+ display:flex !important;
+ flex-direction:column !important;
+ align-items:flex-start !important;
+ gap:5px !important;
+ padding-right:155px !important;
+}
+.post-origin-line,
+.post-answer-line,
+.post-third-line,
+.post-final-line{
+ display:flex !important;
+ align-items:flex-start !important;
+ flex-wrap:wrap !important;
+ gap:4px !important;
+ overflow:visible !important;
+}
+
+
+/* v67: 投稿文の行頭と行間を統一 */
+.posted-row{
+ display:grid !important;
+ grid-template-columns:max-content minmax(0,1fr) !important;
+ column-gap:7px !important;
+ row-gap:8px !important;
+ align-items:start !important;
+ padding-right:155px !important;
+}
+
+/* 名前は1行目だけ。本文1行目は名前の右から開始 */
+.posted-row > .posted-name{
+ grid-column:1 !important;
+ grid-row:1 !important;
+ align-self:start !important;
+ margin:0 !important;
+ padding:0 !important;
+ line-height:1.5 !important;
+}
+.posted-row > .post-origin-line{
+ grid-column:2 !important;
+ grid-row:1 !important;
+}
+
+/* 2行目以降は、1行目本文と同じ頭位置 */
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ grid-column:2 !important;
+ margin:0 !important;
+}
+
+/* 全行の高さ・間隔を同じ基準に */
+.post-origin-line,
+.post-answer-line,
+.post-third-line,
+.post-final-line{
+ display:flex !important;
+ align-items:flex-start !important;
+ flex-wrap:wrap !important;
+ gap:4px !important;
+ line-height:1.5 !important;
+ min-height:38px !important;
+ padding:0 !important;
+}
+
+/* 以前の3行目だけの余白指定を打ち消す */
+.post-row .post-third-line,
+.post-row .post-final-line{
+ margin-top:0 !important;
+ padding-top:0 !important;
+ padding-bottom:0 !important;
+}
+
+
+/* v70: 投稿1行目に2文を表示 */
+.post-origin-line .first-description{
+ display:inline-flex !important;
+ align-items:flex-start !important;
+ gap:4px !important;
+ margin-left:8px !important;
+}
+
+
+.name-inline{position:relative !important;}
+.dont-know-name{
+ position:absolute !important;right:-7px !important;top:-8px !important;z-index:8 !important;
+ border:1px solid #9bcbe0 !important;border-radius:9px !important;background:#fff !important;
+ color:#5b7a88 !important;font-size:10px !important;line-height:1 !important;
+ padding:3px 5px !important;cursor:pointer !important;white-space:nowrap !important;
+}
+#thingNameInput.unknown-name{text-align:center !important;font-weight:700 !important;}
+
+
+/* v74: 「不知道」を名称ボックス右上に密着 */
+.dont-know-name{
+ right:0 !important;
+ top:0 !important;
+ transform:translate(35%,-55%) !important;
+}
+
+
+/* v76: 不知道ボタンを入力ボックス右上に密着 */
+.name-inline{
+ position:relative !important;
+ display:inline-flex !important;
+ align-items:center !important;
+}
+.dont-know-name{
+ position:absolute !important;
+ right:2px !important;
+ top:0 !important;
+ transform:translateY(-78%) !important;
+ margin:0 !important;
+ z-index:20 !important;
+ font-size:10px !important;
+ line-height:1 !important;
+ padding:3px 5px !important;
+ border-radius:7px !important;
+}
+
+
+/* v77: 質問文を細字・2px小さく */
+.q-cell{
+ font-weight:400 !important;
+ font-size:calc(1em - 2px) !important;
+}
+
+
+/* v78: 3段目は名称未入力でも確実に表示 */
+#nameAdjTable.third-visible,
+#nameAdjTable[style*="display: block"]{
+ display:block !important;
+}
+#a5Cell[style*="display: flex"]{
+ display:flex !important;
+}
+
+/* v78: 「不知道」は入力ボックスそのものの右上角に密着 */
+.name-input-wrap{
+ position:relative !important;
+ display:inline-flex !important;
+ align-items:center !important;
+}
+.name-input-wrap .dont-know-name{
+ position:absolute !important;
+ right:0 !important;
+ top:0 !important;
+ transform:translate(0,-72%) !important;
+ margin:0 !important;
+ z-index:30 !important;
+}
+
+
+/* v79: 解答部の開始位置を大きく左へ寄せる */
+.qa-grid{
+ grid-template-columns:185px minmax(0,1fr) !important;
+}
+.a1,.a2,.a3,.a5{
+ padding-left:1em !important;
+}
+@media(max-width:600px){
+ .qa-grid{
+  grid-template-columns:145px minmax(0,1fr) !important;
+ }
+ .a1,.a2,.a3,.a5{
+  padding-left:.5em !important;
+ }
+}
+
+
+/* v80: 不知道ボタン +1px / 右へ5px、質問文 +1px */
+.name-input-wrap .dont-know-name{
+ font-size:11px !important;
+ right:-5px !important;
+}
+.q-cell{
+ font-size:calc(1em - 1px) !important;
+}
+
+
+/* v81: 作成中の各文の間隔を少し詰める（訳の高さは確保） */
+.qa-grid{
+ row-gap:3px !important;
+}
+.a2,.a3{
+ padding-bottom:16px !important;
+}
+.a2 .adj-answer-line:nth-child(2){
+ margin-top:16px !important;
+}
+.a5{
+ padding-bottom:10px !important;
+}
+
+
+/* v84: 投稿欄の高さを約1.5倍に */
+.post{
+ min-height:150px !important;
+}
+
 </style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
- <div class="name-box">
-  <input id="nameInput" class="name-input" placeholder="请输入姓名" maxlength="20">
-  <button class="name-save" onclick="saveName()">确定</button>
- </div>
+  <div class="name-box">
+    
+    <input id="nameInput" class="name-input" placeholder="请输入姓名" maxlength="20">
+    <button id="nameOk" class="name-save" type="button">确定</button>
+  </div>
 </div>
 
 <div class="app">
@@ -973,992 +2343,564 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  <div id="feed" class="feed"><div class="empty">まだ投稿がありません。</div></div>
 
  <div class="composer">
-  <div class="guide"><span id="modeGuideText">发布一下自己的周末安排吧。</span></div>
-  <div class="mode-question-row">
-<div class="mode-switch-wrap">
-  <div class="mode-switch" role="group" aria-label="時間帯切り替え">
-    <button type="button" id="weekendModeBtn" class="mode-switch-btn active" onclick="setActivityMode('weekend')">周末</button>
-    <button type="button" id="afternoonModeBtn" class="mode-switch-btn" onclick="setActivityMode('afternoon')">下午</button>
+  <div class="guide">发布一下自己的家乡吧。</div>
+  <div class="qa-grid">
+    <div class="q-cell q1">しゅっしん は どちらですか。</div>
+    <div class="a-cell a1">
+      <input id="shusshinInput" class="travel-destination-input shusshin-input" type="text"
+             placeholder="用中文输入地名" autocomplete="off">
+      <span class="answer-desu">です。</span>
+      <button id="postBtn" class="post-btn" type="button" disabled>发布</button>
+    </div>
+
+    <div id="shusshinSecond" class="shusshin-second qa-contents">
+      <div class="q-cell q2">
+        <span id="shusshinSubject" class="preview-place"></span><span>は どんな ところですか。</span>
+      </div>
+      <div class="a-cell a2">
+        <span id="shusshinSubjectAnswer" class="origin-answer-text"></span><span>は</span>
+        <span id="shusshinAdjPreview"></span>
+      </div>
+
+      <div id="q3Cell" class="q-cell q3">
+        <span id="shusshinSubject3"></span><span>に なにが ありますか。</span>
+      </div>
+      <div id="a3Cell" class="a-cell a3">
+        <span id="shusshinSubjectAnswer3" class="origin-answer-text"></span><span>に</span>
+        <span id="thingPreview"></span><span id="arimasuText"></span>
+        <span id="nameInline" class="name-inline">
+          <span class="name-input-wrap">
+            <input id="thingNameInput" class="travel-destination-input thing-name-input" type="text"
+                 placeholder="请输入名称" autocomplete="off">
+            <button id="dontKnowNameBtn" class="dont-know-name" type="button">不知道</button>
+          </span>
+          <span>です。</span>
+        </span>
+      </div>
+
+      <div id="q5Cell" class="q-cell q5" hidden></div>
+      <div id="a5Cell" class="a-cell a5" hidden>
+        <span id="thingNameSubject"></span><span>は</span>
+        <span id="nameAdjPreview"></span>
+      </div>
+    </div>
   </div>
-</div>
-<div class="question">しゅうまつ、なにをしますか。</div>
-</div>
 
-  <div class="preview">
-   <span id="previewPlace" class="preview-place"><span id="previewPlaceJp">＿＿</span><span id="previewPlaceCn" class="preview-cn"></span></span>
-   <span id="previewPattern">＿＿＿＿</span>
-   <button id="postBtn" class="post-btn" onclick="postWeekend()" disabled>发布</button>
+  <div id="adjTable" class="choice-table adjective-table">
+
+    
+    <div id="adjArea" class="choices shusshin-choices"></div>
   </div>
 
-  <div class="place-box">
-   <div id="places" class="choices"></div>
+  <div id="thingTable" class="choice-table thing-table">
+    
+    <div id="thingArea" class="choices thing-choices"></div>
   </div>
 
-
-  <div id="secondStage" class="second-stage">
-   <div id="secondPlaceLine" class="preview second-preview">
-    <span id="secondPlace" class="preview-place"></span>
-    <span id="secondDe">で</span>
-    <span id="secondInlineNoun" class="preview-place"><span id="secondInlineNounJp"></span><span id="secondInlineNounCn" class="preview-cn"></span></span>
-    <span id="secondWo" class="wo-slot"></span>
-   </div>
-   <div id="nounArea" class="noun-area"><span class="noun-area-hint">を</span></div>
-   <div class="preview noun-preview">
-    <span id="nounPreview" class="preview-place"><span id="nounPreviewJp">＿＿</span><span id="nounPreviewCn" class="preview-cn"></span></span>
-    <span>を</span>
-   </div>
-   <div id="verbArea" class="verb-area"></div>
-   
-  
+  <div id="nameAdjTable" class="choice-table adjective-table name-adj-table" style="display:none">
+<div class="choice-note">可以选1个，也可以选2个哦</div>
+    <div id="nameAdjArea" class="choices shusshin-choices"></div>
+  </div>
   </div>
  </div>
 </div>
-
 <script>
-const places=[
- ["りょう","宿舍"],
- ["そと","外面"],["おみせ","商店"],["そとのおみせ","外面商店"],["がっこう","学校"],
- ["としょかん","图书馆"],["ショッピングモール","购物中心"],["しょくどう","食堂"],["スーパー","超市"],
- ["グラウンド","运动场"],["コート","球场"],["たいいくかん","体育馆"],["こうえん","公园"],
- ["カラオケ","卡拉OK"],["うち","家"],["りょこう","旅行"],["やまに のぼります","爬山"],["でかけます","外出"]
-];
-const nouns=[
- ["ごはん","饭"],["ビール","啤酒"],
- ["バスケ","篮球"],["サッカー","足球"],["卓球","乒乓球"],["ビリヤード","台球"],
- ["バレーボール","排球"],["バドミントン","羽毛球"],["ゲーム","游戏"],["ダンス","舞蹈"],
- ["りょうり","做饭"],["アルバイト","打工"],["パーティー","聚会"],["バーベキュー","烧烤"],
- ["スマホ","手机"],["アニメ","动漫"],["ドラマ","电视剧"],["えいが","电影"],
- ["まんが","漫画"],["しょうせつ","小说"],["おんがく","音乐"],["ふく","衣服"],
- ["おかし","零食"],["え","画"],["にほんご","日语"],["えいご","英语"],["しゃしん","照片"]
-];
-const verbs=[
- ["たべます。","吃","wo"],["のみます。","喝","wo"],["します。","做","wo"],
- ["みます。","看","wo"],["ききます。","听","wo"],["よみます。","读","wo"],
- ["かいます。","买","wo"],["かきます。","写／画","wo"],["べんきょうします。","学习","wo"],
- ["つくります。","制作／做饭","wo"],["とります。","拍（照片）／拿","wo"],
- ["かいものします。","购物","other"],["うんどうします。","运动","other"],
- ["あるきます。","走路","other"],["さんぽします。","散步","other"],
- ["はしります。","跑步","other"],["そうじします。","打扫","other"],
- ["うたいます。","唱歌","other"],
- 
- ["～と あいます","和～见面","to"],["～と あそびます","一起玩","to"],
- ["～と はなします","说话","to"],["～と でんわします","打电话","to"]
-];
-let selectedVerb="";
-let selectedNoun="";
-let selectedPlace="",selectedPattern="";
-let travelDestination="";
-let userName=localStorage.getItem("weekend_user_name_v1")||"";
-let posts=JSON.parse(localStorage.getItem("weekend_posts_v1")||"[]");
+const NAME_KEY="weekend_user_name_v1";
+const POSTS_KEY="shusshin_posts_v1";
+const METOO_KEY="shusshin_metoo_by_name_v1";
+const OFFLINE_QUEUE_KEY="shusshin_offline_queue_v1";
+let userName=localStorage.getItem(NAME_KEY)||"";
+let posts=[];
+try{posts=JSON.parse(localStorage.getItem(POSTS_KEY))||[]}catch{posts=[]}
 
-function saveName(){
- const v=document.getElementById("nameInput").value.trim();
- if(!v)return;
- userName=v;
- localStorage.setItem("weekend_user_name_v1",userName);
- document.getElementById("nameModal").style.display="none";
-}
-function renderPlaces(){
- const box=document.getElementById("places");box.innerHTML="";
- places.forEach(([jp,cn])=>{
+const adjectives=[
+ ["おおきい","大",false],["ちいさい","小",false],
+ ["しずか","安静",true],["にぎやか","热闹",true],
+ ["きれい","漂亮",true],
+ ["みどりが おおい","绿化多",false],["ひとが おおい","人多",false],
+ ["いい","好",false]
+];
+let selectedAdjs=[];
+const things=[
+ ["やま","山"],["かわ","河"],["うみ","海"],["おてら","寺庙"],
+ ["こうえん","公园"],["おおきい たてもの","大型建筑"],["きれいな たてもの","漂亮的建筑"],["ゆうえんち","游乐园"],["すいぞくかん","水族馆"]
+];
+let selectedThing="";
+let selectedNameAdjs=[];
+const nameAdjectives=[
+ ...adjectives,
+ ["たのしい","玩得开心",false],
+ ["おもしろい","有趣",false],
+ ["ゆうめい","有名",true]
+];
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function inputValue(){return document.getElementById("shusshinInput").value.trim()}
+function alignSecondAnswer(){}
+
+function renderAdj(){
+ const area=document.getElementById("adjArea"); area.innerHTML="";
+ adjectives.forEach(([jp,cn])=>{
   const b=document.createElement("button");
-  b.className="choice"+(selectedPlace===jp?" selected":"");
+  b.type="button";
+  b.className="choice"+(selectedAdjs.includes(jp)?" selected":"");
   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
-  b.onclick=()=>selectPlace(jp);box.appendChild(b);
- });
-}
-
-/* 選択内容に合わせて、不自然な組み合わせを押せなくする */
-const nounVerbMap={
- "ごはん":["たべます。","つくります。","かいます。"],
- "ビール":["のみます。","かいます。"],
- "バスケ":["します。","みます。"],"サッカー":["します。","みます。"],"卓球":["します。","みます。"],"ビリヤード":["します。","みます。"],
- "バレーボール":["します。","みます。"],"バドミントン":["します。","みます。"],"ゲーム":["します。","みます。","かいます。"],"ダンス":["します。","みます。"],
- "りょうり":["します。","つくります。"],"アルバイト":["します。"],"パーティー":["します。"],"バーベキュー":["します。"],
- "スマホ":["みます。","かいます。"],"アニメ":["みます。"],"ドラマ":["みます。"],"えいが":["みます。"],
- "まんが":["よみます。","かいます。"],"しょうせつ":["よみます。","かいます。","かきます。"],
- "おんがく":["ききます。"],"ふく":["かいます。"],"おかし":["たべます。","かいます。","つくります。"],
- "え":["かきます。","みます。"],"にほんご":["べんきょうします。","ききます。","よみます。"],"えいご":["べんきょうします。","ききます。","よみます。"],
- "しゃしん":["とります。","みます。"]
-};
-const noNounVerbs=new Set([
- "かいものします。","うんどうします。","あるきます。","さんぽします。",
- "はしります。","そうじします。","うたいます。",
- 
- "～と あいます","～と あそびます","～と はなします","～と でんわします"
-]);
-
-/* 場所×名詞：可能性が少しでもある組み合わせは許可。
-   「その場所でその名詞を目的語にする活動」が明らかに不自然な場合だけ除外する。 */
-/* 場所×名詞：ユーザー指定＋残りは「確実に不自然」なものだけ禁止 */
-const sportsNouns=new Set(["バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン"]);
-
-const placeNounBlocked={
- "りょう":["アルバイト","バーベキュー"],
- "そと":[],
- "がっこう":[],
- "としょかん":["ごはん","ビール","バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン","りょうり","ゲーム","ダンス","しゃしん","ふく","おかし","パーティー","バーベキュー"],
- "おみせ":[],
- "そとのおみせ":[],
- "ショッピングモール":[],
- "しょくどう":[],
- "スーパー":["バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン","にほんご","えいご","スマホ","アニメ","ドラマ","えいが","まんが","しょうせつ","しゃしん","りょうり","ゲーム","パーティー","ダンス","バーベキュー","え","おんがく","ふく"],
-
- /* 以下は「わりとあり得るなら許可」で、明確に変なものだけ */
- "グラウンド":["りょうり","えいが","しょうせつ","ふく"],
- "コート":["ごはん","ビール","ゲーム","りょうり","アルバイト","パーティー","バーベキュー","スマホ","アニメ","ドラマ","えいが","まんが","しょうせつ","おんがく","ふく","おかし","え","にほんご","えいご","しゃしん"],
- "たいいくかん":["ごはん","ビール","ゲーム","りょうり","アルバイト","パーティー","バーベキュー","スマホ","アニメ","ドラマ","えいが","まんが","しょうせつ","おんがく","ふく","おかし","え","にほんご","えいご","しゃしん"],
- "こうえん":[],
- "カラオケ":["バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン","りょうり","バーベキュー"],
- "うち":[],
- "りょこう":[]
-};
-function nounFitsPlace(noun,place){
- if(!place)return true;
- return !(placeNounBlocked[place]||[]).includes(noun);
-}
-
-/* 名詞単体では成立しても、その場所で「スポーツをする」だけは不自然な場合 */
-function comboFitsPlace(noun,verb,place){
- if(!place)return true;
- if(place==="しょくどう" && verb==="かいます。" && !["ごはん","ビール"].includes(noun))return false;
- if(place==="しょくどう" && noun==="ダンス" && verb==="します。")return false;
- if(verb==="します。" && sportsNouns.has(noun) && ["りょう","しょくどう","スーパー","カラオケ"].includes(place)) return false;
- return true;
-}
-
-function nounFitsVerb(noun,verb){
- if(!verb)return true;
- if(noNounVerbs.has(verb))return false;
- return (nounVerbMap[noun]||[]).includes(verb);
-}
-function verbFitsNoun(verb,noun){
- if(!noun)return true;
- return nounFitsVerb(noun,verb);
-}
-function verbFitsPlace(verb,place){
- if(!place)return true;
- if(["たいいくかん","コート"].includes(place) && new Set(["かいものします。","そうじします。","うたいます。","～と でんわします","～と あいます"]).has(verb))return false;
- if(place==="スーパー" && verb==="たべます。")return false;
- if(verb==="かいます。" && ["カラオケ","コート","たいいくかん","グラウンド","うち","としょかん"].includes(place))return false;
- if(place==="カラオケ" && new Set(["うんどうします。","かいものします。","あるきます。","さんぽします。","はしります。","そうじします。","～と でんわします","～と あいます"]).has(verb))return false;
- /* 場所が意味上ほぼ決まる動詞だけ制限する */
- if(verb==="やまに のぼります。")return place==="やま";
- 
- if(verb==="つくります。" && ["りょう","としょかん","スーパー"].includes(place))return false;
- if(verb==="かいます。" && ["りょう","としょかん"].includes(place))return false;
- return true;
-}
-function hasAvailableVerbForNoun(noun){
- /* 現在の場所で、この名詞を選んだあと1つでも選べる動詞が残るか */
- return verbs.some(([v])=>
-   nounFitsVerb(noun,v) &&
-   verbFitsPlace(v,selectedPlace) &&
-   comboFitsPlace(noun,v,selectedPlace)
- );
-}
-function refreshCompatibility(){
- document.querySelectorAll("#nounArea .noun-choice").forEach(btn=>{
-   const n=btn.dataset.value;
-   const placeOK=nounFitsPlace(n,selectedPlace);
-   const currentVerbOK=!selectedVerb || (nounFitsVerb(n,selectedVerb) && comboFitsPlace(n,selectedVerb,selectedPlace));
-   const leavesVerb=hasAvailableVerbForNoun(n);
-   const ok=placeOK && currentVerbOK && leavesVerb;
-   btn.disabled=!ok;
-   btn.classList.toggle("choice-disabled",!ok);
- });
- document.querySelectorAll("#verbArea .verb-choice").forEach(btn=>{
-   const v=btn.dataset.value;
-   const verbData=verbs.find(x=>x[0]===v);
-   const type=verbData?verbData[2]:"";
-   const needsNoun=type==="wo";
-   const ok=(!needsNoun || !!selectedNoun) &&
-            verbFitsNoun(v,selectedNoun) &&
-            verbFitsPlace(v,selectedPlace) &&
-            (!selectedNoun || comboFitsPlace(selectedNoun,v,selectedPlace));
-   btn.disabled=!ok;
-   btn.classList.toggle("choice-disabled",!ok);
- });
-}
-function renderNouns(){
- const area=document.getElementById("nounArea");
- area.innerHTML="";
- nouns.forEach(([jp,cn])=>{
-   const b=document.createElement("button");
-   b.className="choice noun-choice"+(selectedNoun===jp?" selected":"");
-   b.dataset.value=jp;
-   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
-   b.onclick=()=>{
-     if(b.disabled)return;
-     const oldNoun=selectedNoun;
-     selectedNoun=selectedNoun===jp?"":jp;
-     if(selectedVerb && oldNoun!==selectedNoun) selectedVerb="";
-     renderNouns(); renderVerbs(); updateNounPreview(); updateVerbPreview();
- refreshPostButton();
-   };
-   area.appendChild(b);
- });
- const hint=document.createElement("span");
- hint.className="noun-area-hint"; hint.textContent="を"; area.appendChild(hint);
- refreshCompatibility();
-}
-function updateNounPreview(){
- const ijp=document.getElementById("secondInlineNounJp");
- const icn=document.getElementById("secondInlineNounCn");
- const secondWo=document.getElementById("secondWo");
- const nounPreview=document.querySelector(".noun-preview");
- const secondLine=document.getElementById("secondPlaceLine");
- const found=nouns.find(x=>x[0]===selectedNoun);
- const isDorm=selectedPlace==="りょう";
-
- if(ijp)ijp.textContent=selectedNoun||"";
- if(icn)icn.textContent=found?found[1]:"";
- const nounCard=document.getElementById("secondInlineNoun");
- if(nounCard)nounCard.style.display=selectedNoun?"inline-flex":"none";
- if(secondWo)secondWo.textContent=selectedNoun?"を":"";
-
- if(nounPreview)nounPreview.style.display="none";
- if(secondLine)secondLine.style.display=isDorm?"none":"flex";
-
- /* 寮の場合も、名詞を選ぶたび上の一文を更新 */
- updatePreview();
-}
-function updateVerbPreview(){
- const wo=document.getElementById("secondWo");
- if(wo){
-   let c=document.getElementById("inlineVerbCard");
-   if(!c){
-     c=document.createElement("span"); c.id="inlineVerbCard"; c.className="preview-place";
-     c.innerHTML='<span id="inlineVerbJp"></span><span id="inlineVerbCn" class="preview-cn"></span>';
-     wo.insertAdjacentElement("afterend",c);
+  b.onclick=()=>{
+   const i=selectedAdjs.indexOf(jp);
+   if(i>=0){
+     selectedAdjs=[];
+   }else{
+     selectedAdjs=[jp];
    }
-   const f=verbs.find(x=>x[0]===selectedVerb);
-   document.getElementById("inlineVerbJp").textContent=selectedVerb||"";
-   document.getElementById("inlineVerbCn").textContent=f?f[1]:"";
-   c.style.display=(selectedPlace!=="りょう" && selectedVerb)?"inline-flex":"none";
- }
- updatePreview();
+   renderAdj();
+   updateComposer();
+  };
+  area.appendChild(b);
+ });
 }
-function renderVerbs(){
- const area=document.getElementById("verbArea");
+function renderNameAdj(){
+ const area=document.getElementById("nameAdjArea");
  if(!area)return;
  area.innerHTML="";
- verbs.forEach(([jp,cn,type])=>{
-   const b=document.createElement("button");
-   b.className="choice verb-choice"+(selectedVerb===jp?" selected":"");
-   b.dataset.value=jp;
-   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
-   b.onclick=()=>{
-     if(b.disabled)return;
-     selectedVerb=selectedVerb===jp?"":jp;
-     /* 動詞を選ぶと、合わない名詞は薄くして押せなくする */
-     renderVerbs(); renderNouns(); updateVerbPreview(); updatePreview(); updateNounPreview();
- refreshPostButton();
-   };
-   area.appendChild(b);
- });
- refreshCompatibility();
-}
-function renderSecondStage(){
- const stage=document.getElementById("secondStage");
- const placeEl=document.getElementById("secondPlace");
- const secondLine=document.getElementById("secondPlaceLine");
- if(secondLine){
-   secondLine.classList.toggle("waiting-place",!selectedPlace);
-   secondLine.style.visibility="";
- }
- const show=true;
- stage.classList.add("show");
- renderNouns();
- renderVerbs();
- setTimeout(refreshCompatibility,0);
- updateVerbPreview();
- updateNounPreview();
- if(!selectedPlace){placeEl.innerHTML="";return}
- const found=places.find(x=>x[0]===selectedPlace);
- const secondDe=document.getElementById("secondDe");
- if(secondDe)secondDe.style.display="";
- if(placeEl)placeEl.style.display="inline-flex";
- if(selectedPlace==="りょこう" || selectedPlace==="でかけます"){
-   updateTravelSecondPlace();
- }else if(selectedPlace==="やまに のぼります"){
-   placeEl.innerHTML=`<span>やま</span><span class="preview-cn">山</span>`;
- }else{
-   placeEl.innerHTML=`<span>${selectedPlace}</span><span class="preview-cn">${found?found[1]:""}</span>`;
- }
-}
-function selectPlace(v){
- if(v!==selectedPlace && (v==="りょこう"||v==="でかけます"))travelDestination="";
- selectedPlace=v;
- if(selectedNoun && !nounFitsPlace(selectedNoun,v)) selectedNoun="";
- if(selectedNoun && selectedVerb && !comboFitsPlace(selectedNoun,selectedVerb,v)) selectedVerb="";
- if(selectedVerb && !verbFitsPlace(selectedVerb,v)) selectedVerb="";
- selectedNoun="";
- selectedVerb="";
- selectedPattern=v==="うち"?"かえります":(v==="やまに のぼります"?"のぼります":(v==="でかけます"?"でかけます":(v==="りょう"?"で":"へいきます")));
- renderPlaces();
- updatePatterns();
- updatePreview();
- renderSecondStage();
- renderNouns();
- renderVerbs();
- refreshPostButton();
-}
-function selectPattern(v){
- /* 場所を選ぶと自動決定。手動変更はしない */
-}
-function updatePatterns(){
- /* パターン選択ボタンは廃止。場所に応じて自動決定する */
-}
-function updatePreview(){
- const firstPlaceBox=document.querySelector(".place-box");
- if(firstPlaceBox)firstPlaceBox.classList.remove("has-de-hint");
- const oldDeHint=document.getElementById("firstStageDeHint");
- if(oldDeHint)oldDeHint.remove();
- const placeJp=document.getElementById("previewPlaceJp");
- const placeCn=document.getElementById("previewPlaceCn");
- const pat=document.getElementById("previewPattern");
- const placeCard=document.getElementById("previewPlace");
- const found=places.find(x=>x[0]===selectedPlace);
+ nameAdjectives.forEach(([jp,cn])=>{
+  const b=document.createElement("button");
+  b.type="button";
+  const sizeLocked=(selectedThing==="おおきい たてもの" && (jp==="おおきい" || jp==="ちいさい"));
+  b.disabled=sizeLocked;
+  b.className="choice"+(selectedNameAdjs.includes(jp)?" selected":"")+(sizeLocked?" disabled-choice":"");
+  b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
+  b.onclick=()=>{
+   const i=selectedNameAdjs.indexOf(jp);
 
- let noun=document.getElementById("upperDormNoun");
- let wo=document.getElementById("upperDormWo");
- let travelInput=document.getElementById("travelDestinationInput");
+   if(i>=0){
+     selectedNameAdjs.splice(i,1);
+   }else{
+     // 3段目も対になる語は、後から押した方を優先
+     const opposite={
+       "おおきい":"ちいさい",
+       "ちいさい":"おおきい",
+       "にぎやか":"しずか",
+       "しずか":"にぎやか"
+     }[jp];
 
- if(selectedPlace==="りょこう" || selectedPlace==="でかけます"){
-   const isOuting=selectedPlace==="でかけます";
-   placeCard.style.display="inline-flex";
-   placeJp.textContent=isOuting?"でかけます。":"りょこう";
-   placeCn.textContent=isOuting?"外出":"旅行";
-   if(!travelInput){
-     travelInput=document.createElement("input");
-     travelInput.id="travelDestinationInput";
-     travelInput.className="travel-destination-input";
-     travelInput.placeholder="用中文输入目的地";
-     travelInput.value=travelDestination;
-     travelInput.addEventListener("input",e=>{
-       travelDestination=e.target.value.trim();
-       updateTravelSecondPlace();
-       refreshPostButton();
-       refreshPostButton();
-     });
-     pat.insertAdjacentElement("afterend",travelInput);
-     const go2=document.createElement("span");
-     go2.id="travelGoText";
-     go2.textContent="へ いきます。";
-     travelInput.insertAdjacentElement("afterend",go2);
+     if(opposite){
+       const oi=selectedNameAdjs.indexOf(opposite);
+       if(oi>=0) selectedNameAdjs.splice(oi,1);
+     }
+
+     selectedNameAdjs.push(jp);
+     if(selectedNameAdjs.length>2) selectedNameAdjs.shift();
    }
-   travelInput.style.display="inline-block";
-   const go2=document.getElementById("travelGoText"); if(go2)go2.style.display="inline";
-   pat.textContent=isOuting?"":"へ いきます。";
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove();
-   if(wo)wo.remove();
-   refreshPostButton();
-   updateTravelSecondPlace();
-   return;
- }else{
-   placeCard.style.display="inline-flex";
-   if(travelInput)travelInput.remove();
-   const go2=document.getElementById("travelGoText"); if(go2)go2.remove();
+
+   renderNameAdj();
+   updateComposer();
+  };
+  area.appendChild(b);
+ });
+}
+function renderThings(){
+ const area=document.getElementById("thingArea");
+ if(!area)return;
+ area.innerHTML="";
+ things.forEach(([jp,cn])=>{
+  const b=document.createElement("button");
+  b.type="button";
+  b.className="choice"+(selectedThing===jp?" selected":"");
+  b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
+  b.onclick=()=>{
+   selectedThing=jp;
+   if(selectedThing==="おおきい たてもの"){
+     selectedNameAdjs=selectedNameAdjs.filter(x=>x!=="おおきい" && x!=="ちいさい");
+   }
+   renderThings();
+   renderNameAdj();
+   updateComposer();
+  };
+  area.appendChild(b);
+ });
+}
+function updateComposer(){
+ const v=inputValue(), second=document.getElementById("shusshinSecond");
+ const adjTable=document.getElementById("adjTable");
+ if(adjTable) adjTable.style.display=v?"block":"none";
+ if(!v && (selectedAdjs.length || selectedThing)){
+   selectedAdjs=[];
+   selectedThing="";
+   renderAdj();
+   renderThings();
+ }
+ second.style.display=v?"contents":"none";
+ const subjectHtml=v?`<span>${esc(v)}</span>`:"";
+ document.getElementById("shusshinSubject").innerHTML=subjectHtml;
+ const a2Cell=document.getElementById("shusshinSubjectAnswer").parentElement;
+ a2Cell.style.visibility=selectedAdjs.length?"visible":"hidden";
+ document.getElementById("shusshinSubjectAnswer").textContent=v;
+ const showThird=!!(v&&selectedAdjs.length);
+ const thingTable=document.getElementById("thingTable");
+ if(thingTable) thingTable.style.display=showThird?"block":"none";
+ document.getElementById("q3Cell").style.display=showThird?"block":"none";
+ document.getElementById("a3Cell").style.display=showThird?"flex":"none";
+ document.getElementById("shusshinSubject3").textContent=v;
+ document.getElementById("shusshinSubjectAnswer3").textContent=v;
+ const thingBox=document.getElementById("thingPreview");
+ const a3Cell=document.getElementById("a3Cell");
+ if(a3Cell) a3Cell.style.visibility=selectedThing?"visible":"hidden";
+ const nameInline=document.getElementById("nameInline");
+ if(nameInline){
+   nameInline.style.display=selectedThing?"inline-flex":"none";
+   const buildingThing=(selectedThing==="おおきい たてもの" || selectedThing==="きれいな たてもの");
+   nameInline.classList.toggle("name-next-line",buildingThing);
  }
 
- placeJp.textContent=selectedPlace||"＿＿";
- placeCn.textContent=found?found[1]:"";
+ const nameInput=document.getElementById("thingNameInput");
+ const nameVal=nameInput?nameInput.value.trim():"";
+ const nameAdjTable=document.getElementById("nameAdjTable");
+ const a5Cell=document.getElementById("a5Cell");
+ const q5Cell=document.getElementById("q5Cell");
+ if(nameAdjTable){ nameAdjTable.hidden=!selectedThing; nameAdjTable.style.display=selectedThing ? "block" : "none"; nameAdjTable.classList.toggle("third-visible",!!selectedThing); }
+ if(q5Cell) q5Cell.hidden=true;
+ if(a5Cell){ a5Cell.hidden=!selectedThing; a5Cell.style.display=selectedThing ? "flex" : "none"; }
+ const ns=document.getElementById("thingNameSubject");
+ const knownName=!!nameVal && nameVal!=="×";
+ if(ns){
+   ns.textContent=knownName ? nameVal : "";
+   const wa=ns.nextElementSibling;
+   if(wa) wa.style.display=knownName ? "" : "none";
+ }
+ const np=document.getElementById("nameAdjPreview");
+ if(np){
+   const a=[...selectedNameAdjs];
 
- if(selectedPlace==="やまに のぼります"){
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove(); if(wo)wo.remove();
-   placeJp.textContent="やま"; placeCn.textContent="山";
-   pat.textContent="に のぼります。";
- }else if(selectedPlace==="でかけます"){
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove(); if(wo)wo.remove();
-   placeJp.textContent="でかけます。"; placeCn.textContent="外出";
-   pat.textContent="";
- }else if(selectedPlace==="うち"){
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove();
-   if(wo)wo.remove();
-   pat.textContent="へ かえります。";
- }else if(selectedPlace==="りょう"){
-   pat.textContent="で";
-   let deHint=document.getElementById("firstStageDeHint");
-   if(!deHint){
-     deHint=document.createElement("span");
-     deHint.id="firstStageDeHint";
-     deHint.className="first-stage-de-hint";
-     const firstBox=document.querySelector(".place-box");
-     if(firstBox){
-       firstBox.classList.add("has-de-hint");
-       firstBox.appendChild(deHint);
+   // 2語の接続ルール
+   // 原則：Aです。そして、Bです。
+   // 指定された組み合わせだけ：Aですが、Bです。
+   let ordered=a;
+   let useGa=false;
+
+   if(a.length===2){
+     const has=(x)=>a.includes(x);
+
+     // 「ちいさい」＋「おおきい・しずか」以外：
+     // 選択順に関係なく「ちいさい」を先にして「ですが」
+     if(has("ちいさい")){
+       const other=a.find(x=>x!=="ちいさい");
+       if(other && other!=="おおきい" && other!=="しずか"){
+         ordered=["ちいさい",other];
+         useGa=true;
+       }
+     }
+
+     // 以下2組は、指定の並びで選んだ時だけ「ですが」
+     if(a[0]==="おおきい" && a[1]==="しずか"){
+       ordered=a;
+       useGa=true;
+     }
+     if(a[0]==="しずか" && a[1]==="ひとが おおい"){
+       ordered=a;
+       useGa=true;
      }
    }
-   deHint.textContent="で";
-   if(!noun){
-     noun=document.createElement("span");
-     noun.id="upperDormNoun";
-     noun.className="preview-place";
-     noun.innerHTML='<span id="upperDormNounJp"></span><span id="upperDormNounCn" class="preview-cn"></span>';
-     pat.insertAdjacentElement("afterend",noun);
-   }
-   if(!wo){
-     wo=document.createElement("span");
-     wo.id="upperDormWo";
-     noun.insertAdjacentElement("afterend",wo);
-   }
-   const nf=nouns.find(x=>x[0]===selectedNoun);
-   document.getElementById("upperDormNounJp").textContent=selectedNoun||"";
-   document.getElementById("upperDormNounCn").textContent=nf?nf[1]:"";
-   noun.style.display=selectedNoun?"inline-flex":"none";
-   wo.textContent=selectedNoun?"を":"";
-   let vc=document.getElementById("upperDormVerb");
-   if(!vc && wo){
-     vc=document.createElement("span"); vc.id="upperDormVerb"; vc.className="preview-place";
-     vc.innerHTML='<span id="upperDormVerbJp"></span><span id="upperDormVerbCn" class="preview-cn"></span>';
-     wo.insertAdjacentElement("afterend",vc);
-   }
-   if(vc){
-     const vf=verbs.find(x=>x[0]===selectedVerb);
-     document.getElementById("upperDormVerbJp").textContent=selectedVerb||"";
-     document.getElementById("upperDormVerbCn").textContent=vf?vf[1]:"";
-     vc.style.display=selectedVerb?"inline-flex":"none";
-   }
+
+   np.innerHTML=ordered.map((adj,i)=>{
+     const item=nameAdjectives.find(x=>x[0]===adj);
+     const cn=item?item[1]:"";
+     let ending="です。";
+     if(ordered.length===2 && i===0){
+       ending=useGa ? "ですが、" : "です。そして、";
+     }
+     const body=(adj==="いい") ? "いい ところ" : esc(adj);
+     const card=(adj==="いい")
+       ? `<span class="posted-card"><span>いい</span><span class="posted-cn">${esc(cn)}</span></span><span>ところ</span>`
+       : `<span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>`;
+     return `<span class="adj-answer-line">${card}<span>${ending}</span></span>`;
+   }).join("");
+ }
+ if(selectedThing){
+  const ti=things.find(x=>x[0]===selectedThing);
+  thingBox.innerHTML=`<span class="posted-card thing-card"><span>${esc(selectedThing)}</span><span class="posted-cn">${esc(ti?ti[1]:"")}</span></span>`;
+  document.getElementById("arimasuText").textContent="が あります。";
  }else{
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove();
-   if(wo)wo.remove();
-   pat.textContent=selectedPattern==="へいきます"?"へ いきます。":(selectedPattern||"＿＿＿＿");
+  thingBox.innerHTML="";
+  document.getElementById("arimasuText").textContent="";
  }
- refreshPostButton();
-}
-function updateTravelSecondPlace(){
- if(selectedPlace!=="りょこう" && selectedPlace!=="でかけます")return;
- const placeEl=document.getElementById("secondPlace");
- const secondLine=document.getElementById("secondPlaceLine");
- if(secondLine)secondLine.style.visibility="visible";
- if(placeEl){
-   placeEl.innerHTML=travelDestination ? `<span>${travelDestination}</span>` : "";
-   placeEl.style.display=travelDestination?"inline-flex":"none";
- }
- const secondDe=document.getElementById("secondDe");
- if(secondDe)secondDe.style.display=travelDestination?"":"none";
-}
-
-function refreshPostButton(){
- const btn=document.getElementById("postBtn");
- if(!btn)return;
- const placeOK=!!selectedPlace;
- const verbOK=!!selectedVerb;
- const destinationOK=!["りょこう","でかけます"].includes(selectedPlace) || !!travelDestination;
- btn.disabled=!(placeOK && verbOK && destinationOK);
-}
-
-let activityMode="weekend";
-function setActivityMode(mode){
- activityMode=mode;
- const wb=document.getElementById("weekendModeBtn");
- const ab=document.getElementById("afternoonModeBtn");
- if(wb)wb.classList.toggle("active",mode==="weekend");
- if(ab)ab.classList.toggle("active",mode==="afternoon");
- const guide=document.getElementById("modeGuideText");
- if(guide)guide.textContent=mode==="weekend"?"发布一下自己的周末安排吧。":"发布一下自己下午的安排吧。";
-
- // 見えている質問文だけを切り替える
- const nodes=[...document.querySelectorAll("body *")].filter(el=>el.children.length===0);
- nodes.forEach(el=>{
-   if(el.dataset.modeQuestion==="1"){
-     el.textContent=mode==="weekend"?"しゅうまつ、なにをしますか。":"ごご、なにをしますか。";
-   }else if(el.textContent.trim()==="しゅうまつ、なにをしますか。" || el.textContent.trim()==="ごご、なにをしますか。"){
-     el.dataset.modeQuestion="1";
-     el.textContent=mode==="weekend"?"しゅうまつ、なにをしますか。":"ごご、なにをしますか。";
-   }
- });
-}
-
-function layoutMeTooButtons(){
- requestAnimationFrame(()=>{
-  document.querySelectorAll(".post").forEach(post=>{
-   const wrap=post.querySelector(".me-too-wrap");
-   const rows=[...post.querySelectorAll(".posted-row")];
-   if(!wrap||!rows.length)return;
-
-   let count=wrap.querySelector(".me-too-count") || post.querySelector(":scope > .me-too-count");
-   post.classList.remove("metoo-inline","metoo-row2","metoo-row3");
-   wrap.removeAttribute("style");
-
-   // ✋×N は常に一段目右端。行レイアウトから完全に外す。
-   if(count && count.textContent){
-     if(count.parentElement!==post) post.appendChild(count);
-     count.removeAttribute("style");
-     const pr=post.getBoundingClientRect();
-     const first=rows[0].getBoundingClientRect();
-     const ch=count.getBoundingClientRect().height||16;
-     count.style.position="absolute";
-     count.style.right="6px";
-     count.style.left="auto";
-     count.style.top=(first.top-pr.top+(first.height-ch)/2)+"px";
-     count.style.bottom="auto";
-     count.style.margin="0";
-     count.style.transform="none";
-   }else if(count && count.parentElement!==wrap){
-     wrap.insertBefore(count,wrap.firstChild);
-   }
-
-   const lastRow=rows[rows.length-1];
-   const content=[...lastRow.children].filter(el=>{
-     const cs=getComputedStyle(el);
-     return !el.classList.contains("me-too-count") &&
-            !el.closest(".me-too-wrap") &&
-            cs.display!=="none" && cs.visibility!=="hidden";
-   });
-   const lastContent=content[content.length-1]||lastRow;
-   const pr=post.getBoundingClientRect();
-   const rr=lastRow.getBoundingClientRect();
-   const cr=lastContent.getBoundingClientRect();
-
-   // countを含まないボタン幅だけ測る
-   wrap.style.position="absolute";
-   wrap.style.visibility="hidden";
-   wrap.style.width="max-content";
-   wrap.style.maxWidth="none";
-   const wr=wrap.getBoundingClientRect();
-   const ww=Math.ceil(wr.width), wh=Math.ceil(wr.height);
-   const available=Math.floor(pr.right-6-cr.right);
-
-   if(available>=ww+7){
-     post.classList.add("metoo-inline");
-     wrap.style.left="auto";
-     wrap.style.right="6px";
-     wrap.style.top=(rr.top-pr.top+(rr.height-wh)/2)+"px";
-     wrap.style.bottom="auto";
-   }else{
-     wrap.removeAttribute("style");
-     post.classList.add(rows.length===1?"metoo-row2":"metoo-row3");
-   }
-   wrap.style.visibility="";
-  });
- });
-}
-window.addEventListener("resize",layoutMeTooButtons);
-window.addEventListener("orientationchange",layoutMeTooButtons);
-function postWeekend(){
- if(!selectedPlace||!selectedPattern||!userName)return;
- const lastThree=posts.slice(-3);
- if(lastThree.length===3 && lastThree.every(p=>p.author===userName)){
-   alert("发了这么多，谢谢你！");
-   return;
- }
- if(!selectedVerb)return;
- if(["りょこう","でかけます"].includes(selectedPlace) && !travelDestination)return;
- 
-
- let lines=[];
- if(selectedPlace==="やまに のぼります"){
-   const line1="やまに のぼります。";
-   let line2="やまで";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }else if(selectedPlace==="でかけます"){
-   const line1="でかけます。"+(travelDestination?travelDestination+"へ いきます。":"");
-   let line2=(travelDestination?travelDestination:"")+"で";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }else if(selectedPlace==="うち"){
-   const line1="うちへ かえります。";
-   let line2="うちで";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }else if(selectedPlace==="りょう"){
-   let line="りょうで";
-   if(selectedNoun) line+=selectedNoun+"を";
-   if(selectedVerb) line+=selectedVerb;
-   lines=[line];
- }else if(selectedPlace==="りょこう"){
-   const line1="りょこうへ いきます。"+(travelDestination?travelDestination+"へ いきます。":"");
-   let line2=(travelDestination?travelDestination:"")+"で";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
+ const adjBox=document.getElementById("shusshinAdjPreview");
+ if(selectedAdjs.length){
+  adjBox.innerHTML=selectedAdjs.map((adj,i)=>{
+   const item=adjectives.find(x=>x[0]===adj);
+   const needsNa=!!(item&&item[2]);
+   return `<span class="adj-answer-line"><span class="posted-card shusshin-adj-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(item?item[1]:"")}</span></span>${needsNa?'<span class="na-card">な</span>':""}<span>${(adj==="おおきい"||adj==="ちいさい")?"まちです。":"ところです。"}</span></span>`;
+  }).join("");
  }else{
-   const line1=selectedPlace+"へ いきます。";
-   let line2=selectedPlace+"で";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
+  adjBox.innerHTML="";
  }
+ const buildingWithName =
+   (selectedThing==="おおきい たてもの" || selectedThing==="きれいな たてもの") &&
+   !!nameVal && nameVal!=="×";
+ const canPost =
+   !!v && selectedAdjs.length>0 && !!selectedThing && !!userName &&
+   (selectedNameAdjs.length>0 || buildingWithName);
+ document.getElementById("postBtn").disabled=!canPost;
 
- posts.push({
-   id:Date.now(), author:userName, mode:activityMode, lines,
-   place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけます")?travelDestination:"",
-   noun:selectedNoun, verb:selectedVerb, pattern:selectedPattern, meTooCount:0
- });
- localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- syncPostToDB(posts[posts.length-1]);
- renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 
- selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; travelDestination="";
- renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
+
 }
-const METOO_KEY="weekend_metoo_by_name_v1";
+document.getElementById("shusshinInput").addEventListener("input",updateComposer);
+document.getElementById("thingNameInput").addEventListener("input",()=>{
+ updateComposer();
+});
+document.getElementById("postBtn").onclick=postShusshin;
+
 function meTooMap(){try{return JSON.parse(localStorage.getItem(METOO_KEY))||{}}catch{return {}}}
 function meTooKey(id){return userName+"::"+id}
 function hasMeToo(id){return !!meTooMap()[meTooKey(id)]}
-function rememberMeToo(id){
- const m=meTooMap(); m[meTooKey(id)]=true;
- localStorage.setItem(METOO_KEY,JSON.stringify(m));
+function rememberMeToo(id){const m=meTooMap();m[meTooKey(id)]=true;localStorage.setItem(METOO_KEY,JSON.stringify(m))}
+
+function postShusshin(){
+ const place=inputValue();
+ const thingName=(document.getElementById("thingNameInput")?.value||"").trim();
+ const buildingWithName =
+   (selectedThing==="おおきい たてもの" || selectedThing==="きれいな たてもの") &&
+   !!thingName && thingName!=="×";
+ const canPost = selectedNameAdjs.length>0 || buildingWithName;
+ if(!place||!selectedAdjs.length||!selectedThing||!userName||!canPost)return;
+ const p={
+   id:Date.now(),author:userName,place,
+   adjs:[...selectedAdjs],adj:selectedAdjs[0],
+   thing:selectedThing,thingName,
+   nameAdjs:[...selectedNameAdjs],
+   meTooCount:0,createdAt:Date.now()
+ };
+ posts.push(p); localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
+ syncPostToDB(p); renderPosts();
+ selectedAdjs=[]; selectedThing=""; selectedNameAdjs=[];
+ const thingNameInputReset=document.getElementById("thingNameInput");
+ if(thingNameInputReset){thingNameInputReset.value="";thingNameInputReset.classList.remove("unknown-name");}
+ document.getElementById("shusshinInput").value="";
+ renderAdj();renderThings();renderNameAdj();updateComposer();
 }
-function toggleMeToo(id){
- const p=posts.find(x=>x.id===id);
+async function toggleMeToo(id){
+ const p=posts.find(x=>String(x.id)===String(id));
  const unlimited=userName==="あさの";
- if(!p || (!unlimited && hasMeToo(id)))return;
+ if(!p||(!unlimited&&hasMeToo(id)))return;
  if(!unlimited)rememberMeToo(id);
- if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
- p.meTooCount++;
- incrementMeTooDB(id);
- localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
+ p.meTooCount=Number(p.meTooCount||0)+1;
+ localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
+ incrementMeTooDB(id);renderPosts();
 }
-function enableAdminLongPress(el,postId){
- let timer=null, startX=0,startY=0;
- const clear=()=>{if(timer!==null){clearTimeout(timer);timer=null;}};
- el.addEventListener("pointerdown",e=>{
-   if(userName!=="あさの" || e.target.closest("button"))return;
-   startX=e.clientX;startY=e.clientY;
-   clear();
-   timer=setTimeout(()=>{
-     timer=null;
-     if(userName!=="あさの")return;
-     if(confirm("この投稿を削除しますか？（确定删除这条投稿吗？）")){
-       posts=posts.filter(p=>p.id!==postId);
-       syncDeleteFromDB(postId);
-       localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
-       renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
-     }
-   },750);
- });
- el.addEventListener("pointermove",e=>{if(Math.abs(e.clientX-startX)>12||Math.abs(e.clientY-startY)>12)clear();});
- ["pointerup","pointercancel","pointerleave"].forEach(t=>el.addEventListener(t,clear));
- el.addEventListener("contextmenu",e=>{if(userName==="あさの" && !e.target.closest("button"))e.preventDefault();});
-}
+
 function renderPosts(){
- const feed=document.getElementById("feed");
+ const feed=document.querySelector(".feed");
+ if(!feed)return;
  feed.innerHTML="";
- posts.slice().reverse().forEach(p=>{
-   const d=document.createElement("div");
-   d.className="post";
+ posts.forEach(p=>{
+  const d=document.createElement("div");d.className="post";d.dataset.id=p.id;
+  const row=document.createElement("div");row.className="posted-row";
 
-   if(Array.isArray(p.lines)){
-     const placeFound=places.find(x=>x[0]===p.place);
-     const nounFound=nouns.find(x=>x[0]===p.noun);
-     const verbFound=verbs.find(x=>x[0]===p.verb);
-     const placeCn=placeFound?placeFound[1]:"";
-     const nounCn=nounFound?nounFound[1]:"";
-     const verbCn=verbFound?verbFound[1]:"";
+  const postAdjs=(Array.isArray(p.adjs)&&p.adjs.length?p.adjs:[p.adj]).filter(Boolean).slice(0,2);
+  const answers=postAdjs.map((adj,i)=>{
+   const item=adjectives.find(x=>x[0]===adj);
+   const cn=item?item[1]:"";
+   const needsNa=!!(item&&item[2]);
+   const noun=(adj==="おおきい"||adj==="ちいさい")?"まち":"ところ";
+   return `<span class="post-answer-line">
+     ${i===0?`<span class="posted-place-plain">${esc(p.place)}</span><span>は</span>`:""}
+     <span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>
+     ${needsNa?'<span class="na-card">な</span>':""}<span>${noun}です。</span>
+   </span>`;
+  }).join("");
 
-     const card=(jp,cn)=>`<span class="posted-card"><span>${jp}</span><span class="posted-cn">${cn}</span></span>`;
-     const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
-     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="afternoon"?"ごご、":"しゅうまつ、"}</span>`;
+  const thingLine=p.thing?`<span class="post-third-line">
+    <span class="posted-place-plain">${esc(p.place)}</span><span>に</span>
+    <span class="posted-card"><span>${esc(p.thing)}</span><span class="posted-cn">${esc((things.find(x=>x[0]===p.thing)||[])[1]||"")}</span></span>
+    <span>が あります。</span>
+    ${p.thingName&&p.thingName!=="×"?`<span class="posted-place-plain">${esc(p.thingName)}</span><span>です。</span>`:""}
+  </span>`:"";
 
-     if(p.place==="やまに のぼります"){
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("やま","山")}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else if(p.place==="でかけます"){
-       const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("でかけます。","外出")}${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else if(p.place==="うち"){
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("うち",placeCn)}<span>へ かえります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("うち",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else if(p.place==="りょう"){
-       d.innerHTML=`<div class="posted-row">${name}${modePrefix}${card("りょう",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-     }else if(p.place==="りょこう"){
-       const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("りょこう","旅行")}<span>へ いきます。</span>${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else{
-       const row1=`<div class="posted-row">${name}${modePrefix}${card(p.place,placeCn)}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card(p.place,placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }
-   }else{
-     d.textContent=(p.author?`（${p.author}）`:"")+(p.text||"");
-   }
+  let finalLine="";
+  const nas=(Array.isArray(p.nameAdjs)?p.nameAdjs:[]).filter(Boolean).slice(0,2);
+  if(p.thingName && p.thingName!=="×" && nas.length){
+    let ordered=[...nas], useGa=false;
+    if(nas.length===2){
+      if(nas.includes("ちいさい")){
+        const other=nas.find(x=>x!=="ちいさい");
+        if(other && other!=="おおきい" && other!=="しずか"){
+          ordered=["ちいさい",other]; useGa=true;
+        }
+      }
+      if(nas[0]==="おおきい" && nas[1]==="しずか"){ordered=[...nas];useGa=true;}
+      if(nas[0]==="しずか" && nas[1]==="ひとが おおい"){ordered=[...nas];useGa=true;}
+    }
+    const parts=ordered.map((adj,i)=>{
+      const item=nameAdjectives.find(x=>x[0]===adj);
+      const cn=item?item[1]:"";
+      const ending=(ordered.length===2&&i===0)?(useGa?"ですが、":"です。そして、"):"です。";
+      return `<span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>${adj==="いい"?'<span>ところ</span>':""}<span>${ending}</span>`;
+    }).join("");
+    finalLine=`<span class="post-third-line post-final-line"><span class="posted-place-plain">${esc(p.thingName)}</span><span>は</span>${parts}</span>`;
+  }
 
-   {
-     const verbText=p.verb||"";
-     if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
-     const wrap=document.createElement("div");
-     wrap.className="me-too-wrap";
-     const count=document.createElement("span");
-     count.className="me-too-count";
-     count.textContent=p.meTooCount>0?`✋×${p.meTooCount}`:"";
-     const btn=document.createElement("button");
-     const done=userName!=="あさの" && hasMeToo(p.id);
-     btn.className="me-too-btn"+(done?" liked":"");
-     btn.disabled=done;
-     btn.textContent=verbText?`✋ 私も ${verbText}`:"✋ 私も";
-     btn.onclick=()=>toggleMeToo(p.id);
-     wrap.appendChild(count);
-     wrap.appendChild(btn);
-     d.appendChild(wrap);
-   }
-   enableAdminLongPress(d,p.id);
-   feed.appendChild(d);
+  const firstAdj=postAdjs[0];
+  let firstDescription="";
+  if(firstAdj){
+    const item=adjectives.find(x=>x[0]===firstAdj);
+    const cn=item?item[1]:"";
+    const needsNa=!!(item&&item[2]);
+    const noun=(firstAdj==="おおきい"||firstAdj==="ちいさい")?"まち":"ところ";
+    firstDescription=`<span class="first-description">
+      <span class="posted-place-plain">${esc(p.place)}</span><span>は</span>
+      <span class="posted-card"><span>${esc(firstAdj)}</span><span class="posted-cn">${esc(cn)}</span></span>
+      ${needsNa?'<span class="na-card">な</span>':""}<span>${noun}です。</span>
+    </span>`;
+  }
+
+  row.innerHTML=`<span class="posted-name">（${esc(p.author)}）</span>
+    <span class="post-origin-line">
+      <span>出身 は</span><span class="posted-place-plain">${esc(p.place)}</span><span>です。</span>
+      ${firstDescription}
+    </span>
+    ${thingLine}${finalLine}`;
+  d.appendChild(row);
+
+  const wrap=document.createElement("div");wrap.className="me-too-wrap";
+  const count=document.createElement("span");count.className="me-too-count";
+  count.textContent=Number(p.meTooCount||0)>0?`♥×${Number(p.meTooCount||0)}`:"";
+  const btn=document.createElement("button");
+  const done=userName!=="あさの"&&hasMeToo(p.id);
+  btn.className="me-too-btn"+(done?" liked":"");btn.disabled=done;
+  btn.textContent="♥ いい ところ ですね。";
+  btn.onclick=()=>toggleMeToo(p.id);
+  wrap.append(btn);
+  d.appendChild(count);
+  d.appendChild(wrap);
+
+  let timer=null;
+  const start=()=>{if(userName!=="あさの")return;timer=setTimeout(()=>deletePost(p.id),750)};
+  const cancel=()=>{if(timer){clearTimeout(timer);timer=null}};
+  d.addEventListener("pointerdown",start);d.addEventListener("pointerup",cancel);
+  d.addEventListener("pointerleave",cancel);d.addEventListener("pointercancel",cancel);
+  feed.appendChild(d);
  });
 }
-document.getElementById("nameInput").value=userName;
-document.getElementById("nameModal").style.display="flex";
-document.getElementById("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")saveName()});
-renderPlaces();updatePatterns();updatePreview();renderSecondStage();renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
-refreshPostButton();
-
-if(document.fonts&&document.fonts.ready){document.fonts.ready.then(layoutMeTooButtons);}
-
-function forceMeTooCountTopRight(){
- requestAnimationFrame(()=>{
-  document.querySelectorAll(".post").forEach(post=>{
-   const firstRow=post.querySelector(".posted-row");
-   if(!firstRow)return;
-
-   // wrap内・行内・post直下のどこにいても拾う
-   const count=post.querySelector(".me-too-count");
-   if(!count || !count.textContent.trim())return;
-
-   // 必ず投稿カード直下へ移動
-   if(count.parentElement!==post) post.appendChild(count);
-
-   const pr=post.getBoundingClientRect();
-   const fr=firstRow.getBoundingClientRect();
-   const ch=count.getBoundingClientRect().height || 16;
-
-   count.style.setProperty("position","absolute","important");
-   count.style.setProperty("right","6px","important");
-   count.style.setProperty("left","auto","important");
-   count.style.setProperty("top",(fr.top-pr.top+(fr.height-ch)/2)+"px","important");
-   count.style.setProperty("bottom","auto","important");
-   count.style.setProperty("margin","0","important");
-   count.style.setProperty("transform","none","important");
-   count.style.setProperty("display","block","important");
-   count.style.setProperty("width","max-content","important");
-   count.style.setProperty("white-space","nowrap","important");
-   count.style.setProperty("z-index","99","important");
-  });
- });
+function deletePost(id){
+ if(userName!=="あさの")return;
+ if(!confirm("この投稿を削除しますか？"))return;
+ posts=posts.filter(p=>String(p.id)!==String(id));
+ localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
+ syncDeleteFromDB(id);renderPosts();
 }
 
-window.addEventListener("load",forceMeTooCountTopRight);
-window.addEventListener("resize",forceMeTooCountTopRight);
-window.addEventListener("orientationchange",forceMeTooCountTopRight);
+/* 名前モーダル：前サイトと同じく毎回表示 */
+function ensureNameModal(){
+ const modal=document.getElementById("nameModal");
+ const input=document.getElementById("nameInput");
+ const ok=document.getElementById("nameOk");
+ userName=localStorage.getItem(NAME_KEY)||"";
+ input.value=userName;
+ modal.style.display="flex";
+ setTimeout(()=>input.focus(),50);
+ const save=()=>{
+   const n=input.value.trim();
+   if(!n)return;
+   userName=n;
+   localStorage.setItem(NAME_KEY,userName);
+   modal.style.display="none";
+   updateComposer();
+   renderPosts();
+ };
+ ok.onclick=save;
+ input.onkeydown=e=>{if(e.key==="Enter")save();};
+}
 
-/* ===== v110 Firebase Realtime Database 同期 ===== */
+/* Firebase + オフラインキュー */
 const firebaseConfig={
  apiKey:"AIzaSyCaLCM4TXURROKyDKD_Mga8ZnWr1-Wk9Wg",
  authDomain:"database-s-9e4b3.firebaseapp.com",
  databaseURL:"https://database-s-9e4b3-default-rtdb.asia-southeast1.firebasedatabase.app",
- projectId:"database-s-9e4b3",
- storageBucket:"database-s-9e4b3.firebasestorage.app",
- messagingSenderId:"13648984683",
- appId:"1:13648984683:web:c782d2963c253df69b8f2e",
- measurementId:"G-FV2NMNQW4C"
+ projectId:"database-s-9e4b3",storageBucket:"database-s-9e4b3.firebasestorage.app",
+ messagingSenderId:"13648984683",appId:"1:13648984683:web:c782d2963c253df69b8f2e"
 };
-let db=null, dbRef=null, dbSet=null, dbRemove=null, dbOnValue=null, dbRunTransaction=null;
-let firebaseReady=false;
-const DB_POSTS_PATH="weekendSentence/posts";
-
-async function initFirebaseSync(){
- try{
-  const appMod=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js");
-  const dbMod=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js");
-  const app=appMod.initializeApp(firebaseConfig);
-  db=dbMod.getDatabase(app);
-  dbRef=dbMod.ref;
-  dbSet=dbMod.set;
-  dbRemove=dbMod.remove;
-  dbOnValue=dbMod.onValue;
-  dbRunTransaction=dbMod.runTransaction;
-  firebaseReady=true;
-
-  let firstDbLoad=true;
-  dbOnValue(dbRef(db,DB_POSTS_PATH),async(snap)=>{
-   const val=snap.val()||{};
-   const remote=Object.entries(val).map(([id,p])=>({
-    ...p,
-    id:p.id ?? id,
-    meTooCount:Number(p.meTooCount||0)
-   }));
-
-   if(firstDbLoad){
-    firstDbLoad=false;
-    const remoteIds=new Set(remote.map(p=>String(p.id)));
-    const localOnly=posts.filter(p=>!remoteIds.has(String(p.id)));
-    for(const p of localOnly){
-     try{
-      await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(p.id)),{
-       ...p, createdAt:p.createdAt||Number(p.id)||Date.now()
-      });
-     }catch(e){console.error("local migration error",e)}
-    }
-    if(localOnly.length)return;
-   }
-
-   posts=remote.sort((a,b)=>Number(a.createdAt||a.id||0)-Number(b.createdAt||b.id||0));
-   localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
-   renderPosts();
-   layoutMeTooButtons();
-   forceMeTooCountTopRight();
-  });
- }catch(err){
-  console.error("Firebase sync error:",err);
- }
-}
-initFirebaseSync();
-
-async function syncPostToDB(post){
- if(!firebaseReady||!post)return;
- try{
-  await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(post.id)),{
-   ...post,
-   createdAt:post.createdAt||Date.now()
-  });
- }catch(e){console.error("post sync error",e)}
-}
-
-async function syncDeleteFromDB(id){
- if(!firebaseReady)return;
- try{await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(id)));}
- catch(e){console.error("delete sync error",e)}
-}
-
-async function incrementMeTooDB(id){
- if(!firebaseReady)return false;
- try{
-  const r=dbRef(db,DB_POSTS_PATH+"/"+String(id)+"/meTooCount");
-  await dbRunTransaction(r,v=>Number(v||0)+1);
-  return true;
- }catch(e){
-  console.error("reaction sync error",e);
-  return false;
- }
-}
-
-/* ===== v112 オフライン操作キュー ===== */
-const OFFLINE_QUEUE_KEY="weekend_offline_queue_v1";
-function readOfflineQueue(){
- try{return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY))||[]}
- catch{return []}
-}
-function writeOfflineQueue(q){
- localStorage.setItem(OFFLINE_QUEUE_KEY,JSON.stringify(q));
-}
-function queueOfflineOp(op){
- const q=readOfflineQueue();
- q.push({...op,qid:Date.now()+"_"+Math.random().toString(36).slice(2)});
- writeOfflineQueue(q);
-}
-async function flushOfflineQueue(){
- if(!firebaseReady || !navigator.onLine)return;
- const q=readOfflineQueue();
- if(!q.length)return;
+const DB_POSTS_PATH="shusshinSentence/posts";
+let db,dbRef,dbSet,dbRemove,dbRunTransaction,firebaseReady=false;
+function readQ(){try{return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY))||[]}catch{return []}}
+function writeQ(q){localStorage.setItem(OFFLINE_QUEUE_KEY,JSON.stringify(q))}
+function queue(op){const q=readQ();q.push({...op,qid:Date.now()+"_"+Math.random()});writeQ(q)}
+async function flushQ(){
+ if(!firebaseReady||!navigator.onLine)return;
  const remain=[];
- for(const op of q){
+ for(const op of readQ()){
   try{
-   if(op.type==="post"){
-    await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(op.post.id)),{
-     ...op.post,createdAt:op.post.createdAt||Number(op.post.id)||Date.now()
-    });
-   }else if(op.type==="delete"){
-    await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(op.id)));
-   }else if(op.type==="metoo"){
-    await dbRunTransaction(
-     dbRef(db,DB_POSTS_PATH+"/"+String(op.id)+"/meTooCount"),
-     v=>Number(v||0)+Number(op.amount||1)
-    );
-   }
-  }catch(e){
-   remain.push(op);
-  }
+   if(op.type==="post")await dbSet(dbRef(db,DB_POSTS_PATH+"/"+op.post.id),op.post);
+   if(op.type==="delete")await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+op.id));
+   if(op.type==="metoo")await dbRunTransaction(dbRef(db,DB_POSTS_PATH+"/"+op.id+"/meTooCount"),v=>Number(v||0)+1);
+  }catch(e){remain.push(op)}
  }
- writeOfflineQueue(remain);
+ writeQ(remain);
+}
+async function syncPostToDB(p){
+ if(!firebaseReady||!navigator.onLine){queue({type:"post",post:p});return}
+ try{await dbSet(dbRef(db,DB_POSTS_PATH+"/"+p.id),p)}catch{queue({type:"post",post:p})}
+}
+async function syncDeleteFromDB(id){
+ if(!firebaseReady||!navigator.onLine){queue({type:"delete",id});return}
+ try{await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+id))}catch{queue({type:"delete",id})}
+}
+async function incrementMeTooDB(id){
+ if(!firebaseReady||!navigator.onLine){queue({type:"metoo",id});return}
+ try{await dbRunTransaction(dbRef(db,DB_POSTS_PATH+"/"+id+"/meTooCount"),v=>Number(v||0)+1)}
+ catch{queue({type:"metoo",id})}
+}
+async function initFirebase(){
+ try{
+  const A=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js");
+  const D=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js");
+  db=D.getDatabase(A.initializeApp(firebaseConfig));dbRef=D.ref;dbSet=D.set;dbRemove=D.remove;dbRunTransaction=D.runTransaction;
+  firebaseReady=true;await flushQ();
+  D.onValue(dbRef(db,DB_POSTS_PATH),snap=>{
+   const val=snap.val()||{};
+   posts=Object.entries(val).map(([id,p])=>({...p,id:p.id??id,meTooCount:Number(p.meTooCount||0)}))
+    .sort((a,b)=>Number(a.createdAt||a.id)-Number(b.createdAt||b.id));
+   localStorage.setItem(POSTS_KEY,JSON.stringify(posts));renderPosts();
+  });
+ }catch(e){console.error(e)}
+}
+window.addEventListener("online",flushQ);
+window.addEventListener("resize",()=>requestAnimationFrame(alignSecondAnswer));
+window.addEventListener("orientationchange",()=>setTimeout(alignSecondAnswer,100));
+setInterval(()=>{if(firebaseReady&&navigator.onLine&&readQ().length)flushQ()},5000);
+
+ensureNameModal();renderAdj();renderNameAdj();renderThings();updateComposer();renderPosts();initFirebase();
+
+const _thingNameInput=document.getElementById("thingNameInput");
+const _dontKnowNameBtn=document.getElementById("dontKnowNameBtn");
+if(_thingNameInput && _dontKnowNameBtn){
+ _dontKnowNameBtn.addEventListener("click",(e)=>{
+  e.preventDefault();
+  _thingNameInput.value="×";
+  _thingNameInput.classList.add("unknown-name");
+  _thingNameInput.dispatchEvent(new Event("input",{bubbles:true}));
+ });
+ _thingNameInput.addEventListener("pointerdown",()=>{
+  if(_thingNameInput.value==="×"){
+   _thingNameInput.value="";
+   _thingNameInput.classList.remove("unknown-name");
+   _thingNameInput.dispatchEvent(new Event("input",{bubbles:true}));
+   setTimeout(()=>_thingNameInput.focus(),0);
+  }
+ });
+ _thingNameInput.addEventListener("input",()=>{
+  if(_thingNameInput.value!=="×") _thingNameInput.classList.remove("unknown-name");
+ });
 }
 
-/* 既存DB関数をオフライン対応版へ上書き */
-syncPostToDB=async function(post){
- if(!post)return;
- if(!firebaseReady || !navigator.onLine){
-  queueOfflineOp({type:"post",post});
-  return;
- }
- try{
-  await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(post.id)),{
-   ...post,createdAt:post.createdAt||Number(post.id)||Date.now()
-  });
- }catch(e){
-  queueOfflineOp({type:"post",post});
- }
-};
-
-syncDeleteFromDB=async function(id){
- if(!firebaseReady || !navigator.onLine){
-  queueOfflineOp({type:"delete",id});
-  return;
- }
- try{
-  await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(id)));
- }catch(e){
-  queueOfflineOp({type:"delete",id});
- }
-};
-
-incrementMeTooDB=async function(id){
- if(!firebaseReady || !navigator.onLine){
-  queueOfflineOp({type:"metoo",id,amount:1});
-  return false;
- }
- try{
-  await dbRunTransaction(
-   dbRef(db,DB_POSTS_PATH+"/"+String(id)+"/meTooCount"),
-   v=>Number(v||0)+1
-  );
-  return true;
- }catch(e){
-  queueOfflineOp({type:"metoo",id,amount:1});
-  return false;
- }
-};
-
-/* ネット復帰時は、ページを開いたままでも自動送信 */
-window.addEventListener("online",()=>{
- setTimeout(flushOfflineQueue,300);
-});
-
-/* Firebase接続成功後にも未送信キューを送る */
-const _originalInitFirebaseSync=initFirebaseSync;
-initFirebaseSync=async function(){
- await _originalInitFirebaseSync();
- if(firebaseReady)await flushOfflineQueue();
-};
-
-setTimeout(flushOfflineQueue,1200);
-setInterval(()=>{
- if(firebaseReady && navigator.onLine && readOfflineQueue().length)flushOfflineQueue();
-},5000);
 </script>
 </body>
 </html>
 
 <style>
 .me-too-wrap{display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:4px}
-.me-too-count{font-size:13px;color:#3f7e2e;font-weight:700;white-space:nowrap}
-.me-too-btn{border:1px solid #9fbe91;background:#f5fbf2;color:#3f7e2e;border-radius:9px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer}
-.me-too-btn:hover{background:#edf7e8}
-.me-too-btn.liked{background:#d8ebcf;color:#315f24;border-color:#8eb47c}
+.me-too-count{font-size:13px;color:#286b8a;font-weight:700;white-space:nowrap}
+.me-too-btn{border:1px solid #9bcbe0;background:#f5fbf2;color:#286b8a;border-radius:9px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer}
+.me-too-btn:hover{background:#eef9fd}
+.me-too-btn.liked{background:#d8ebcf;color:#234f63;border-color:#8eb47c}
 .me-too-btn:disabled{cursor:default;opacity:.58}
 </style>
