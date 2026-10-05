@@ -2871,7 +2871,7 @@ function updateComposer(){
  const a2Cell=document.getElementById("shusshinSubjectAnswer").parentElement;
  a2Cell.style.visibility=selectedAdjs.length?"visible":"hidden";
  document.getElementById("shusshinSubjectAnswer").textContent=v;
- const showThird=!!(v&&selectedAdjs.length);
+ const showThird=!!(v&&(selectedAdjs.length || selectedThing));
  const thingTable=document.getElementById("thingTable");
  if(thingTable) thingTable.style.display=showThird?"block":"none";
  document.getElementById("q3Cell").style.display=showThird?"block":"none";
