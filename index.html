@@ -4285,6 +4285,21 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  padding-left:0 !important;
 }
 
+
+/* v167: 投稿本文だけ、さらに少し左へ */
+.post .post-origin-line,
+.post .post-answer-line,
+.post .post-third-line,
+.post .post-final-line{
+ margin-left:-5px !important;
+}
+
+/* ですが文の2行目も本文と同じ左端 */
+.post .post-origin-line > .post-q2-line-break
++ .first-description.ga-pair > .town-post-sentence:first-child{
+ margin-left:0 !important;
+}
+
 </style>
 </head>
 <body>
