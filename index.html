@@ -3052,6 +3052,18 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  transform:none !important;
 }
 
+
+/* v121 */
+.post > .me-too-count,
+.post.reaction-fit-last-line > .me-too-count{
+ position:static !important; display:block !important; width:100% !important;
+ height:16px !important; min-height:16px !important; box-sizing:border-box !important;
+ text-align:right !important; margin:2px 0 2px !important; padding:0 7px 0 0 !important;
+ line-height:16px !important; white-space:nowrap !important;
+ inset:auto !important; transform:none !important;
+}
+.post > .me-too-wrap,.post.reaction-fit-last-line > .me-too-wrap{transition:none !important;}
+
 </style>
 </head>
 <body>
@@ -3862,7 +3874,10 @@ if(_thingNameInput && _dontKnowNameBtn){
  }
  const feed=document.getElementById("feed");
  if(feed){
-   new MutationObserver(run).observe(feed,{childList:true,subtree:true,characterData:true});
+   new MutationObserver(mutations=>{
+     if(mutations.some(m=>m.type==="childList" &&
+       [...m.addedNodes,...m.removedNodes].some(n=>n.nodeType===1))) run();
+   }).observe(feed,{childList:true,subtree:true,characterData:false});
    if("ResizeObserver" in window)new ResizeObserver(run).observe(feed);
  }
  window.addEventListener("resize",run);
