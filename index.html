@@ -2843,6 +2843,25 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  box-sizing:border-box !important;
 }
 
+
+/* v114: 投稿文が自然折返しした行も、通常の投稿行と同じ縦間隔にする */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ line-height:1.65 !important;
+}
+
+/* flex内で折り返された場合も同じ行高を維持 */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ align-items:baseline !important;
+ align-content:flex-start !important;
+ row-gap:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3026,7 +3045,10 @@ function renderThings(){
   const b=document.createElement("button");
   b.type="button";
   b.className="choice"+(selectedThing===jp?" selected":"");
-  b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
+  const shownJp=(jp==="おおきい たてもの"||jp==="きれいな たてもの")
+    ? jp.replace(" たてもの","<br>たてもの")
+    : jp;
+  b.innerHTML=`<span class="jp">${shownJp}</span><span class="cn">${cn}</span>`;
   b.onclick=()=>{
    selectedThing=jp;
    if(selectedThing==="おおきい たてもの"){
@@ -3638,7 +3660,6 @@ if(_thingNameInput && _dontKnowNameBtn){
        post.style.setProperty("--reaction-count-top",Math.max(0,countTop)+"px");
      }else{
        /* 前の行がない場合は本文の上に重ねず、通常位置を維持 */
-       
        post.style.setProperty("--reaction-count-top",(last.top-pr.top-Math.max(14,count.getBoundingClientRect().height)-3)+"px");
      }
      post.classList.add("reaction-fit-last-line");
@@ -3646,7 +3667,6 @@ if(_thingNameInput && _dontKnowNameBtn){
  }
  let id=0;
  function run(){
-   
    cancelAnimationFrame(id);
    id=requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".post").forEach(place)));
  }
