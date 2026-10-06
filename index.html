@@ -3622,6 +3622,40 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  column-gap:0 !important;
 }
 
+
+/* v141: 「出身は」は文字列自体もCSS上も完全に連続 */
+.post .shusshin-wa{
+ white-space:nowrap !important;
+ margin:0 !important;
+ padding:5px 0 0 0 !important;
+ letter-spacing:0 !important;
+}
+
+/* 投稿1行目：カード箱の上端を行の上端へ。
+   普通の文字側をカード内文字と同じ高さまで下げる。 */
+.posted-row > .post-origin-line{
+ padding-top:5px !important;
+ align-items:flex-start !important;
+}
+.posted-row > .post-origin-line > span:not(.posted-card):not(.first-description),
+.post .town-post-sentence > span:not(.posted-card):not(.na-card){
+ padding-top:5px !important;
+ box-sizing:border-box !important;
+}
+.posted-row > .post-origin-line .posted-card,
+.posted-row > .post-origin-line .na-card{
+ top:0 !important;
+ margin-top:0 !important;
+ align-self:flex-start !important;
+}
+
+/* first-description内で普通文字に付いた余計な外側余白は消す */
+.post .first-description,
+.post .town-post-sentence{
+ margin-top:0 !important;
+ padding-top:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4183,7 +4217,7 @@ function renderPosts(){
 
   row.innerHTML=`<span class="posted-name">（${esc(p.author)}）</span>
     <span class="post-origin-line">
-      <span>出身 は</span><span class="posted-place-plain">${esc(p.place)}</span><span>です。</span>
+      <span class="shusshin-wa">出身は</span><span class="posted-place-plain">${esc(p.place)}</span><span>です。</span>
       ${firstDescription}
     </span>
     ${thingLine}${finalLine}`;
@@ -4571,40 +4605,44 @@ if(_thingNameInput && _dontKnowNameBtn){
 
 
 <script>
-/* v139: 町特徴の第2文は、次行に置けば1行で収まる時は次行から開始 */
+/* v141: 第2文が1行に収まるなら、必ず第2行から開始 */
 (()=>{
- function adjustSecondSentence(container, selector){
-   if(!container)return;
-   const second=container.querySelector(`${selector}:nth-child(2)`);
-   if(!second)return;
-   second.style.flexBasis="auto";
+ function setRule(host, second){
+   if(!host || !second)return;
+   second.style.removeProperty("flex-basis");
+   second.style.removeProperty("width");
 
    requestAnimationFrame(()=>{
-     const available=container.clientWidth;
-     const width=second.getBoundingClientRect().width;
-     if(width>0 && width<=available){
-       second.style.flexBasis="100%";
-       second.style.width="max-content";
+     /* 文を改行なしで置いた時の必要幅 */
+     const needed=second.scrollWidth;
+     const available=host.clientWidth;
+     if(needed>0 && needed<=available){
+       second.style.setProperty("flex-basis","100%","important");
+       second.style.setProperty("width","max-content","important");
      }
    });
  }
  function adjustAll(){
    const preview=document.getElementById("shusshinAdjPreview");
    if(preview){
-     const host=preview.parentElement;
-     adjustSecondSentence(host,"#shusshinAdjPreview .adj-answer-line");
+     const second=preview.querySelector(".adj-answer-line:nth-child(2)");
+     setRule(preview.parentElement,second);
    }
    document.querySelectorAll(".post .first-description").forEach(fd=>{
-     const host=fd.closest(".post-origin-line");
-     adjustSecondSentence(host,".first-description .town-post-sentence");
+     const second=fd.querySelector(".town-post-sentence:nth-child(2)");
+     setRule(fd.closest(".post-origin-line"),second);
    });
  }
- const root=document.getElementById("composer")||document.body;
- new MutationObserver(adjustAll).observe(root,{childList:true,subtree:true});
+ const composer=document.querySelector(".composer")||document.body;
+ new MutationObserver(ms=>{
+   if(ms.some(m=>m.type==="childList"))adjustAll();
+ }).observe(composer,{childList:true,subtree:true});
  const feed=document.getElementById("feed");
- if(feed)new MutationObserver(adjustAll).observe(feed,{childList:true,subtree:true});
+ if(feed)new MutationObserver(ms=>{
+   if(ms.some(m=>m.type==="childList"))adjustAll();
+ }).observe(feed,{childList:true,subtree:true});
  window.addEventListener("resize",adjustAll);
- adjustAll();
+ requestAnimationFrame(adjustAll);
 })();
 </script>
 
