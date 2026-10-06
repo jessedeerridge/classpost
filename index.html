@@ -3646,6 +3646,7 @@ if(_thingNameInput && _dontKnowNameBtn){
  }
  let id=0;
  function run(){
+   
    cancelAnimationFrame(id);
    id=requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".post").forEach(place)));
  }
