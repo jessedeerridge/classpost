@@ -3172,6 +3172,33 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  padding-bottom:4px !important;
 }
 
+
+/* v125: 最後の本文行に余裕がある時だけ、いいねボタンをその行の右端へ */
+.post.like-fits-last-line > .me-too-wrap{
+ position:absolute !important;
+ right:7px !important;
+ top:var(--like-top) !important;
+ width:auto !important;
+ max-width:none !important;
+ margin:0 !important;
+ padding:0 !important;
+ z-index:6 !important;
+}
+
+/* ♥×N はボタンの一行上・右端 */
+.post.like-fits-last-line > .me-too-count{
+ position:absolute !important;
+ right:7px !important;
+ top:calc(var(--like-top) - 17px) !important;
+ width:auto !important;
+ height:15px !important;
+ min-height:15px !important;
+ line-height:15px !important;
+ margin:0 !important;
+ padding:0 !important;
+ z-index:7 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3955,6 +3982,92 @@ if(_thingNameInput && _dontKnowNameBtn){
   max-width:100% !important;
 }
 </style>
+
+
+<script>
+/* v125: 投稿生成後/画面幅変更時だけ測定。いいねクリックでは再配置しない */
+(()=>{
+ const GAP=10, RIGHT=7;
+
+ function textRects(root){
+   const out=[];
+   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+   let n;
+   while((n=walker.nextNode())){
+     if(!n.nodeValue || !n.nodeValue.trim())continue;
+     const el=n.parentElement;
+     if(!el || el.closest(".posted-cn"))continue;
+     const cs=getComputedStyle(el);
+     if(cs.display==="none" || cs.visibility==="hidden")continue;
+     const r=document.createRange();
+     r.selectNodeContents(n);
+     [...r.getClientRects()].forEach(x=>{
+       if(x.width>0 && x.height>0)out.push(x);
+     });
+   }
+   root.querySelectorAll(".posted-card").forEach(el=>{
+     const r=el.getBoundingClientRect();
+     if(r.width>0 && r.height>0)out.push(r);
+   });
+   return out;
+ }
+
+ function place(post){
+   post.classList.remove("like-fits-last-line");
+   post.style.removeProperty("--like-top");
+
+   const row=post.querySelector(".posted-row");
+   const wrap=post.querySelector(":scope > .me-too-wrap");
+   const btn=wrap?.querySelector(".me-too-btn");
+   if(!row || !wrap || !btn)return;
+
+   const rects=textRects(row);
+   if(!rects.length)return;
+
+   const maxBottom=Math.max(...rects.map(r=>r.bottom));
+   const lastRects=rects.filter(r=>Math.abs(r.bottom-maxBottom)<5);
+   if(!lastRects.length)return;
+
+   const lastRight=Math.max(...lastRects.map(r=>r.right));
+   const lastTop=Math.min(...lastRects.map(r=>r.top));
+   const lastBottom=Math.max(...lastRects.map(r=>r.bottom));
+
+   const pr=post.getBoundingClientRect();
+   const pcs=getComputedStyle(post);
+   const usableRight=pr.right
+     -parseFloat(pcs.borderRightWidth||0)
+     -parseFloat(pcs.paddingRight||0)
+     -RIGHT;
+   const bw=btn.getBoundingClientRect().width;
+
+   if(usableRight-lastRight >= bw+GAP){
+     const bh=btn.getBoundingClientRect().height;
+     const top=((lastTop+lastBottom)/2)-(bh/2)-pr.top;
+     post.style.setProperty("--like-top",Math.max(0,top)+"px");
+     post.classList.add("like-fits-last-line");
+   }
+ }
+
+ function placeAll(){
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{
+     document.querySelectorAll(".post").forEach(place);
+   }));
+ }
+
+ const feed=document.getElementById("feed");
+ if(feed){
+   /* 投稿そのものが追加/削除された時だけ */
+   new MutationObserver(ms=>{
+     if(ms.some(m=>[...m.addedNodes,...m.removedNodes].some(
+       n=>n.nodeType===1 && (n.classList?.contains("post") || n.querySelector?.(".post"))
+     ))) placeAll();
+   }).observe(feed,{childList:true,subtree:false});
+ }
+ window.addEventListener("resize",placeAll);
+ document.fonts?.ready?.then(placeAll);
+ placeAll();
+})();
+</script>
 
 </body>
 </html>
