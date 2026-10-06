@@ -3542,95 +3542,48 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 
-/* v137: 投稿本文の縦リズムを根本修正
-   カードの訳余白をカード自身の高さに含めない。 */
+/* v138: 全体間隔はv136へ戻し、折返しだけ最小修正 */
 .posted-row{
- --post-text-line:1.45em;
- --post-translation-space:16px;
+ --post-line-h:1.55em;
 }
 
-/* すべての表示行に同じ訳スペースを確保する */
+/* 行全体に追加余白を入れない */
 .posted-row > .post-origin-line,
 .posted-row > .post-answer-line,
 .posted-row > .post-third-line,
 .posted-row > .post-final-line{
- display:flex !important;
- flex-wrap:wrap !important;
- align-items:flex-start !important;
- align-content:flex-start !important;
- column-gap:0 !important;
- row-gap:var(--post-translation-space) !important;
- line-height:var(--post-text-line) !important;
+ line-height:var(--post-line-h) !important;
+ row-gap:0 !important;
  margin:0 !important;
- padding:0 0 var(--post-translation-space) 0 !important;
- min-height:0 !important;
+ padding:0 !important;
 }
 
-/* 文の塊は高さを増やさない */
-.post .first-description{
- display:contents !important;
+/* カードの日本語部分は文字と同じ上端 */
+.post .posted-card,
+.post .na-card{
+ top:0 !important;
+ transform:none !important;
+ vertical-align:top !important;
+ align-self:flex-start !important;
 }
+
+/* 「な」だけ下余白を持たせない */
+.post .na-card{
+ margin:0 !important;
+}
+
+/* 通常カードの訳用余白は元の範囲だけ確保 */
+.post .posted-card{
+ margin:0 0 14px 0 !important;
+}
+
+/* 折返しの文ブロック自体には余計な間隔を足さない */
 .post .town-post-sentence,
 .post .connector-with-adj{
- display:inline-flex !important;
- flex:0 0 auto !important;
- flex-wrap:nowrap !important;
- align-items:flex-start !important;
- align-self:flex-start !important;
- line-height:var(--post-text-line) !important;
  margin:0 !important;
  padding:0 !important;
  gap:0 !important;
- white-space:nowrap !important;
-}
-
-/* 日本語カードと「な」カードは同じ基準線・同じ本体高さ */
-.post .posted-card,
-.post .na-card{
- display:inline-flex !important;
- flex:0 0 auto !important;
- align-items:center !important;
- justify-content:center !important;
- align-self:flex-start !important;
- position:relative !important;
- top:0 !important;
- bottom:auto !important;
- transform:none !important;
- vertical-align:top !important;
- box-sizing:border-box !important;
- height:auto !important;
- min-height:0 !important;
- padding:5px 7px !important;
- margin:0 !important;
- line-height:1.15 !important;
-}
-
-/* 中国語訳は完全に行外へ。カードやflex行の高さを変えない */
-.post .posted-card > .posted-cn{
- position:absolute !important;
- display:block !important;
- left:50% !important;
- top:calc(100% + 2px) !important;
- right:auto !important;
- bottom:auto !important;
- transform:translateX(-50%) !important;
- margin:0 !important;
- padding:0 !important;
- line-height:1.05 !important;
- white-space:nowrap !important;
-}
-
-/* 「な」は日本語カードと上端・高さを合わせる */
-.post .na-card{
- padding-top:5px !important;
- padding-bottom:5px !important;
-}
-
-/* 連続する投稿行の間隔も必ず同じ */
-.posted-row > .post-origin-line + .post-answer-line,
-.posted-row > .post-answer-line + .post-third-line,
-.posted-row > .post-third-line + .post-final-line{
- margin-top:0 !important;
+ line-height:var(--post-line-h) !important;
 }
 
 </style>
