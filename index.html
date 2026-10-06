@@ -3455,6 +3455,92 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  line-height:1.05 !important;
 }
 
+
+/* v136: 投稿本文の折返し・改行を同一の行ボックス規則に統一 */
+.posted-row{
+ --post-line-h:1.55em;
+ --post-card-bottom:15px;
+}
+
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ display:flex !important;
+ flex-wrap:wrap !important;
+ align-items:flex-start !important;
+ align-content:flex-start !important;
+ column-gap:0 !important;
+ row-gap:0 !important;
+ line-height:var(--post-line-h) !important;
+ margin:0 !important;
+ padding:0 !important;
+ min-height:0 !important;
+}
+
+/* 折返された各文も親と同じ行高。独自の縦位置を持たせない */
+.post .first-description{
+ display:contents !important;
+}
+.post .town-post-sentence,
+.post .connector-with-adj{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ flex-wrap:nowrap !important;
+ align-items:flex-start !important;
+ align-self:flex-start !important;
+ line-height:var(--post-line-h) !important;
+ margin:0 !important;
+ padding:0 !important;
+ gap:0 !important;
+ white-space:nowrap !important;
+}
+
+/* カード本体の上端を普通の文字と完全に同じ位置に固定 */
+.post .posted-card,
+.post .na-card{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ align-items:center !important;
+ justify-content:center !important;
+ align-self:flex-start !important;
+ position:relative !important;
+ top:0 !important;
+ bottom:auto !important;
+ transform:none !important;
+ vertical-align:top !important;
+ box-sizing:border-box !important;
+ min-height:0 !important;
+ height:auto !important;
+ padding:5px 7px !important;
+ margin:0 0 var(--post-card-bottom) 0 !important;
+ line-height:1.15 !important;
+}
+
+/* 「な」は訳なしカードなので、訳用の余白を持たせない */
+.post .na-card{
+ margin-bottom:0 !important;
+}
+
+/* 訳は絶対配置。本文の行高・カード位置を押し下げない */
+.post .posted-card > .posted-cn{
+ position:absolute !important;
+ left:50% !important;
+ top:calc(100% + 2px) !important;
+ bottom:auto !important;
+ transform:translateX(-50%) !important;
+ margin:0 !important;
+ padding:0 !important;
+ line-height:1.05 !important;
+ white-space:nowrap !important;
+}
+
+/* 1文目と2文目の間にも独自の縦余白を作らない */
+.post .town-post-sentence + .town-post-sentence,
+.posted-row > .post-origin-line + .post-answer-line{
+ margin-top:0 !important;
+}
+
 </style>
 </head>
 <body>
