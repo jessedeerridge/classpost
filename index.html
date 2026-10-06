@@ -3148,6 +3148,30 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  animation:none !important;
 }
 
+
+/* v124: 反応エリアを本文の直下まで詰める */
+.post > .me-too-count,
+.post.reaction-fit-last-line > .me-too-count{
+ margin-top:-7px !important;
+ margin-bottom:0 !important;
+ height:15px !important;
+ min-height:15px !important;
+ line-height:15px !important;
+}
+.post > .me-too-wrap,
+.post.reaction-fit-last-line > .me-too-wrap,
+.post.metoo-inline > .me-too-wrap,
+.post.metoo-row2 > .me-too-wrap,
+.post.metoo-row3 > .me-too-wrap,
+.post.reaction-inline > .me-too-wrap,
+.post.reaction-on-last-line > .me-too-wrap{
+ margin-top:-1px !important;
+ margin-bottom:0 !important;
+}
+.post{
+ padding-bottom:4px !important;
+}
+
 </style>
 </head>
 <body>
