@@ -2894,6 +2894,29 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  align-content:normal !important;
 }
 
+
+/* v116: 投稿カード内の中国語訳ぶんの高さを確保して、次の行と重ならないようにする */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ overflow:visible !important;
+}
+
+/* 訳はカードの下に出るため、そのぶん各投稿行の下側に余白を確保 */
+.posted-row > .post-origin-line:has(.posted-cn),
+.posted-row > .post-answer-line:has(.posted-cn),
+.posted-row > .post-third-line:has(.posted-cn),
+.posted-row > .post-final-line:has(.posted-cn){
+ padding-bottom:15px !important;
+}
+
+/* カード内訳の位置は維持しつつ、本文との距離を一定にする */
+.posted-row .posted-cn{
+ top:calc(100% + 2px) !important;
+ line-height:1.1 !important;
+}
+
 </style>
 </head>
 <body>
