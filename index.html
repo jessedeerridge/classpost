@@ -3943,6 +3943,62 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  white-space:nowrap !important;
 }
 
+
+/* v154: 質問2の回答ゾーンは元の自然な折返しに戻す */
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line,
+#stage2QA .a2 .adj-answer-line.q2-answer-own-line,
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line.small-ga-line,
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line.force-second-line{
+ flex:0 0 auto !important;
+ flex-basis:auto !important;
+ width:max-content !important;
+ max-width:100% !important;
+ white-space:nowrap !important;
+ margin-left:0 !important;
+}
+
+/* 投稿文：
+   2文ある場合は第2文を新しい行から。
+   「ちいさいですが、」で始まる第1文は、その文自体を新しい行から。 */
+.post .first-description .town-post-sentence.post-force-new-line{
+ flex-basis:100% !important;
+ width:max-content !important;
+ max-width:100% !important;
+ white-space:nowrap !important;
+}
+
+
+/* v155: 1段目の「1個/2個」説明は、ちいさい選択中だけ */
+#adjChoiceNote{
+ display:none !important;
+}
+#adjTable.small-selected > #adjChoiceNote{
+ display:block !important;
+}
+
+/* 1段目・3段目の説明は、後続UIが出てもサイズを変えない */
+#adjChoiceNote,
+#nameAdjTable .choice-note,
+#nameAdjChoiceNote{
+ box-sizing:border-box !important;
+ flex:0 0 100% !important;
+ width:100% !important;
+ max-width:100% !important;
+ min-width:0 !important;
+ align-self:flex-start !important;
+ font-size:inherit !important;
+ line-height:1.35 !important;
+ padding-top:0 !important;
+ padding-bottom:0 !important;
+}
+
+/* 親flexのalign/伸長変化の影響を受けない */
+#adjTable,
+#nameAdjTable{
+ align-items:flex-start !important;
+ align-content:flex-start !important;
+}
+
 </style>
 </head>
 <body>
@@ -4899,70 +4955,57 @@ if(_thingNameInput && _dontKnowNameBtn){
 
 
 
+
 <script>
-/* v150: 質問2の第2文。単独なら1行に収まる時は、必ず2行目から始める */
+/* v154: 折返しルールは「投稿文」にだけ適用 */
 (()=>{
- function adjustQ2SecondSentence(){
-   const answer=document.querySelector("#stage2QA .a2");
-   const preview=document.getElementById("shusshinAdjPreview");
-   if(!answer || !preview)return;
-   const lines=preview.querySelectorAll(".adj-answer-line");
-   const second=lines[1];
-   if(!second)return;
+ function applyPostWrapRules(root=document){
+   root.querySelectorAll(".post .first-description").forEach(fd=>{
+     const lines=[...fd.querySelectorAll(":scope > .town-post-sentence")];
+     lines.forEach(x=>x.classList.remove("post-force-new-line"));
+     if(!lines.length)return;
 
-   second.classList.remove("q2-second-own-line");
-   requestAnimationFrame(()=>{
-     const cs=getComputedStyle(answer);
-     const fullLine=answer.clientWidth
-       - parseFloat(cs.paddingLeft||0)
-       - parseFloat(cs.paddingRight||0);
+     /* 「ちいさいですが、」の文は、その文を次行から */
+     const firstText=(lines[0].textContent||"").replace(/\s+/g,"");
+     if(firstText.includes("ちいさいですが、")){
+       lines[0].classList.add("post-force-new-line");
+     }
 
-     const probe=second.cloneNode(true);
-     probe.classList.remove("q2-second-own-line");
-     probe.style.cssText="position:fixed!important;left:-20000px!important;top:0!important;display:inline-flex!important;flex:none!important;width:max-content!important;max-width:none!important;white-space:nowrap!important;visibility:hidden!important;";
-     document.body.appendChild(probe);
-     const sentenceWidth=probe.getBoundingClientRect().width;
-     probe.remove();
-
-     if(sentenceWidth>0 && sentenceWidth<=fullLine){
-       second.classList.add("q2-second-own-line");
+     /* 回答2が2文なら、第2文を次行から */
+     if(lines.length>=2){
+       lines[1].classList.add("post-force-new-line");
      }
    });
  }
-
- const root=document.getElementById("stage2QA")||document.body;
- new MutationObserver(adjustQ2SecondSentence).observe(root,{childList:true,subtree:true,characterData:true});
- window.addEventListener("resize",adjustQ2SecondSentence);
- document.addEventListener("DOMContentLoaded",adjustQ2SecondSentence);
- requestAnimationFrame(adjustQ2SecondSentence);
+ const feed=document.getElementById("feed");
+ if(feed){
+   new MutationObserver(ms=>{
+     if(ms.some(m=>m.type==="childList"))applyPostWrapRules(feed);
+   }).observe(feed,{childList:true,subtree:true});
+ }
+ requestAnimationFrame(()=>applyPostWrapRules(document));
 })();
 </script>
 
 
-
 <script>
-/* v152: 質問2の指定された3ルールだけを適用 */
+/* v155: 1段目説明の表示状態を選択状態と常時同期 */
 (()=>{
- function applyQ2Rules(){
-   const preview=document.getElementById("shusshinAdjPreview");
-   if(!preview)return;
-   const lines=[...preview.querySelectorAll(".adj-answer-line")];
-   lines.forEach(x=>x.classList.remove("small-ga-line"));
-
-   /* 「ちいさいですが、」の場合だけ第1文を2行目から */
-   const first=lines[0];
-   if(first){
-     const t=(first.textContent||"").replace(/\s+/g,"");
-     if(t.includes("ちいさいですが、")){
-       first.classList.add("small-ga-line");
-     }
-   }
+ function syncFirstNote(){
+   const table=document.getElementById("adjTable");
+   if(!table)return;
+   const selected=[...table.querySelectorAll("button.selected, .selected")]
+     .some(el=>(el.textContent||"").replace(/\s+/g,"").includes("ちいさい"));
+   table.classList.toggle("small-selected",selected);
  }
- const root=document.getElementById("stage2QA")||document.body;
- new MutationObserver(ms=>{
-   if(ms.some(m=>m.type==="childList"||m.type==="characterData"))applyQ2Rules();
- }).observe(root,{childList:true,subtree:true,characterData:true});
- requestAnimationFrame(applyQ2Rules);
+ const table=document.getElementById("adjTable");
+ if(table){
+   new MutationObserver(syncFirstNote).observe(table,{
+     subtree:true,childList:true,attributes:true,attributeFilter:["class"]
+   });
+   table.addEventListener("click",()=>requestAnimationFrame(syncFirstNote));
+ }
+ requestAnimationFrame(syncFirstNote);
 })();
 </script>
 
