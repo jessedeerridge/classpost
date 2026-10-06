@@ -3093,6 +3093,61 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  z-index:7 !important;
 }
 
+
+/* v123 FINAL reaction layout
+   ♥×N = 必ずボタンの一行上。反応UIは通常フロー固定で、いいね時に位置を再計算しない。 */
+.post,
+.post.reaction-fit-last-line{
+ position:relative !important;
+ min-height:0 !important;
+ padding-bottom:6px !important;
+}
+.post > .me-too-count,
+.post.reaction-fit-last-line > .me-too-count{
+ position:static !important;
+ display:block !important;
+ width:100% !important;
+ height:16px !important;
+ min-height:16px !important;
+ box-sizing:border-box !important;
+ text-align:right !important;
+ line-height:16px !important;
+ margin:2px 0 1px !important;
+ padding:0 7px 0 0 !important;
+ inset:auto !important;
+ transform:none !important;
+ z-index:auto !important;
+ white-space:nowrap !important;
+}
+.post > .me-too-wrap,
+.post.reaction-fit-last-line > .me-too-wrap,
+.post.metoo-inline > .me-too-wrap,
+.post.metoo-row2 > .me-too-wrap,
+.post.metoo-row3 > .me-too-wrap,
+.post.reaction-inline > .me-too-wrap,
+.post.reaction-on-last-line > .me-too-wrap{
+ position:static !important;
+ display:flex !important;
+ width:100% !important;
+ max-width:100% !important;
+ justify-content:flex-end !important;
+ align-items:center !important;
+ box-sizing:border-box !important;
+ margin:0 !important;
+ padding:0 !important;
+ inset:auto !important;
+ transform:none !important;
+ z-index:auto !important;
+}
+
+/* いいね状態変更で寸法・位置・アニメーションを一切変えない */
+.post .me-too-btn,
+.post .me-too-count,
+.post .me-too-wrap{
+ transition:none !important;
+ animation:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -3458,6 +3513,30 @@ function postShusshin(){
  if(thingNameInputReset){thingNameInputReset.value="";thingNameInputReset.classList.remove("unknown-name");}
  document.getElementById("shusshinInput").value="";
  renderAdj();renderThings();renderNameAdj();updateComposer();
+}
+
+
+/* v123: 投稿内容が同じで反応数だけ変わった時はDOMを作り直さない */
+function samePostContent(a,b){
+  if(!a||!b)return false;
+  const keys=["id","author","place","adj","thing","thingName","createdAt"];
+  if(keys.some(k=>String(a[k]??"")!==String(b[k]??"")))return false;
+  return JSON.stringify(a.adjs||[])===JSON.stringify(b.adjs||[]) &&
+         JSON.stringify(a.nameAdjs||[])===JSON.stringify(b.nameAdjs||[]);
+}
+function renderOrPatchPosts(nextPosts){
+  const prev=Array.isArray(posts)?posts:[];
+  const next=Array.isArray(nextPosts)?nextPosts:[];
+  const structural =
+    prev.length!==next.length ||
+    prev.some((p,i)=>!next[i] || !samePostContent(p,next[i]));
+
+  posts=next;
+  if(structural){
+    renderPosts();
+    return;
+  }
+  next.forEach(p=>updateReactionOnly(p.id));
 }
 
 function updateReactionOnly(id){
@@ -3852,87 +3931,6 @@ if(_thingNameInput && _dontKnowNameBtn){
   max-width:100% !important;
 }
 </style>
-
-<script>
-/* v112: 本文を先に100%幅で描画し、実際の各表示行を測って反応UIを置く */
-(()=>{
- const GAP=10, RIGHT=7;
-
- function rectsOf(root){
-   const a=[];
-   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
-   let n;
-   while((n=w.nextNode())){
-     if(!n.nodeValue?.trim())continue;
-     const e=n.parentElement;
-     if(!e || e.closest(".posted-cn"))continue;
-     const cs=getComputedStyle(e);
-     if(cs.display==="none"||cs.visibility==="hidden")continue;
-     const r=document.createRange(); r.selectNodeContents(n);
-     [...r.getClientRects()].forEach(x=>{if(x.width>0&&x.height>0)a.push(x)});
-   }
-   root.querySelectorAll(".posted-card,.na-card").forEach(e=>{
-     const x=e.getBoundingClientRect();
-     if(x.width>0&&x.height>0)a.push(x);
-   });
-   return a;
- }
- function rowsOf(rects){
-   const rows=[];
-   rects.sort((a,b)=>a.top-b.top||a.left-b.left).forEach(r=>{
-     let q=rows.find(x=>Math.abs(x.top-r.top)<=4);
-     if(!q) rows.push(q={top:r.top,bottom:r.bottom,right:r.right});
-     else {q.top=Math.min(q.top,r.top);q.bottom=Math.max(q.bottom,r.bottom);q.right=Math.max(q.right,r.right);}
-   });
-   return rows.sort((a,b)=>a.top-b.top);
- }
- function place(post){
-   const row=post.querySelector(".posted-row");
-   const wrap=post.querySelector(":scope > .me-too-wrap");
-   const btn=wrap?.querySelector(".me-too-btn");
-   const count=post.querySelector(":scope > .me-too-count");
-   if(!row||!wrap||!btn||!count)return;
-
-   post.classList.remove("metoo-inline","metoo-row2","metoo-row3","reaction-inline",
-                         "reaction-on-last-line","reaction-fit-last-line");
-   post.style.removeProperty("--reaction-btn-top");
-   post.style.removeProperty("--reaction-count-top");
-
-   const rows=rowsOf(rectsOf(row));
-   if(!rows.length)return;
-
-   const pr=post.getBoundingClientRect();
-   const cs=getComputedStyle(post);
-   const innerRight=pr.right-parseFloat(cs.borderRightWidth||0)-parseFloat(cs.paddingRight||0)-RIGHT;
-   const last=rows.at(-1);
-   const bw=btn.getBoundingClientRect().width;
-
-   if(innerRight-last.right >= bw+GAP){
-     const br=btn.getBoundingClientRect();
-     const btnTop=(last.top+last.bottom-br.height)/2-pr.top;
-     post.style.setProperty("--reaction-btn-top",Math.max(0,btnTop)+"px");
-
-     post.classList.add("reaction-fit-last-line");
-   }
- }
- let id=0;
- function run(){
-   cancelAnimationFrame(id);
-   id=requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".post").forEach(place)));
- }
- const feed=document.getElementById("feed");
- if(feed){
-   new MutationObserver(mutations=>{
-     if(mutations.some(m=>m.type==="childList" &&
-       [...m.addedNodes,...m.removedNodes].some(n=>n.nodeType===1))) run();
-   }).observe(feed,{childList:true,subtree:true,characterData:false});
-   if("ResizeObserver" in window)new ResizeObserver(run).observe(feed);
- }
- window.addEventListener("resize",run);
- document.fonts?.ready?.then(run);
- run();
-})();
-</script>
 
 </body>
 </html>
