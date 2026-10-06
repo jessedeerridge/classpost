@@ -4360,6 +4360,34 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  to{opacity:1;transform:translate(-50%,-50%) scale(1);}
 }
 
+
+/* v170: food版と同じ、投稿欄からぶら下がる三角ボタン */
+.feed-resizer{
+ height:24px !important;
+ margin:-1px 0 4px !important;
+ position:relative !important;
+ z-index:5 !important;
+}
+.feed-resizer button{
+ display:block !important;
+ width:38px !important;
+ height:24px !important;
+ margin:0 auto !important;
+ padding:0 !important;
+ border:1px solid var(--line) !important;
+ border-top:0 !important;
+ border-radius:0 0 10px 10px !important;
+ background:rgba(255,255,255,.9) !important;
+ color:#777 !important;
+ font-size:14px !important;
+ line-height:22px !important;
+ font-weight:700 !important;
+ box-shadow:0 2px 4px rgba(0,0,0,.04) !important;
+}
+.feed-resizer button:active{
+ transform:none !important;
+}
+
 </style>
 </head>
 <body>
