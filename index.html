@@ -3829,6 +3829,75 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  padding-bottom:7px !important;
 }
 
+
+/* v149: 原因修正
+   これまでカード内だけ line-height:1.2 + 上下padding だったため、
+   flex上端を揃えても日本語のベースラインが素の文より下になっていた。
+   投稿内ではカード本体を「素の文1行」と同じ line-height にする。
+   中国語訳は absolute のため、この高さ計算には入らない。 */
+.posted-row{
+ --post-line-h:1.55em !important;
+}
+.post .posted-card,
+.post .na-card{
+ position:relative !important;
+ top:0 !important;
+ transform:none !important;
+ align-self:flex-start !important;
+ vertical-align:top !important;
+ box-sizing:border-box !important;
+ height:var(--post-line-h) !important;
+ min-height:var(--post-line-h) !important;
+ padding:0 7px !important;
+ margin-top:0 !important;
+ margin-bottom:14px !important;
+ line-height:var(--post-line-h) !important;
+ display:inline-flex !important;
+ align-items:baseline !important;
+ justify-content:center !important;
+ overflow:visible !important;
+}
+
+/* メイン日本語は素の文と全く同じ1.55emの行箱。
+   top/translateでの微調整は一切しない。 */
+.post .posted-card > span:first-child{
+ position:static !important;
+ top:auto !important;
+ bottom:auto !important;
+ transform:none !important;
+ display:inline !important;
+ line-height:var(--post-line-h) !important;
+ white-space:nowrap !important;
+}
+
+/* 訳は行箱の外。カード・本文の縦位置には影響しない */
+.post .posted-card > .posted-cn{
+ position:absolute !important;
+ left:50% !important;
+ top:calc(100% + 2px) !important;
+ transform:translateX(-50%) !important;
+ margin:0 !important;
+ padding:0 !important;
+ height:auto !important;
+ line-height:1.05 !important;
+ white-space:nowrap !important;
+}
+
+/* 1文目・2文目とも同じ行箱・同じ上端基準 */
+.posted-row > .post-origin-line,
+.post .first-description,
+.post .town-post-sentence{
+ line-height:var(--post-line-h) !important;
+ align-items:flex-start !important;
+ align-content:flex-start !important;
+}
+.post .town-post-sentence > span:not(.posted-card):not(.na-card),
+.posted-row > .post-origin-line > span:not(.posted-card):not(.first-description){
+ line-height:var(--post-line-h) !important;
+ padding-top:0 !important;
+ padding-bottom:0 !important;
+}
+
 </style>
 </head>
 <body>
