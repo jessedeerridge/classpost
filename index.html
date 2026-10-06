@@ -3225,6 +3225,13 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  animation:none !important;
 }
 
+
+/* v128: 町の特徴は最大2個 */
+#shusshinAdjPreview .adj-answer-line + .adj-answer-line,
+.first-description .town-post-sentence + .town-post-sentence{
+ margin-left:.45em !important;
+}
+
 </style>
 </head>
 <body>
@@ -3237,7 +3244,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 </div>
 
 <div class="app">
- <div class="board-title">发布</div>
+ <div class="board-title"></div>
  <div id="feed" class="feed"><div class="empty">まだ投稿がありません。</div></div>
 
  <div class="feed-resizer" aria-label="投稿欄の高さ調整">
@@ -3350,9 +3357,10 @@ function renderAdj(){
   b.onclick=()=>{
    const i=selectedAdjs.indexOf(jp);
    if(i>=0){
-     selectedAdjs=[];
+     selectedAdjs.splice(i,1);
    }else{
-     selectedAdjs=[jp];
+     selectedAdjs.push(jp);
+     if(selectedAdjs.length>2) selectedAdjs.shift();
    }
    renderAdj();
    updateComposer();
@@ -3424,6 +3432,24 @@ function renderThings(){
   area.appendChild(b);
  });
 }
+
+function orderedTownAdjs(arr){
+ const a=(Array.isArray(arr)?arr:[]).filter(Boolean).slice(0,2);
+ if(a.length===2 && a.includes("ちいさい")){
+   const other=a.find(x=>x!=="ちいさい");
+   /* ちいさい＋しずか だけは例外にしない。それ以外は選択順に関係なくちいさいを先頭 */
+   if(other && other!=="しずか") return {ordered:["ちいさい",other], useGa:true};
+ }
+ return {ordered:a, useGa:false};
+}
+function townAdjHtml(adj, ending){
+ const item=adjectives.find(x=>x[0]===adj);
+ const needsNa=!!(item&&item[2]);
+ const noun=(adj==="おおきい"||adj==="ちいさい")?"まち":"ところ";
+ const shownNoun=(adj==="ちいさい" && ending==="ですが、") ? "" : noun;
+ return `<span class="adj-answer-line"><span class="posted-card shusshin-adj-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(item?item[1]:"")}</span></span>${needsNa?'<span class="na-card">な</span>':""}<span>${shownNoun}${ending}</span></span>`;
+}
+
 function updateComposer(){
  const v=inputValue(), second=document.getElementById("shusshinSecond");
  const adjTable=document.getElementById("adjTable");
@@ -3535,10 +3561,12 @@ const a2Cell=document.getElementById("shusshinSubjectAnswer").parentElement;
  }
  const adjBox=document.getElementById("shusshinAdjPreview");
  if(selectedAdjs.length){
-  adjBox.innerHTML=selectedAdjs.map((adj,i)=>{
-   const item=adjectives.find(x=>x[0]===adj);
-   const needsNa=!!(item&&item[2]);
-   return `<span class="adj-answer-line"><span class="posted-card shusshin-adj-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(item?item[1]:"")}</span></span>${needsNa?'<span class="na-card">な</span>':""}<span>${(adj==="おおきい"||adj==="ちいさい")?"まちです。":"ところです。"}</span></span>`;
+  const rule=orderedTownAdjs(selectedAdjs);
+  adjBox.innerHTML=rule.ordered.map((adj,i)=>{
+   const ending=(rule.ordered.length===2 && i===0)
+     ? (rule.useGa ? "ですが、" : "です。")
+     : "です。";
+   return townAdjHtml(adj,ending);
   }).join("");
  }else{
   adjBox.innerHTML="";
@@ -3722,18 +3750,24 @@ function renderPosts(){
     finalLine=`<span class="post-third-line post-final-line">${p.thingName!=="×"?`<span class="posted-place-plain">${esc(p.thingName)}</span><span>は</span>`:""}${parts}</span>`;
   }
 
-  const firstAdj=postAdjs[0];
   let firstDescription="";
-  if(firstAdj){
-    const item=adjectives.find(x=>x[0]===firstAdj);
-    const cn=item?item[1]:"";
-    const needsNa=!!(item&&item[2]);
-    const noun=(firstAdj==="おおきい"||firstAdj==="ちいさい")?"まち":"ところ";
-    firstDescription=`<span class="first-description">
-      <span class="posted-place-plain">${esc(p.place)}</span><span>は</span>
-      <span class="posted-card"><span>${esc(firstAdj)}</span><span class="posted-cn">${esc(cn)}</span></span>
-      ${needsNa?'<span class="na-card">な</span>':""}<span>${noun}です。</span>
-    </span>`;
+  if(postAdjs.length){
+    const rule=orderedTownAdjs(postAdjs);
+    const descriptions=rule.ordered.map((adj,i)=>{
+      const item=adjectives.find(x=>x[0]===adj);
+      const cn=item?item[1]:"";
+      const needsNa=!!(item&&item[2]);
+      const noun=(adj==="おおきい"||adj==="ちいさい")?"まち":"ところ";
+      const ending=(rule.ordered.length===2 && i===0)
+        ? (rule.useGa ? "ですが、" : "です。")
+        : "です。";
+      return `<span class="town-post-sentence">
+        ${i===0?`<span class="posted-place-plain">${esc(p.place)}</span><span>は</span>`:""}
+        <span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>
+        ${needsNa?'<span class="na-card">な</span>':""}<span>${(adj==="ちいさい" && ending==="ですが、")?"":noun}${ending}</span>
+      </span>`;
+    }).join("");
+    firstDescription=`<span class="first-description">${descriptions}</span>`;
   }
 
   row.innerHTML=`<span class="posted-name">（${esc(p.author)}）</span>
