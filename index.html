@@ -3210,6 +3210,21 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  animation:none !important;
 }
 
+
+/* v127: いいね前後で投稿・反応UIの寸法を完全固定 */
+.me-too-btn,
+.me-too-btn:disabled,
+.me-too-btn[aria-pressed="true"],
+.me-too-btn[aria-pressed="false"]{
+ width:auto !important;
+ min-width:0 !important;
+ height:auto !important;
+ box-sizing:border-box !important;
+ transform:none !important;
+ transition:none !important;
+ animation:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -3633,6 +3648,8 @@ function updateReactionOnly(id){
   if(btn){
     const reacted=hasReacted(id);
     btn.setAttribute("aria-pressed",reacted?"true":"false");
+    /* 寸法は変えず、二重クリックだけ防ぐ */
+    if(userName!=="あさの") btn.disabled=reacted;
   }
 }
 
@@ -3833,9 +3850,15 @@ async function initFirebase(){
   firebaseReady=true;await flushQ();
   D.onValue(dbRef(db,DB_POSTS_PATH),snap=>{
    const val=snap.val()||{};
-   posts=Object.entries(val).map(([id,p])=>({...p,id:p.id??id,meTooCount:Number(p.meTooCount||0)}))
+   const nextPosts=Object.entries(val)
+    .map(([id,p])=>({...p,id:p.id??id,meTooCount:Number(p.meTooCount||0)}))
     .sort((a,b)=>Number(a.createdAt||a.id)-Number(b.createdAt||b.id));
-   localStorage.setItem(POSTS_KEY,JSON.stringify(posts));renderPosts();
+
+   /* v127:
+      Firebaseのいいね更新で feed.innerHTML="" → 全投稿再生成、となっていたのが
+      ちらつきの本当の原因。本文構造が同じなら反応数だけ差し替える。 */
+   renderOrPatchPosts(nextPosts);
+   localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
   });
  }catch(e){console.error(e)}
 }
