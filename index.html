@@ -3898,6 +3898,16 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  padding-bottom:0 !important;
 }
 
+
+/* v150: 質問2の第2文を、条件成立時は必ず独立した2行目へ */
+#stage2QA .a2 .adj-answer-line.q2-second-own-line{
+  flex:0 0 100% !important;
+  width:max-content !important;
+  max-width:none !important;
+  white-space:nowrap !important;
+  margin-left:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4855,34 +4865,41 @@ if(_thingNameInput && _dontKnowNameBtn){
 
 
 <script>
-/* v144: 第2文が回答欄の一行幅に収まるなら、必ず2行目から一行 */
+/* v150: 質問2の第2文。単独なら1行に収まる時は、必ず2行目から始める */
 (()=>{
- function adjust(){
+ function adjustQ2SecondSentence(){
+   const answer=document.querySelector("#stage2QA .a2");
    const preview=document.getElementById("shusshinAdjPreview");
-   if(!preview)return;
-   const second=preview.querySelector(".adj-answer-line:nth-child(2)");
+   if(!answer || !preview)return;
+   const lines=preview.querySelectorAll(".adj-answer-line");
+   const second=lines[1];
    if(!second)return;
-   second.classList.remove("force-second-line");
+
+   second.classList.remove("q2-second-own-line");
    requestAnimationFrame(()=>{
-     const answer=preview.closest(".a2");
-     if(!answer)return;
-     const clone=second.cloneNode(true);
-     clone.classList.remove("force-second-line");
-     clone.style.cssText+=";position:fixed!important;left:-10000px!important;top:0!important;width:max-content!important;max-width:none!important;flex:none!important;white-space:nowrap!important;visibility:hidden!important;";
-     document.body.appendChild(clone);
-     const needed=clone.getBoundingClientRect().width;
-     clone.remove();
      const cs=getComputedStyle(answer);
-     const available=answer.clientWidth-parseFloat(cs.paddingLeft||0)-parseFloat(cs.paddingRight||0);
-     if(needed>0 && needed<=available) second.classList.add("force-second-line");
+     const fullLine=answer.clientWidth
+       - parseFloat(cs.paddingLeft||0)
+       - parseFloat(cs.paddingRight||0);
+
+     const probe=second.cloneNode(true);
+     probe.classList.remove("q2-second-own-line");
+     probe.style.cssText="position:fixed!important;left:-20000px!important;top:0!important;display:inline-flex!important;flex:none!important;width:max-content!important;max-width:none!important;white-space:nowrap!important;visibility:hidden!important;";
+     document.body.appendChild(probe);
+     const sentenceWidth=probe.getBoundingClientRect().width;
+     probe.remove();
+
+     if(sentenceWidth>0 && sentenceWidth<=fullLine){
+       second.classList.add("q2-second-own-line");
+     }
    });
  }
-  
+
  const root=document.getElementById("stage2QA")||document.body;
- new MutationObserver(ms=>{if(ms.some(m=>m.type==="childList"))adjust();})
-   .observe(root,{childList:true,subtree:true});
- window.addEventListener("resize",adjust);
- requestAnimationFrame(adjust);
+ new MutationObserver(adjustQ2SecondSentence).observe(root,{childList:true,subtree:true,characterData:true});
+ window.addEventListener("resize",adjustQ2SecondSentence);
+ document.addEventListener("DOMContentLoaded",adjustQ2SecondSentence);
+ requestAnimationFrame(adjustQ2SecondSentence);
 })();
 </script>
 
