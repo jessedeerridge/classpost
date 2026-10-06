@@ -4067,6 +4067,20 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  flex-wrap:nowrap !important;
 }
 
+
+/* v158: 投稿の回答2が「ちいさいですが、」なら、
+   回答2全体を投稿の2行目から開始 */
+.post .post-origin-line > .first-description.small-ga-description{
+ flex-basis:100% !important;
+ width:100% !important;
+ margin-left:0 !important;
+}
+.post .post-origin-line > .first-description.small-ga-description
+> .town-post-sentence:first-child{
+ white-space:nowrap !important;
+ width:max-content !important;
+}
+
 </style>
 </head>
 <body>
@@ -5055,6 +5069,27 @@ if(_thingNameInput && _dontKnowNameBtn){
    }).observe(feed,{childList:true,subtree:true});
  }
  requestAnimationFrame(()=>applyPostWrapRules(document));
+})();
+</script>
+
+
+<script>
+/* v158: 投稿文の回答2先頭が「ちいさいですが、」かを判定 */
+(()=>{
+ function apply(root=document){
+   root.querySelectorAll(".post .first-description").forEach(fd=>{
+     fd.classList.remove("small-ga-description");
+     const first=fd.querySelector(":scope > .town-post-sentence:first-child");
+     if(!first)return;
+     const text=(first.textContent||"").replace(/\s+/g,"");
+     if(text.includes("ちいさいですが、")){
+       fd.classList.add("small-ga-description");
+     }
+   });
+ }
+ const feed=document.getElementById("feed");
+ if(feed)new MutationObserver(()=>apply(feed)).observe(feed,{childList:true,subtree:true});
+ requestAnimationFrame(()=>apply(document));
 })();
 </script>
 
