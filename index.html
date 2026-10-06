@@ -3026,6 +3026,32 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  row-gap:7px !important;
 }
 
+
+/* v120: 投稿カード下余白を最小化 */
+.post{
+ min-height:0 !important;
+ padding-bottom:7px !important;
+}
+.post > .me-too-wrap{
+ margin-bottom:0 !important;
+}
+
+/* ♥×N は常に「いいねボタンの直前の1行」の右端 */
+.post > .me-too-count,
+.post.reaction-fit-last-line > .me-too-count{
+ position:static !important;
+ display:block !important;
+ width:100% !important;
+ box-sizing:border-box !important;
+ text-align:right !important;
+ margin:3px 0 2px !important;
+ padding:0 7px 0 0 !important;
+ line-height:1.15 !important;
+ white-space:nowrap !important;
+ inset:auto !important;
+ transform:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -3826,16 +3852,6 @@ if(_thingNameInput && _dontKnowNameBtn){
      const btnTop=(last.top+last.bottom-br.height)/2-pr.top;
      post.style.setProperty("--reaction-btn-top",Math.max(0,btnTop)+"px");
 
-     /* 一つ前の表示行がある時だけ、その行に♥×Nを置く */
-     if(rows.length>=2 && count.textContent.trim()){
-       const prev=rows.at(-2);
-       const ch=count.getBoundingClientRect().height || 14;
-       const countTop=(prev.top+prev.bottom-ch)/2-pr.top;
-       post.style.setProperty("--reaction-count-top",Math.max(0,countTop)+"px");
-     }else{
-       /* 前の行がない場合は本文の上に重ねず、通常位置を維持 */
-       post.style.setProperty("--reaction-count-top",(last.top-pr.top-Math.max(14,count.getBoundingClientRect().height)-3)+"px");
-     }
      post.classList.add("reaction-fit-last-line");
    }
  }
