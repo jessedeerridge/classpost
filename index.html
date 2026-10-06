@@ -4300,9 +4300,74 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  margin-left:0 !important;
 }
 
+
+/* v168: 出身入力やり直しポップ */
+.origin-retry-popup{
+ position:fixed;
+ left:50%;
+ top:22%;
+ transform:translate(-50%,-8px);
+ z-index:9999;
+ display:none;
+ max-width:calc(100vw - 32px);
+ padding:10px 15px;
+ border:1px solid #9bcbe0;
+ border-radius:12px;
+ background:#eef9fd;
+ color:#234f63;
+ font-size:14px;
+ line-height:1.4;
+ font-weight:500;
+ box-shadow:0 4px 14px rgba(35,79,99,.16);
+ text-align:center;
+ white-space:nowrap;
+}
+.origin-retry-popup.show{
+ display:block;
+ animation:originRetryIn .16s ease-out;
+}
+@keyframes originRetryIn{
+ from{opacity:0;transform:translate(-50%,-13px);}
+ to{opacity:1;transform:translate(-50%,-8px);}
+}
+
+
+/* v169: やり直しポップは画面中央の正方形 */
+.origin-retry-popup{
+ left:50% !important;
+ top:50% !important;
+ width:180px !important;
+ height:180px !important;
+ max-width:calc(100vw - 40px) !important;
+ padding:18px !important;
+ transform:translate(-50%,-50%) !important;
+ border-radius:18px !important;
+ box-sizing:border-box !important;
+ display:none !important;
+ align-items:center !important;
+ justify-content:center !important;
+ text-align:center !important;
+ white-space:normal !important;
+ font-size:16px !important;
+ line-height:1.65 !important;
+}
+.origin-retry-popup.show{
+ display:flex !important;
+ animation:originRetryCenterIn .16s ease-out !important;
+}
+@keyframes originRetryCenterIn{
+ from{opacity:0;transform:translate(-50%,-50%) scale(.96);}
+ to{opacity:1;transform:translate(-50%,-50%) scale(1);}
+}
+
 </style>
 </head>
 <body>
+
+<div id="originRetryPopup" class="origin-retry-popup" role="alert" aria-live="polite">
+  <span id="originRetryText"></span>
+</div>
+
 <div id="nameModal" class="name-modal">
   <div class="name-box">
     
@@ -5320,6 +5385,70 @@ if(_thingNameInput && _dontKnowNameBtn){
    .observe(feed,{childList:true,subtree:true});
  window.addEventListener("resize",()=>requestAnimationFrame(fixReactionRows));
  requestAnimationFrame(fixReactionRows);
+})();
+</script>
+
+
+<script>
+/* v168: 出身欄の入力チェック
+   優先順：かな → 広西 → 省/州/市 */
+(()=>{
+ const input=document.getElementById("shusshinInput");
+ const pop=document.getElementById("originRetryPopup");
+ const text=document.getElementById("originRetryText");
+ if(!input||!pop||!text)return;
+
+ let timer=null;
+ function show(msg){
+   clearTimeout(timer);
+   text.innerHTML=msg;
+   pop.classList.remove("show");
+   void pop.offsetWidth;
+   pop.classList.add("show");
+   timer=setTimeout(()=>pop.classList.remove("show"),2200);
+ }
+
+ function validate(){
+   const v=input.value.trim();
+   if(!v)return true;
+
+   if(/[\u3040-\u309F\u30A0-\u30FF]/.test(v)){
+     show("请用中文输入地名。<br>请重新输入。");
+     input.value="";
+     input.dispatchEvent(new Event("input",{bubbles:true}));
+     input.focus();
+     return false;
+   }
+   if(v.includes("広西") || v.includes("广西")){
+     show("请不要输入“广西”。<br>只输入地名就可以。");
+     input.value="";
+     input.dispatchEvent(new Event("input",{bubbles:true}));
+     input.focus();
+     return false;
+   }
+   if(/[省州市]/.test(v)){
+     const hit=v.match(/[省州市]/)?.[0] || "";
+     show(`请不要输入“${hit}”。<br>只输入地名就可以。`);
+     input.value="";
+     input.dispatchEvent(new Event("input",{bubbles:true}));
+     input.focus();
+     return false;
+   }
+   return true;
+ }
+
+ input.addEventListener("change",validate);
+ input.addEventListener("blur",()=>{ if(input.value.trim()) validate(); });
+
+ /* 发布時にも必ず検査 */
+ document.addEventListener("click",e=>{
+   const btn=e.target.closest("button");
+   if(!btn)return;
+   if((btn.textContent||"").trim()==="发布" && !validate()){
+     e.preventDefault();
+     e.stopImmediatePropagation();
+   }
+ },true);
 })();
 </script>
 
