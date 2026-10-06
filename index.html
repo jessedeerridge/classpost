@@ -3796,6 +3796,39 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  transform:none !important;
 }
 
+
+/* v147: カード本体だけをほんの少し上へ。訳の位置計算には影響させない */
+.post .posted-card,
+.post .na-card{
+ transform:translateY(-1px) !important;
+}
+
+
+/* v148: カード枠ではなく、日本語本文のベースラインを素の文と一致させる。
+   訳は絶対配置のままなので基準には入らない。 */
+.post .posted-card{
+ transform:none !important;
+ align-self:flex-start !important;
+}
+.post .na-card{
+ transform:none !important;
+ align-self:flex-start !important;
+}
+
+/* カード内のメイン文字だけを素の本文のベースラインへ合わせる */
+.post .posted-card > span:first-child{
+ position:relative !important;
+ top:-2px !important;
+ line-height:1.2 !important;
+}
+
+/* 「な」も同じ文字基準 */
+.post .na-card{
+ line-height:1.2 !important;
+ padding-top:3px !important;
+ padding-bottom:7px !important;
+}
+
 </style>
 </head>
 <body>
