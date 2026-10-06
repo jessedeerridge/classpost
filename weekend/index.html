@@ -958,6 +958,34 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  pointer-events:none!important;
 }
 
+
+/* food版と同じ投稿欄操作 */
+.board-title{display:none !important;}
+.feed-expand-btn{
+ display:block !important;
+ width:38px !important;
+ height:24px !important;
+ margin:-1px auto 4px !important;
+ padding:0 !important;
+ border:1px solid var(--line) !important;
+ border-top:0 !important;
+ border-radius:0 0 10px 10px !important;
+ background:rgba(255,255,255,.9) !important;
+ color:#66835d !important;
+ font-size:14px !important;
+ line-height:22px !important;
+ font-weight:700 !important;
+ cursor:pointer !important;
+ box-shadow:0 2px 4px rgba(63,126,46,.08) !important;
+ position:relative !important;
+ z-index:5 !important;
+}
+.feed.expanded{height:72vh !important;}
+
+/* 投稿左リボン：この緑UIになじむ色 */
+.post.own-post{border-left-color:#5f9f52 !important;}
+.post.other-post{border-left-color:#c5ddbb !important;}
+
 </style>
 </head>
 <body>
@@ -969,8 +997,9 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 </div>
 
 <div class="app">
- <div class="board-title">发布</div>
+ <div class="board-title"></div>
  <div id="feed" class="feed"><div class="empty">まだ投稿がありません。</div></div>
+ <button id="feedExpandBtn" class="feed-expand-btn" type="button" aria-label="展开投稿">▼</button>
 
  <div class="composer">
   <div class="guide"><span id="modeGuideText">发布一下自己的周末安排吧。</span></div>
@@ -1600,6 +1629,14 @@ function postWeekend(){
  syncPostToDB(posts[posts.length-1]);
  renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 
+ /* 投稿したら投稿欄を下へ展開 */
+ const feed=document.getElementById("feed");
+ const feedBtn=document.getElementById("feedExpandBtn");
+ if(feed){
+   feed.classList.add("expanded");
+   if(feedBtn)feedBtn.textContent="▲";
+ }
+
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
 }
@@ -1649,7 +1686,8 @@ function renderPosts(){
  feed.innerHTML="";
  posts.slice().reverse().forEach(p=>{
    const d=document.createElement("div");
-   d.className="post";
+   const isOwnPost=!!userName && (p.author||"").trim()===userName.trim();
+   d.className="post "+(isOwnPost?"own-post":"other-post");
 
    if(Array.isArray(p.lines)){
      const placeFound=places.find(x=>x[0]===p.place);
@@ -1951,6 +1989,55 @@ setInterval(()=>{
  if(firebaseReady && navigator.onLine && readOfflineQueue().length)flushOfflineQueue();
 },5000);
 </script>
+
+<script>
+/* 投稿欄：▼で展開、▲で収納。入力欄を押したら収納 */
+(()=>{
+ const feed=document.getElementById("feed");
+ const btn=document.getElementById("feedExpandBtn");
+ if(!feed||!btn)return;
+
+ const collapse=()=>{
+   feed.classList.remove("expanded");
+   btn.textContent="▼";
+ };
+ btn.addEventListener("click",()=>{
+   const opening=!feed.classList.contains("expanded");
+   feed.classList.toggle("expanded",opening);
+   btn.textContent=opening?"▲":"▼";
+ });
+ document.addEventListener("pointerdown",e=>{
+   if(e.target && e.target.id==="travelDestinationInput") collapse();
+ },true);
+ document.addEventListener("focusin",e=>{
+   if(e.target && e.target.id==="travelDestinationInput") collapse();
+ });
+})();
+</script>
+
+
+<script>
+/* 投稿欄が展開中なら、操作ボタンを押した時点で収納する。
+   週末／午後の切替ボタンも含む。三角ボタン自身は除外。 */
+(()=>{
+ const feed=document.getElementById("feed");
+ const expandBtn=document.getElementById("feedExpandBtn");
+ if(!feed)return;
+
+ const collapseFeed=()=>{
+   if(!feed.classList.contains("expanded"))return;
+   feed.classList.remove("expanded");
+   if(expandBtn)expandBtn.textContent="▼";
+ };
+
+ document.addEventListener("pointerdown",e=>{
+   const btn=e.target.closest("button");
+   if(!btn || btn===expandBtn || btn.classList.contains("me-too-btn"))return;
+   collapseFeed();
+ },true);
+})();
+</script>
+
 </body>
 </html>
 
