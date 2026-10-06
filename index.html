@@ -3586,6 +3586,42 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  line-height:var(--post-line-h) !important;
 }
 
+
+/* v139
+   町の特徴の2文目：
+   1行目の残りに入るかではなく、「2行目なら1行で収まる」場合は
+   2文目を最初から次行へ送る。 */
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ flex-basis:auto !important;
+}
+
+/* 投稿の町特徴も同じルール */
+.post .first-description .town-post-sentence:nth-child(2){
+ flex-basis:auto !important;
+}
+
+/* 投稿1行目は、中国語訳のための上側の呼吸を少し戻す。
+   カードだけが下がって見えないよう本文全体を同じ位置から開始。 */
+.posted-row > .post-origin-line{
+ padding-top:5px !important;
+}
+.posted-row > .post-origin-line .posted-card,
+.posted-row > .post-origin-line .na-card{
+ top:0 !important;
+ align-self:flex-start !important;
+}
+
+
+/* v140: 投稿文「出身は」の間を詰める */
+.post .post-origin-line > span:first-child,
+.post .post-origin-line > span:nth-child(2){
+ margin-right:0 !important;
+ margin-left:0 !important;
+}
+.post .post-origin-line{
+ column-gap:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4532,6 +4568,45 @@ if(_thingNameInput && _dontKnowNameBtn){
 
 
 
+
+
+<script>
+/* v139: 町特徴の第2文は、次行に置けば1行で収まる時は次行から開始 */
+(()=>{
+ function adjustSecondSentence(container, selector){
+   if(!container)return;
+   const second=container.querySelector(`${selector}:nth-child(2)`);
+   if(!second)return;
+   second.style.flexBasis="auto";
+
+   requestAnimationFrame(()=>{
+     const available=container.clientWidth;
+     const width=second.getBoundingClientRect().width;
+     if(width>0 && width<=available){
+       second.style.flexBasis="100%";
+       second.style.width="max-content";
+     }
+   });
+ }
+ function adjustAll(){
+   const preview=document.getElementById("shusshinAdjPreview");
+   if(preview){
+     const host=preview.parentElement;
+     adjustSecondSentence(host,"#shusshinAdjPreview .adj-answer-line");
+   }
+   document.querySelectorAll(".post .first-description").forEach(fd=>{
+     const host=fd.closest(".post-origin-line");
+     adjustSecondSentence(host,".first-description .town-post-sentence");
+   });
+ }
+ const root=document.getElementById("composer")||document.body;
+ new MutationObserver(adjustAll).observe(root,{childList:true,subtree:true});
+ const feed=document.getElementById("feed");
+ if(feed)new MutationObserver(adjustAll).observe(feed,{childList:true,subtree:true});
+ window.addEventListener("resize",adjustAll);
+ adjustAll();
+})();
+</script>
 
 </body>
 </html>
