@@ -4262,6 +4262,29 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  padding-left:0 !important;
 }
 
+
+/* v166: 名前と投稿本文の開始位置をさらに左へ */
+.post{
+ padding-left:1px !important;
+}
+
+/* 左の色線のすぐ右まで寄せる */
+.post .posted-name,
+.post .post-origin-line,
+.post .post-answer-line,
+.post .post-third-line,
+.post .post-final-line{
+ margin-left:-3px !important;
+ padding-left:0 !important;
+}
+
+/* 2行目へ送った「ですが文」も同じ開始位置 */
+.post .post-origin-line > .post-q2-line-break
++ .first-description.ga-pair > .town-post-sentence:first-child{
+ margin-left:0 !important;
+ padding-left:0 !important;
+}
+
 </style>
 </head>
 <body>
