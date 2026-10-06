@@ -3908,6 +3908,17 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
   margin-left:0 !important;
 }
 
+
+/* v151: 質問2は「地名＋は」を1行目、
+   答え文が単独1行に収まるなら答え文全体を2行目から */
+#stage2QA .a2 .adj-answer-line.q2-answer-own-line{
+  flex:0 0 100% !important;
+  width:max-content !important;
+  max-width:none !important;
+  white-space:nowrap !important;
+  margin-left:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4900,6 +4911,57 @@ if(_thingNameInput && _dontKnowNameBtn){
  window.addEventListener("resize",adjustQ2SecondSentence);
  document.addEventListener("DOMContentLoaded",adjustQ2SecondSentence);
  requestAnimationFrame(adjustQ2SecondSentence);
+})();
+</script>
+
+
+<script>
+/* v151: 質問2の「答え文」自体を判定する。
+   v150は2個目の形容詞文だけを見ていたため、1個選択時には何も起きていなかった。 */
+(()=>{
+ function adjustQ2Answer(){
+   const answer=document.querySelector("#stage2QA .a2");
+   const preview=document.getElementById("shusshinAdjPreview");
+   if(!answer || !preview)return;
+
+   const first=preview.querySelector(".adj-answer-line");
+   if(!first)return;
+
+   first.classList.remove("q2-answer-own-line");
+
+   requestAnimationFrame(()=>{
+     const cs=getComputedStyle(answer);
+     const fullLine=answer.clientWidth
+       - parseFloat(cs.paddingLeft||0)
+       - parseFloat(cs.paddingRight||0);
+
+     /* preview内の答え文全体（1個なら1文、2個なら2文）を
+        改行なしで置いた時の幅を測る */
+     const probe=preview.cloneNode(true);
+     probe.style.cssText="position:fixed!important;left:-20000px!important;top:0!important;display:inline-flex!important;flex-wrap:nowrap!important;width:max-content!important;max-width:none!important;white-space:nowrap!important;visibility:hidden!important;";
+     probe.querySelectorAll(".adj-answer-line").forEach(el=>{
+       el.classList.remove("q2-answer-own-line","q2-second-own-line","force-second-line");
+       el.style.cssText+=";flex:0 0 auto!important;width:max-content!important;max-width:none!important;white-space:nowrap!important;";
+     });
+     document.body.appendChild(probe);
+     const needed=probe.getBoundingClientRect().width;
+     probe.remove();
+
+     if(needed>0 && needed<=fullLine){
+       /* 最初の答え文を100% flex itemにして、地名＋はの次の行へ送る。
+          previewはdisplay:contentsなので、後続文もその後ろに並ぶ。 */
+       first.classList.add("q2-answer-own-line");
+     }
+   });
+ }
+
+ const root=document.getElementById("stage2QA")||document.body;
+ new MutationObserver(ms=>{
+   if(ms.some(m=>m.type==="childList" || m.type==="characterData"))adjustQ2Answer();
+ }).observe(root,{childList:true,subtree:true,characterData:true});
+ window.addEventListener("resize",adjustQ2Answer);
+ document.addEventListener("DOMContentLoaded",adjustQ2Answer);
+ requestAnimationFrame(adjustQ2Answer);
 })();
 </script>
 
