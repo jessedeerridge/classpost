@@ -4165,6 +4165,29 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  bottom:calc(4px + 1.55em) !important;
 }
 
+
+/* v163: 投稿の「ですが文」は文全体を絶対に途中で折り返さない。
+   「ちいさいですが、＋次の形容詞＋です。」までを1つの横一行として扱う。 */
+.post .first-description.ga-pair{
+ display:inline-flex !important;
+ flex-wrap:nowrap !important;
+ width:max-content !important;
+ min-width:max-content !important;
+ max-width:none !important;
+ white-space:nowrap !important;
+}
+.post .first-description.ga-pair > .town-post-sentence,
+.post .first-description.ga-pair > .town-post-sentence.post-force-new-line{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ flex-basis:auto !important;
+ width:max-content !important;
+ min-width:max-content !important;
+ max-width:none !important;
+ white-space:nowrap !important;
+ flex-wrap:nowrap !important;
+}
+
 </style>
 </head>
 <body>
