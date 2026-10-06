@@ -4188,6 +4188,80 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  flex-wrap:nowrap !important;
 }
 
+
+/* v164: 投稿の左余白をさらに詰める */
+.post{
+ padding-left:4px !important;
+ padding-right:4px !important;
+ overflow-x:hidden !important;
+}
+.posted-row,
+.posted-name,
+.post-origin-line,
+.post-answer-line,
+.post-third-line,
+.post-final-line{
+ margin-left:0 !important;
+ padding-left:0 !important;
+}
+
+/* 名前と投稿文頭を左端近くへ */
+.post .posted-name{
+ margin-left:-1px !important;
+}
+.post .post-origin-line{
+ margin-left:-1px !important;
+}
+
+/* 投稿エリアでは横スクロールを絶対に出さない */
+#feed,
+.post,
+.posted-row{
+ overflow-x:hidden !important;
+ max-width:100% !important;
+}
+
+/* 「ですが文」は途中では折り返さないが、
+   画面幅そのものを超えないよう文字間・カード余白を少し圧縮 */
+.post .first-description.ga-pair{
+ max-width:100% !important;
+ min-width:0 !important;
+}
+.post .first-description.ga-pair .posted-card{
+ padding-left:4px !important;
+ padding-right:4px !important;
+}
+.post .first-description.ga-pair > .town-post-sentence{
+ min-width:0 !important;
+}
+
+
+/* v165: 「ですが文」が2行目に来た時の左端を、
+   通常の投稿文開始位置と完全に統一 */
+.post .post-origin-line > .post-q2-line-break{
+ flex-basis:100% !important;
+ width:100% !important;
+}
+
+.post .post-origin-line > .post-q2-line-break + .first-description,
+.post .post-origin-line > .post-q2-line-break + .first-description.ga-pair{
+ margin-left:0 !important;
+ padding-left:0 !important;
+}
+
+/* display:contents の子が前行の残り位置を引き継がないよう、
+   ですが文先頭を投稿行の左端基準に固定 */
+.post .post-origin-line > .post-q2-line-break
++ .first-description.ga-pair > .town-post-sentence:first-child{
+ margin-left:0 !important;
+ padding-left:0 !important;
+}
+
+/* post-origin-line 自体の開始位置と同じ値に統一 */
+.post .post-origin-line{
+ padding-left:0 !important;
+}
+
 </style>
 </head>
 <body>
