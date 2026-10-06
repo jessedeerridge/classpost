@@ -5002,6 +5002,7 @@ if(_thingNameInput && _dontKnowNameBtn){
  if(table){
    new MutationObserver(syncFirstNote).observe(table,{
      subtree:true,childList:true,attributes:true,attributeFilter:["class"]
+  
    });
    table.addEventListener("click",()=>requestAnimationFrame(syncFirstNote));
  }
