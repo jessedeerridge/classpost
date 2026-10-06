@@ -4081,6 +4081,49 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  width:max-content !important;
 }
 
+
+/* v159: 投稿文の「ちいさいですが、」は回答2全体を2行目から。
+   first-description は display:contents のため、その親では改行できない。
+   post-origin-line直下に実体の100%幅flex itemを置いて確実に改行する。 */
+.post .post-origin-line > .post-q2-line-break{
+ display:block !important;
+ flex:0 0 100% !important;
+ width:100% !important;
+ height:0 !important;
+ min-height:0 !important;
+ margin:0 !important;
+ padding:0 !important;
+ border:0 !important;
+ line-height:0 !important;
+}
+
+
+/* v160: いいところボタンが最終行に入らない時は、
+   直後の次の1行に置く。カード訳用の下余白を反応欄へ持ち越さない。 */
+.post .reaction-area,
+.post .reaction-wrap,
+.post .metoo-area{
+ clear:none !important;
+ margin-top:0 !important;
+ padding-top:0 !important;
+}
+
+/* 右寄せ配置を解除された（次行へ落ちた）反応欄 */
+.post .reaction-area:not(.reaction-inline),
+.post .reaction-wrap:not(.reaction-inline),
+.post .metoo-area:not(.reaction-inline){
+ position:relative !important;
+ top:0 !important;
+ bottom:auto !important;
+ transform:none !important;
+ line-height:var(--post-line-h,1.55em) !important;
+}
+
+/* 投稿本文末尾から次行までの余分な空きを作らない */
+.posted-row{
+ row-gap:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -4648,7 +4691,11 @@ function renderPosts(){
         ${needsNa?'<span class="na-card">な</span>':""}<span>${noun}です。</span>
       </span>`;
     }).join("");
-    firstDescription=`<span class="first-description">${descriptions}</span>`;
+    /* 「ちいさいですが、」の時は first-description の前に
+       実体のflex改行要素を置く。first-description は display:contents なので、
+       親にclassを付ける方式では改行できない。 */
+    const postQ2Break=rule.useGa ? '<span class="post-q2-line-break" aria-hidden="true"></span>' : '';
+    firstDescription=`${postQ2Break}<span class="first-description">${descriptions}</span>`;
   }
 
   row.innerHTML=`<span class="posted-name">（${esc(p.author)}）</span>
@@ -5073,23 +5120,30 @@ if(_thingNameInput && _dontKnowNameBtn){
 </script>
 
 
+
 <script>
-/* v158: 投稿文の回答2先頭が「ちいさいですが、」かを判定 */
+/* v160: 反応ボタンが最終行に収まらない場合の縦位置を補正 */
 (()=>{
- function apply(root=document){
-   root.querySelectorAll(".post .first-description").forEach(fd=>{
-     fd.classList.remove("small-ga-description");
-     const first=fd.querySelector(":scope > .town-post-sentence:first-child");
-     if(!first)return;
-     const text=(first.textContent||"").replace(/\s+/g,"");
-     if(text.includes("ちいさいですが、")){
-       fd.classList.add("small-ga-description");
-     }
+ function fixReactionRows(){
+   document.querySelectorAll(".post").forEach(post=>{
+     const area=post.querySelector(".reaction-area,.reaction-wrap,.metoo-area");
+     if(!area)return;
+
+     /* absolute/right配置中は既存ロジックを尊重 */
+     const cs=getComputedStyle(area);
+     if(cs.position==="absolute")return;
+
+     area.style.setProperty("margin-top","0","important");
+     area.style.setProperty("padding-top","0","important");
+     area.style.setProperty("top","0","important");
+     area.style.setProperty("transform","none","important");
    });
  }
  const feed=document.getElementById("feed");
- if(feed)new MutationObserver(()=>apply(feed)).observe(feed,{childList:true,subtree:true});
- requestAnimationFrame(()=>apply(document));
+ if(feed)new MutationObserver(()=>requestAnimationFrame(fixReactionRows))
+   .observe(feed,{childList:true,subtree:true});
+ window.addEventListener("resize",()=>requestAnimationFrame(fixReactionRows));
+ requestAnimationFrame(fixReactionRows);
 })();
 </script>
 
