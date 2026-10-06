@@ -379,6 +379,53 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
  .origin-input{width:90px;height:32px;font-size:16px!important;padding:1px 5px;border-radius:7px}
 }
 
+
+/* 投稿一覧の展開ボタン */
+.board-title{height:16px;margin-left:0 !important}
+.feed-expand-btn{
+ display:block;
+ width:38px;
+ height:24px;
+ margin:-1px auto 0;
+ padding:0;
+ border:1px solid var(--line);
+ border-top:0;
+ border-radius:0 0 10px 10px;
+ background:rgba(255,255,255,.9);
+ color:#777;
+ font-size:14px;
+ line-height:22px;
+ cursor:pointer;
+ box-shadow:0 2px 4px rgba(0,0,0,.04);
+}
+.feed.expanded{
+ height:72vh !important;
+}
+.feed.has-posts:not(.expanded){
+ height:275px !important;
+}
+@media(max-width:700px){
+ .feed.has-posts:not(.expanded){
+   height:275px !important;
+ }
+ .feed-expand-btn{
+   height:23px;
+   line-height:21px;
+ }
+}
+
+/* 投稿がある時は一覧が高くなるので、▲も一覧の下へ自然に下がる */
+
+
+/* 左上の接続状態テキストは表示しない */
+.board-title{display:none !important;}
+#syncStatus{display:none !important;}
+
+
+/* 投稿左リボン：自分は濃い緑、ほかの人は薄い緑 */
+.post.own-post{border-left-color:#70a978 !important;}
+.post.other-post{border-left-color:#b9d7b9 !important;}
+
 </style>
 
 <style>
@@ -411,10 +458,11 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
 </div>
 
 <div class="app">
-  <div class="board-title">发布 <span id="syncStatus" style="margin-left:8px;font-size:11px;color:#999">● オフライン</span></div>
+  <div class="board-title"><span id="syncStatus" style="font-size:11px;color:#999">● オフライン</span></div>
   <section class="feed" id="feed">
     <div class="empty" id="empty">まだ投稿がありません。</div>
   </section>
+  <button id="feedExpandBtn" class="feed-expand-btn" type="button" aria-label="展开投稿">▼</button>
 
   <section class="drawer" id="drawer">
     <div class="composer">
@@ -590,6 +638,14 @@ function likePost(btn){
  renderPost(post,true);
  enqueue(post.id);
 
+ /* 投稿したら投稿欄を下へ展開 */
+ const feed=document.getElementById("feed");
+ const feedBtn=document.getElementById("feedExpandBtn");
+ if(feed){
+   feed.classList.add("expanded");
+   if(feedBtn) feedBtn.textContent="▲";
+ }
+
  document.getElementById("subject").value="";
  s1=s2=s3=null;
  render();
@@ -716,6 +772,9 @@ function renderPost(post,scroll=false){
    feed.appendChild(item);
  }
  item.innerHTML=postHTML(post);
+ const isOwnPost=!!userName && (post.author||"").trim()===userName.trim();
+ item.classList.toggle("own-post",isOwnPost);
+ item.classList.toggle("other-post",!isOwnPost);
  item.classList.toggle("pending",!!post.pending);
  item.classList.toggle("synced",!post.pending);
  attachLongPress(item);
@@ -903,5 +962,43 @@ try{
 }
 </script>
 
+
+<script>
+/* 投稿一覧：投稿済みなら高さを下げ、▲で展開/縮小 */
+(()=>{
+ const feed=document.getElementById("feed");
+ const btn=document.getElementById("feedExpandBtn");
+ if(!feed||!btn)return;
+
+ function sync(){
+   const hasPosts=!!feed.querySelector(".post");
+   feed.classList.toggle("has-posts",hasPosts);
+   btn.textContent=feed.classList.contains("expanded")?"▲":"▼";
+ }
+ btn.addEventListener("click",()=>{
+   feed.classList.toggle("expanded");
+   sync();
+ });
+ new MutationObserver(sync).observe(feed,{childList:true});
+ requestAnimationFrame(sync);
+})();
+</script>
+
+
+<script>
+/* 料理名入力ボックスを押したら、展開した投稿欄を元の高さへ戻す */
+(()=>{
+ const subject=document.getElementById("subject");
+ const feed=document.getElementById("feed");
+ const btn=document.getElementById("feedExpandBtn");
+ if(!subject||!feed)return;
+ const collapse=()=>{
+   feed.classList.remove("expanded");
+   if(btn) btn.textContent="▼";
+ };
+ subject.addEventListener("focus",collapse);
+ subject.addEventListener("pointerdown",collapse);
+})();
+</script>
 </body>
 </html>
