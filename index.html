@@ -4124,6 +4124,47 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  row-gap:0 !important;
 }
 
+
+/* v161: 「ちいさいですが、」は2行目から始めるが、
+   「ですが、」の直後では改行しない。 */
+.post .first-description.ga-pair > .town-post-sentence:nth-child(2),
+.post .first-description.ga-pair > .town-post-sentence:nth-child(2).post-force-new-line{
+ flex:0 0 auto !important;
+ flex-basis:auto !important;
+ width:max-content !important;
+ min-width:max-content !important;
+ white-space:nowrap !important;
+}
+
+/* いいところボタン：
+   最終行に入らない時、♥×Nを通常フローから外す。
+   countが1行分の高さを消費していたのが「架空の行」の原因。 */
+.post:not(.like-fits-last-line) > .me-too-count{
+ position:absolute !important;
+ right:7px !important;
+ width:auto !important;
+ height:15px !important;
+ min-height:15px !important;
+ line-height:15px !important;
+ margin:0 !important;
+ padding:0 !important;
+ z-index:7 !important;
+}
+
+/* ボタンは本文直後の次行。訳用14px余白だけを相殺する。 */
+.post:not(.like-fits-last-line) > .me-too-wrap{
+ position:relative !important;
+ width:100% !important;
+ margin-top:-14px !important;
+ padding-top:0 !important;
+ justify-content:flex-end !important;
+}
+
+/* countはボタンの直前の実表示行の右端へ */
+.post:not(.like-fits-last-line) > .me-too-count{
+ bottom:calc(4px + 1.55em) !important;
+}
+
 </style>
 </head>
 <body>
@@ -4695,7 +4736,7 @@ function renderPosts(){
        実体のflex改行要素を置く。first-description は display:contents なので、
        親にclassを付ける方式では改行できない。 */
     const postQ2Break=rule.useGa ? '<span class="post-q2-line-break" aria-hidden="true"></span>' : '';
-    firstDescription=`${postQ2Break}<span class="first-description">${descriptions}</span>`;
+    firstDescription=`${postQ2Break}<span class="first-description${rule.useGa ? " ga-pair" : ""}">${descriptions}</span>`;
   }
 
   row.innerHTML=`<span class="posted-name">（${esc(p.author)}）</span>
