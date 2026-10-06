@@ -3968,35 +3968,103 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 
-/* v155: 1段目の「1個/2個」説明は、ちいさい選択中だけ */
-#adjChoiceNote{
+/* v156: 過去CSSの競合を最終的に上書き */
+
+/* 一段目の説明は「ちいさい」が選択中の時だけ。
+   以前の #adjTable > #adjChoiceNote {display:block!important} より強い指定にする。 */
+#adjTable > #adjChoiceNote{
  display:none !important;
 }
 #adjTable.small-selected > #adjChoiceNote{
  display:block !important;
 }
 
-/* 1段目・3段目の説明は、後続UIが出てもサイズを変えない */
-#adjChoiceNote,
-#nameAdjTable .choice-note,
-#nameAdjChoiceNote{
+/* 一段目・三段目の説明は、二段目選択後も絶対にサイズを変えない */
+#adjTable > #adjChoiceNote,
+#nameAdjTable > .choice-note{
+ font-size:12px !important;
+ line-height:15px !important;
+ min-height:15px !important;
+ height:15px !important;
+ font-weight:400 !important;
+ padding:0 !important;
+ margin:0 0 5px 0 !important;
  box-sizing:border-box !important;
- flex:0 0 100% !important;
  width:100% !important;
- max-width:100% !important;
- min-width:0 !important;
- align-self:flex-start !important;
- font-size:inherit !important;
- line-height:1.35 !important;
- padding-top:0 !important;
- padding-bottom:0 !important;
+ flex:0 0 15px !important;
+ transform:none !important;
 }
 
-/* 親flexのalign/伸長変化の影響を受けない */
-#adjTable,
-#nameAdjTable{
- align-items:flex-start !important;
- align-content:flex-start !important;
+/* 質問2の回答：各回答文の途中では絶対に折り返さない */
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ width:max-content !important;
+ max-width:none !important;
+ white-space:nowrap !important;
+ flex-wrap:nowrap !important;
+}
+
+/* 投稿文も、各回答文の途中では絶対に折り返さない */
+.post .first-description .town-post-sentence{
+ display:inline-flex !important;
+ width:max-content !important;
+ max-width:none !important;
+ white-space:nowrap !important;
+ flex-wrap:nowrap !important;
+}
+
+
+/* v157 FINAL OVERRIDE */
+
+/* 注記：表示条件と文字サイズを親レイアウトから完全に独立 */
+#adjChoiceNote,
+#nameAdjChoiceNote{
+ font-family:Arial,"Noto Sans SC",sans-serif !important;
+ font-size:12px !important;
+ line-height:15px !important;
+ font-weight:400 !important;
+ letter-spacing:0 !important;
+ text-size-adjust:none !important;
+ -webkit-text-size-adjust:none !important;
+ height:15px !important;
+ min-height:15px !important;
+ max-height:15px !important;
+ padding:0 !important;
+ margin:0 0 5px 0 !important;
+ transform:none !important;
+ zoom:1 !important;
+}
+#adjChoiceNote{display:none !important;}
+#adjTable.small-selected > #adjChoiceNote{display:block !important;}
+
+/* 質問2：回答文の「中」では折り返さない。
+   古い force / nth-child / q2-* 指定を全部打ち消す。 */
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line,
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line:nth-child(2),
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line.force-second-line,
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line.q2-second-own-line,
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line.q2-answer-own-line,
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line.small-ga-line{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ flex-basis:auto !important;
+ width:max-content !important;
+ min-width:max-content !important;
+ max-width:none !important;
+ white-space:nowrap !important;
+ flex-wrap:nowrap !important;
+}
+
+/* 投稿：各「どんなところ」回答文の中も必ず横一行 */
+.post .first-description .town-post-sentence,
+.post .first-description .town-post-sentence.post-force-new-line{
+ display:inline-flex !important;
+ width:max-content !important;
+ min-width:max-content !important;
+ max-width:none !important;
+ white-space:nowrap !important;
+ flex-wrap:nowrap !important;
 }
 
 </style>
@@ -4074,7 +4142,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
   </div>
 
   <div id="nameAdjTable" class="choice-table adjective-table name-adj-table" style="display:none">
-<div class="choice-note">可以选1个，也可以选2个哦</div>
+<div id="nameAdjChoiceNote" class="choice-note">可以选1个，也可以选2个哦</div>
     <div id="nameAdjArea" class="choices shusshin-choices"></div>
   </div>
   </div>
@@ -4145,7 +4213,10 @@ function renderAdj(){
   };
   area.appendChild(b);
  });
- adjTable.classList.toggle("small-selected",selectedAdjs.includes("ちいさい"));
+ const smallSelected=selectedAdjs.includes("ちいさい");
+ adjTable.classList.toggle("small-selected",smallSelected);
+ const note=document.getElementById("adjChoiceNote");
+ if(note) note.style.setProperty("display",smallSelected?"block":"none","important");
 }
 function renderNameAdj(){
  const area=document.getElementById("nameAdjArea");
@@ -4984,29 +5055,6 @@ if(_thingNameInput && _dontKnowNameBtn){
    }).observe(feed,{childList:true,subtree:true});
  }
  requestAnimationFrame(()=>applyPostWrapRules(document));
-})();
-</script>
-
-
-<script>
-/* v155: 1段目説明の表示状態を選択状態と常時同期 */
-(()=>{
- function syncFirstNote(){
-   const table=document.getElementById("adjTable");
-   if(!table)return;
-   const selected=[...table.querySelectorAll("button.selected, .selected")]
-     .some(el=>(el.textContent||"").replace(/\s+/g,"").includes("ちいさい"));
-   table.classList.toggle("small-selected",selected);
- }
- const table=document.getElementById("adjTable");
- if(table){
-   new MutationObserver(syncFirstNote).observe(table,{
-     subtree:true,childList:true,attributes:true,attributeFilter:["class"]
-  
-   });
-   table.addEventListener("click",()=>requestAnimationFrame(syncFirstNote));
- }
- requestAnimationFrame(syncFirstNote);
 })();
 </script>
 
