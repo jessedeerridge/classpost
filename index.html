@@ -3696,6 +3696,106 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  max-width:none !important;
 }
 
+
+/* v144: 「1つか2つ」は、ちいさい選択中だけ */
+#adjChoiceNote{display:none !important;}
+#adjTable.small-selected > #adjChoiceNote{display:block !important;}
+
+/* カード箱を上下に動かさない。カード内文字も余計にずらさない */
+.posted-row > .post-origin-line .posted-card,
+.posted-row > .post-origin-line .na-card{
+ top:0 !important;
+ transform:none !important;
+ align-self:flex-start !important;
+}
+.posted-row > .post-origin-line .posted-card > span:first-child,
+.posted-row > .post-origin-line .na-card{
+ position:static !important;
+ top:auto !important;
+}
+
+/* 2文目が単独一行で入る時は、必ず次行から */
+#shusshinAdjPreview .adj-answer-line.force-second-line{
+ flex-basis:100% !important;
+ width:max-content !important;
+ max-width:none !important;
+ white-space:nowrap !important;
+}
+
+
+/* v145: 投稿文のカードと通常文字を同じ上下位置に揃える */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line,
+.post .town-post-sentence,
+.post .connector-with-adj{
+ align-items:center !important;
+}
+
+.post .posted-card,
+.post .na-card{
+ align-self:center !important;
+ top:0 !important;
+ bottom:auto !important;
+ transform:none !important;
+ vertical-align:middle !important;
+}
+
+/* カード内の日本語にも上下方向の個別補正をかけない */
+.post .posted-card > span:first-child,
+.post .na-card{
+ position:static !important;
+ top:auto !important;
+ bottom:auto !important;
+ transform:none !important;
+}
+
+/* 本文文字にも個別の上下paddingを残さない */
+.posted-row > .post-origin-line > span:not(.posted-card):not(.first-description),
+.post .town-post-sentence > span:not(.posted-card):not(.na-card){
+ padding-top:0 !important;
+ padding-bottom:0 !important;
+}
+
+
+/* v146: 中国語訳はカードの縦位置計算から完全に除外。
+   カード本体と本文文字だけで上下を揃える。 */
+.post .posted-card{
+ position:relative !important;
+ overflow:visible !important;
+ margin-bottom:14px !important;
+ align-self:flex-start !important;
+ vertical-align:top !important;
+ top:0 !important;
+ transform:none !important;
+}
+.post .posted-card > .posted-cn{
+ position:absolute !important;
+ left:50% !important;
+ top:100% !important;
+ margin-top:2px !important;
+ transform:translateX(-50%) !important;
+ height:auto !important;
+ line-height:1.05 !important;
+ pointer-events:none !important;
+}
+
+/* 訳を含まないカード本体の上端に、通常文字を合わせる */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line,
+.post .town-post-sentence,
+.post .connector-with-adj{
+ align-items:flex-start !important;
+}
+.post .na-card{
+ align-self:flex-start !important;
+ top:0 !important;
+ transform:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -3823,18 +3923,26 @@ function renderAdj(){
    if(i>=0){
      selectedAdjs.splice(i,1);
    }else{
-     if(jp==="おおきい" || jp==="ちいさい"){
-       const opposite=jp==="おおきい" ? "ちいさい" : "おおきい";
-       selectedAdjs=selectedAdjs.filter(x=>x!==opposite);
+     if(jp==="ちいさい"){
+       selectedAdjs=selectedAdjs.filter(x=>x!=="おおきい");
+       if(selectedAdjs.length>=2) selectedAdjs=selectedAdjs.slice(-1);
+       selectedAdjs.push("ちいさい");
+     }else if(selectedAdjs.includes("ちいさい")){
+       if(jp==="おおきい"){
+         selectedAdjs=["おおきい"];
+       }else{
+         selectedAdjs=["ちいさい",jp];
+       }
+     }else{
+       selectedAdjs=[jp];
      }
-     selectedAdjs.push(jp);
-     if(selectedAdjs.length>2) selectedAdjs.shift();
    }
    renderAdj();
    updateComposer();
   };
   area.appendChild(b);
  });
+ adjTable.classList.toggle("small-selected",selectedAdjs.includes("ちいさい"));
 }
 function renderNameAdj(){
  const area=document.getElementById("nameAdjArea");
@@ -4645,44 +4753,31 @@ if(_thingNameInput && _dontKnowNameBtn){
 
 
 <script>
-/* v143: 第2文が回答欄の1行幅に収まるなら、必ず2行目から1行で表示 */
+/* v144: 第2文が回答欄の一行幅に収まるなら、必ず2行目から一行 */
 (()=>{
  function adjust(){
    const preview=document.getElementById("shusshinAdjPreview");
    if(!preview)return;
    const second=preview.querySelector(".adj-answer-line:nth-child(2)");
    if(!second)return;
-
-   second.style.removeProperty("flex-basis");
-   second.style.removeProperty("width");
-
+   second.classList.remove("force-second-line");
    requestAnimationFrame(()=>{
      const answer=preview.closest(".a2");
      if(!answer)return;
-
-     /* cloneで自然な1行幅を測るので、現在の折返し状態に影響されない */
      const clone=second.cloneNode(true);
+     clone.classList.remove("force-second-line");
      clone.style.cssText+=";position:fixed!important;left:-10000px!important;top:0!important;width:max-content!important;max-width:none!important;flex:none!important;white-space:nowrap!important;visibility:hidden!important;";
      document.body.appendChild(clone);
      const needed=clone.getBoundingClientRect().width;
      clone.remove();
-
      const cs=getComputedStyle(answer);
-     const available=answer.clientWidth
-       - parseFloat(cs.paddingLeft||0)
-       - parseFloat(cs.paddingRight||0);
-
-     if(needed>0 && needed<=available){
-       second.style.setProperty("flex-basis","100%","important");
-       second.style.setProperty("width","max-content","important");
-       second.style.setProperty("white-space","nowrap","important");
-     }
+     const available=answer.clientWidth-parseFloat(cs.paddingLeft||0)-parseFloat(cs.paddingRight||0);
+     if(needed>0 && needed<=available) second.classList.add("force-second-line");
    });
  }
- const target=document.getElementById("stage2QA")||document.body;
- new MutationObserver(ms=>{
-   if(ms.some(m=>m.type==="childList"))adjust();
- }).observe(target,{childList:true,subtree:true});
+ const root=document.getElementById("stage2QA")||document.body;
+ new MutationObserver(ms=>{if(ms.some(m=>m.type==="childList"))adjust();})
+   .observe(root,{childList:true,subtree:true});
  window.addEventListener("resize",adjust);
  requestAnimationFrame(adjust);
 })();
