@@ -3064,6 +3064,35 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 .post > .me-too-wrap,.post.reaction-fit-last-line > .me-too-wrap{transition:none !important;}
 
+
+/* v122: いいねで投稿DOMを再生成しない。♥はボタンより必ず上 */
+.post > .me-too-count{
+ position:static !important;
+ display:block !important;
+ width:100% !important;
+ height:16px !important;
+ min-height:16px !important;
+ text-align:right !important;
+ line-height:16px !important;
+ margin:2px 0 2px !important;
+ padding:0 7px 0 0 !important;
+ box-sizing:border-box !important;
+}
+.post.reaction-fit-last-line > .me-too-count{
+ position:absolute !important;
+ width:auto !important;
+ height:16px !important;
+ min-height:16px !important;
+ right:7px !important;
+ top:calc(var(--reaction-btn-top) - 18px) !important;
+ bottom:auto !important;
+ left:auto !important;
+ margin:0 !important;
+ padding:0 !important;
+ line-height:16px !important;
+ z-index:7 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3430,6 +3459,24 @@ function postShusshin(){
  document.getElementById("shusshinInput").value="";
  renderAdj();renderThings();renderNameAdj();updateComposer();
 }
+
+function updateReactionOnly(id){
+  const p=posts.find(x=>x.id===id);
+  if(!p)return;
+  const d=document.querySelector(`.post[data-post-id="${CSS.escape(String(id))}"]`);
+  if(!d)return;
+
+  const count=d.querySelector(":scope > .me-too-count");
+  if(count) count.textContent=p.meTooCount>0 ? `♥×${p.meTooCount}` : "";
+
+  const btn=d.querySelector(".me-too-btn");
+  if(btn){
+    const reacted=hasReacted(id);
+    btn.classList.toggle("active",reacted);
+    btn.setAttribute("aria-pressed",reacted?"true":"false");
+  }
+}
+
 async function toggleMeToo(id){
  const p=posts.find(x=>String(x.id)===String(id));
  const unlimited=userName==="あさの";
@@ -3437,7 +3484,7 @@ async function toggleMeToo(id){
  if(!unlimited)rememberMeToo(id);
  p.meTooCount=Number(p.meTooCount||0)+1;
  localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
- incrementMeTooDB(id);renderPosts();
+ incrementMeTooDB(id);updateReactionOnly(id);
 }
 
 function renderPosts(){
@@ -3452,7 +3499,8 @@ function renderPosts(){
  if(!feed)return;
  feed.innerHTML="";
  posts.forEach(p=>{
-  const d=document.createElement("div");d.className="post "+(p.author===userName?"own-post":"other-post");d.dataset.id=p.id;
+  const d=document.createElement("div");d.className="post "+(p.author===userName?"own-post":"other-post");
+  d.dataset.postId=p.id;d.dataset.id=p.id;
   const row=document.createElement("div");row.className="posted-row";
 
   const postAdjs=(Array.isArray(p.adjs)&&p.adjs.length?p.adjs:[p.adj]).filter(Boolean).slice(0,2);
