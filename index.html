@@ -3418,6 +3418,43 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  padding:0 !important;
 }
 
+
+/* v135: 投稿1・2行目を同じ行間・同じ基準線に統一 */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line{
+ line-height:1.45 !important;
+ row-gap:0 !important;
+ margin-top:0 !important;
+ margin-bottom:0 !important;
+ padding-top:0 !important;
+ padding-bottom:0 !important;
+ align-items:flex-start !important;
+ align-content:flex-start !important;
+}
+
+/* カードを文字の基準線から下げない */
+.post .posted-card,
+.post .na-card{
+ vertical-align:top !important;
+ align-self:flex-start !important;
+ position:relative !important;
+ top:0 !important;
+ transform:none !important;
+}
+
+/* 日本語文字もカード内で中央に固定 */
+.post .posted-card > span:first-child,
+.post .na-card{
+ line-height:1.15 !important;
+}
+
+/* 中国語訳だけカードの下へ。カード本体の位置には影響させない */
+.post .posted-card > .posted-cn{
+ top:calc(100% + 2px) !important;
+ transform:translateX(-50%) !important;
+ line-height:1.05 !important;
+}
+
 </style>
 </head>
 <body>
