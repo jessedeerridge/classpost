@@ -2862,6 +2862,38 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  row-gap:0 !important;
 }
 
+
+/* v115: 投稿文の「文間」と「自然折返し」の行間を完全に統一 */
+.posted-row{
+ row-gap:0 !important;
+}
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ line-height:1.75 !important;
+ min-height:1.75em !important;
+ margin:0 !important;
+ padding-top:0 !important;
+ padding-bottom:0 !important;
+}
+
+/* 各文の次行も、自然折返し1行分と同じ距離だけ下げる */
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ margin-top:0 !important;
+}
+
+/* flex折返しでも各flex lineの高さを潰さない */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ align-items:baseline !important;
+ align-content:normal !important;
+}
+
 </style>
 </head>
 <body>
