@@ -2917,6 +2917,63 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  line-height:1.1 !important;
 }
 
+
+/* v117: 投稿内の訳を absolute で浮かせず、カード自身の高さに含める。
+   これで自然折返ししても訳と次の表示行が絶対に重ならない。 */
+.post .posted-card{
+ position:relative !important;
+ display:inline-grid !important;
+ grid-template-rows:auto auto !important;
+ align-items:center !important;
+ justify-items:center !important;
+ height:auto !important;
+ min-height:0 !important;
+ padding:5px 7px 3px !important;
+ margin:0 !important;
+ line-height:1.15 !important;
+ vertical-align:top !important;
+ overflow:visible !important;
+ box-sizing:border-box !important;
+}
+.post .posted-card > span:first-child{
+ grid-row:1 !important;
+ line-height:1.2 !important;
+ white-space:nowrap !important;
+}
+.post .posted-card > .posted-cn{
+ position:static !important;
+ grid-row:2 !important;
+ display:block !important;
+ left:auto !important;
+ right:auto !important;
+ top:auto !important;
+ bottom:auto !important;
+ transform:none !important;
+ margin-top:3px !important;
+ line-height:1.1 !important;
+ white-space:nowrap !important;
+ text-align:center !important;
+}
+
+/* v116で設けた仮の下余白は不要。カードの実高さでレイアウトする */
+.posted-row > .post-origin-line:has(.posted-cn),
+.posted-row > .post-answer-line:has(.posted-cn),
+.posted-row > .post-third-line:has(.posted-cn),
+.posted-row > .post-final-line:has(.posted-cn){
+ padding-bottom:0 !important;
+}
+
+/* 折返し行はカードの実高さを基準に並び、行同士に一定の余白を持たせる */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ line-height:1.75 !important;
+ align-items:flex-start !important;
+ align-content:flex-start !important;
+ row-gap:7px !important;
+}
+
 </style>
 </head>
 <body>
