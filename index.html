@@ -3199,6 +3199,17 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  z-index:7 !important;
 }
 
+
+/* v126: いいね前後でボタンの寸法を一切変えない */
+.me-too-btn,
+.me-too-btn[aria-pressed="true"],
+.me-too-btn[aria-pressed="false"]{
+ box-sizing:border-box !important;
+ transform:none !important;
+ transition:none !important;
+ animation:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -3567,42 +3578,60 @@ function postShusshin(){
 }
 
 
-/* v123: 投稿内容が同じで反応数だけ変わった時はDOMを作り直さない */
-function samePostContent(a,b){
-  if(!a||!b)return false;
-  const keys=["id","author","place","adj","thing","thingName","createdAt"];
-  if(keys.some(k=>String(a[k]??"")!==String(b[k]??"")))return false;
-  return JSON.stringify(a.adjs||[])===JSON.stringify(b.adjs||[]) &&
-         JSON.stringify(a.nameAdjs||[])===JSON.stringify(b.nameAdjs||[]);
+/* v126: Firebaseでいいね数だけ変化した場合は、投稿DOMを絶対に再生成しない */
+function postContentSignature(p){
+  return JSON.stringify({
+    id:String(p?.id??""),
+    author:p?.author??"",
+    place:p?.place??"",
+    adjs:Array.isArray(p?.adjs)?p.adjs:[],
+    adj:p?.adj??"",
+    thing:p?.thing??"",
+    thingName:p?.thingName??"",
+    nameAdjs:Array.isArray(p?.nameAdjs)?p.nameAdjs:[],
+    createdAt:p?.createdAt??""
+  });
 }
 function renderOrPatchPosts(nextPosts){
-  const prev=Array.isArray(posts)?posts:[];
   const next=Array.isArray(nextPosts)?nextPosts:[];
-  const structural =
-    prev.length!==next.length ||
-    prev.some((p,i)=>!next[i] || !samePostContent(p,next[i]));
+  const oldById=new Map((Array.isArray(posts)?posts:[]).map(p=>[String(p.id),p]));
+  const newById=new Map(next.map(p=>[String(p.id),p]));
+
+  let structural=oldById.size!==newById.size;
+  if(!structural){
+    for(const [id,np] of newById){
+      const op=oldById.get(id);
+      if(!op || postContentSignature(op)!==postContentSignature(np)){
+        structural=true;
+        break;
+      }
+    }
+  }
 
   posts=next;
   if(structural){
     renderPosts();
-    return;
+  }else{
+    /* いいね同期は数字と選択状態だけ変更。投稿本体には触れない */
+    next.forEach(p=>updateReactionOnly(p.id));
   }
-  next.forEach(p=>updateReactionOnly(p.id));
 }
 
 function updateReactionOnly(id){
-  const p=posts.find(x=>x.id===id);
+  const p=posts.find(x=>String(x.id)===String(id));
   if(!p)return;
-  const d=document.querySelector(`.post[data-post-id="${CSS.escape(String(id))}"]`);
+  const escId=(window.CSS&&CSS.escape)?CSS.escape(String(id)):String(id).replace(/"/g,'\\"');
+  const d=document.querySelector(`.post[data-post-id="${escId}"]`);
   if(!d)return;
 
   const count=d.querySelector(":scope > .me-too-count");
-  if(count) count.textContent=p.meTooCount>0 ? `♥×${p.meTooCount}` : "";
+  const value=Number(p.meTooCount)||0;
+  const nextText=value>0 ? `♥×${value}` : "";
+  if(count && count.textContent!==nextText) count.textContent=nextText;
 
   const btn=d.querySelector(".me-too-btn");
   if(btn){
     const reacted=hasReacted(id);
-    btn.classList.toggle("active",reacted);
     btn.setAttribute("aria-pressed",reacted?"true":"false");
   }
 }
