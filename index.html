@@ -3374,6 +3374,50 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  margin-right:0 !important;
 }
 
+
+/* v134: 投稿の自然折返し時の縦余白を詰める。
+   中国語訳が重ならない最低限だけ確保する。 */
+.post .posted-card{
+ margin-bottom:14px !important;
+}
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ row-gap:0 !important;
+ line-height:1.45 !important;
+}
+
+/* 投稿内の「な」カードを通常カードと同じ日本語カード寸法・位置に揃える */
+.post .na-card{
+ display:inline-flex !important;
+ align-items:center !important;
+ justify-content:center !important;
+ align-self:flex-start !important;
+ box-sizing:border-box !important;
+ min-height:0 !important;
+ padding:5px 7px !important;
+ margin:0 0 14px 0 !important;
+ border-radius:7px !important;
+ background:#fff1f5 !important;
+ color:#7a5964 !important;
+ line-height:1.15 !important;
+ vertical-align:top !important;
+ flex:0 0 auto !important;
+}
+
+/* 「そして、」と次の形容詞は絶対に分離しない。
+   形容詞の後ろでは通常どおり折返し可能。 */
+.post .connector-with-adj{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ align-items:flex-start !important;
+ white-space:nowrap !important;
+ gap:0 !important;
+ margin:0 !important;
+ padding:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3891,8 +3935,18 @@ function renderPosts(){
     const parts=ordered.map((adj,i)=>{
       const item=nameAdjectives.find(x=>x[0]===adj);
       const cn=item?item[1]:"";
-      const ending=(ordered.length===2&&i===0)?(useGa?"ですが、":"です。そして、"):"です。";
-      return `<span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>${adj==="いい"?'<span>ところ</span>':""}<span>${ending}</span>`;
+      const card=`<span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>${adj==="いい"?'<span>ところ</span>':""}`;
+
+      if(ordered.length===1) return `${card}<span>です。</span>`;
+
+      if(i===0){
+        return `${card}<span>${useGa?"ですが、":"です。"}</span>`;
+      }
+
+      /* 「そして、」は次の形容詞と同じ塊。
+         そのため「そして、」直後では折り返さない。
+         形容詞の後（です。の前）では折り返し可能。 */
+      return `${useGa?"":'<span class="connector-with-adj"><span>そして、</span>'+card+'</span>'}${useGa?card:""}<span>です。</span>`;
     }).join("");
     finalLine=`<span class="post-third-line post-final-line">${p.thingName!=="×"?`<span class="posted-place-plain">${esc(p.thingName)}</span><span>は</span>`:""}${parts}</span>`;
   }
