@@ -3266,6 +3266,90 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  margin-top:4px !important;
 }
 
+
+/* v131: 一段目の案内はボタン群の直前 */
+#adjChoiceNote{
+ margin:4px 0 5px 0 !important;
+ text-align:left !important;
+}
+
+/* 「どんなところ」の答え：
+   1文目は通常通り。2文目は文単位で、残り幅に入れば同じ行、
+   入らなければ丸ごと次の行へ。 */
+#stage2QA .a2,
+.qa-stage-block .a2{
+ display:flex !important;
+ flex-wrap:wrap !important;
+ align-items:flex-start !important;
+ column-gap:.35em !important;
+ row-gap:6px !important;
+}
+#stage2QA .a2 #shusshinAdjPreview,
+.qa-stage-block .a2 #shusshinAdjPreview{
+ display:contents !important;
+}
+#stage2QA .a2 #shusshinAdjPreview .adj-answer-line,
+.qa-stage-block .a2 #shusshinAdjPreview .adj-answer-line{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ width:auto !important;
+ max-width:100% !important;
+ white-space:nowrap !important;
+ align-items:flex-start !important;
+ margin:0 !important;
+}
+
+
+/* v132: 一段目の説明はボタン群の中で1行を占有 */
+#adjTable #adjChoiceNote{
+ flex:0 0 100% !important;
+ width:100% !important;
+ box-sizing:border-box !important;
+ margin:0 0 5px 0 !important;
+ padding:0 !important;
+ text-align:left !important;
+}
+
+/* v132: 「どんなところ」の回答。
+   出身地＋は＋第1文は普通に流す。
+   第2文だけを1つの塊として扱い、残り幅に入れば同じ行、
+   入らなければ第2文全体を次行へ送る。 */
+#stage2QA .a2,
+.qa-stage-block .a2{
+ display:flex !important;
+ flex-wrap:wrap !important;
+ align-items:flex-start !important;
+ column-gap:.35em !important;
+ row-gap:6px !important;
+}
+#stage2QA .a2 #shusshinAdjPreview,
+.qa-stage-block .a2 #shusshinAdjPreview{
+ display:contents !important;
+}
+#shusshinAdjPreview .adj-answer-line{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ width:max-content !important;
+ max-width:100% !important;
+ white-space:nowrap !important;
+ align-items:flex-start !important;
+ margin:0 !important;
+}
+
+/* 投稿側も各特徴文を文単位で折り返す */
+.post .first-description{
+ display:contents !important;
+}
+.post .town-post-sentence{
+ display:inline-flex !important;
+ flex:0 0 auto !important;
+ width:max-content !important;
+ max-width:100% !important;
+ white-space:nowrap !important;
+ align-items:flex-start !important;
+ margin:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3601,10 +3685,11 @@ const a2Cell=document.getElementById("shusshinSubjectAnswer").parentElement;
  if(selectedAdjs.length){
   const rule=orderedTownAdjs(selectedAdjs);
   adjBox.innerHTML=rule.ordered.map((adj,i)=>{
-   const ending=(rule.ordered.length===2 && i===0)
-     ? (rule.useGa ? "ですが、" : "です。")
-     : "です。";
-   return townAdjHtml(adj,ending);
+   if(rule.useGa && i===0){
+     const item=adjectives.find(x=>x[0]===adj);
+     return `<span class="adj-answer-line"><span class="posted-card shusshin-adj-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(item?item[1]:"")}</span></span><span>ですが、</span></span>`;
+   }
+   return townAdjHtml(adj,"です。");
   }).join("");
  }else{
   adjBox.innerHTML="";
@@ -3795,14 +3880,20 @@ function renderPosts(){
       const item=adjectives.find(x=>x[0]===adj);
       const cn=item?item[1]:"";
       const needsNa=!!(item&&item[2]);
+
+      if(rule.useGa && i===0){
+        return `<span class="town-post-sentence">
+          <span class="posted-place-plain">${esc(p.place)}</span><span>は</span>
+          <span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>
+          <span>ですが、</span>
+        </span>`;
+      }
+
       const noun=(adj==="おおきい"||adj==="ちいさい")?"まち":"ところ";
-      const ending=(rule.ordered.length===2 && i===0)
-        ? (rule.useGa ? "ですが、" : "です。")
-        : "です。";
       return `<span class="town-post-sentence">
         ${i===0?`<span class="posted-place-plain">${esc(p.place)}</span><span>は</span>`:""}
         <span class="posted-card"><span>${esc(adj)}</span><span class="posted-cn">${esc(cn)}</span></span>
-        ${needsNa?'<span class="na-card">な</span>':""}<span>${(adj==="ちいさい" && ending==="ですが、")?"":noun}${ending}</span>
+        ${needsNa?'<span class="na-card">な</span>':""}<span>${noun}です。</span>
       </span>`;
     }).join("");
     firstDescription=`<span class="first-description">${descriptions}</span>`;
@@ -4203,7 +4294,7 @@ if(_thingNameInput && _dontKnowNameBtn){
    note.id="adjChoiceNote";
    note.className="choice-note adj-choice-note";
    note.textContent="可以选1个，也可以选2个哦";
-   table.insertAdjacentElement("afterend",note);
+   table.prepend(note);
  }
 })();
 </script>
