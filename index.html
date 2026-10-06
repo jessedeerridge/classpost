@@ -3350,6 +3350,30 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  margin:0 !important;
 }
 
+
+/* v133: 一段目説明は一度だけ表示。再描画で増殖させない */
+#adjTable > #adjChoiceNote{
+ display:block !important;
+ width:100% !important;
+ flex:0 0 100% !important;
+ margin:0 0 5px 0 !important;
+}
+
+/* v133: 投稿の「ですが、」前後を通常の文章間隔にする */
+.post .first-description .town-post-sentence + .town-post-sentence,
+.first-description .town-post-sentence + .town-post-sentence{
+ margin-left:0 !important;
+}
+.post .first-description,
+.post .town-post-sentence{
+ column-gap:0 !important;
+ gap:0 !important;
+}
+.post .town-post-sentence > span{
+ margin-left:0 !important;
+ margin-right:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -3413,7 +3437,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
     </div>
   </div>
 
-  <div id="adjTable" class="choice-table adjective-table">
+  <div id="adjTable" class="choice-table adjective-table"><div id="adjChoiceNote" class="choice-note adj-choice-note">可以选1个，也可以选2个哦</div>
 
     
     <div id="adjArea" class="choices shusshin-choices"></div>
@@ -4285,19 +4309,7 @@ if(_thingNameInput && _dontKnowNameBtn){
 </script>
 
 
-<script>
-/* v130: 一段目の選択数案内 */
-(()=>{
- const table=document.getElementById("adjTable");
- if(table && !document.getElementById("adjChoiceNote")){
-   const note=document.createElement("div");
-   note.id="adjChoiceNote";
-   note.className="choice-note adj-choice-note";
-   note.textContent="可以选1个，也可以选2个哦";
-   table.prepend(note);
- }
-})();
-</script>
+
 
 </body>
 </html>
