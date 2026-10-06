@@ -3676,6 +3676,26 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  top:2px !important;
 }
 
+
+/* v143: カード箱は動かさない。
+   カード内の日本語文字の基準線だけ、通常本文に合わせる。 */
+.posted-row > .post-origin-line .posted-card,
+.posted-row > .post-origin-line .na-card{
+ top:0 !important;
+ transform:none !important;
+ align-self:flex-start !important;
+}
+.posted-row > .post-origin-line .posted-card > span:first-child,
+.posted-row > .post-origin-line .na-card{
+ position:relative !important;
+ top:2px !important;
+}
+
+/* 「どんなところ」の2文目は2行目に送った時は必ず一行 */
+#shusshinAdjPreview .adj-answer-line:nth-child(2){
+ max-width:none !important;
+}
+
 </style>
 </head>
 <body>
@@ -4625,9 +4645,9 @@ if(_thingNameInput && _dontKnowNameBtn){
 
 
 <script>
-/* v142: 「どんなところ」の第2文は、独立行なら収まる場合に必ず2行目へ */
+/* v143: 第2文が回答欄の1行幅に収まるなら、必ず2行目から1行で表示 */
 (()=>{
- function adjustPreview(){
+ function adjust(){
    const preview=document.getElementById("shusshinAdjPreview");
    if(!preview)return;
    const second=preview.querySelector(".adj-answer-line:nth-child(2)");
@@ -4637,34 +4657,34 @@ if(_thingNameInput && _dontKnowNameBtn){
    second.style.removeProperty("width");
 
    requestAnimationFrame(()=>{
-     /* a2全体ではなく、回答本文が実際に使える横幅で比較 */
-     const answer=preview.closest(".a2") || preview.parentElement;
-     const available=answer ? answer.getBoundingClientRect().width : 0;
+     const answer=preview.closest(".a2");
+     if(!answer)return;
 
-     /* 一時的に内容幅を測る */
-     const oldPos=second.style.position;
-     const oldVis=second.style.visibility;
-     second.style.position="absolute";
-     second.style.visibility="hidden";
-     second.style.width="max-content";
-     const needed=second.getBoundingClientRect().width;
-     second.style.position=oldPos;
-     second.style.visibility=oldVis;
-     second.style.removeProperty("width");
+     /* cloneで自然な1行幅を測るので、現在の折返し状態に影響されない */
+     const clone=second.cloneNode(true);
+     clone.style.cssText+=";position:fixed!important;left:-10000px!important;top:0!important;width:max-content!important;max-width:none!important;flex:none!important;white-space:nowrap!important;visibility:hidden!important;";
+     document.body.appendChild(clone);
+     const needed=clone.getBoundingClientRect().width;
+     clone.remove();
 
-     if(needed>0 && available>0 && needed<=available){
+     const cs=getComputedStyle(answer);
+     const available=answer.clientWidth
+       - parseFloat(cs.paddingLeft||0)
+       - parseFloat(cs.paddingRight||0);
+
+     if(needed>0 && needed<=available){
        second.style.setProperty("flex-basis","100%","important");
        second.style.setProperty("width","max-content","important");
+       second.style.setProperty("white-space","nowrap","important");
      }
    });
  }
- function run(){ adjustPreview(); }
- const root=document.querySelector(".composer")||document.body;
+ const target=document.getElementById("stage2QA")||document.body;
  new MutationObserver(ms=>{
-   if(ms.some(m=>m.type==="childList"))run();
- }).observe(root,{childList:true,subtree:true});
- window.addEventListener("resize",run);
- requestAnimationFrame(run);
+   if(ms.some(m=>m.type==="childList"))adjust();
+ }).observe(target,{childList:true,subtree:true});
+ window.addEventListener("resize",adjust);
+ requestAnimationFrame(adjust);
 })();
 </script>
 
