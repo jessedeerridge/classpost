@@ -4877,6 +4877,7 @@ if(_thingNameInput && _dontKnowNameBtn){
      if(needed>0 && needed<=available) second.classList.add("force-second-line");
    });
  }
+  
  const root=document.getElementById("stage2QA")||document.body;
  new MutationObserver(ms=>{if(ms.some(m=>m.type==="childList"))adjust();})
    .observe(root,{childList:true,subtree:true});
