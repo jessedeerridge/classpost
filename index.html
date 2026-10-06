@@ -2974,6 +2974,58 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  row-gap:7px !important;
 }
 
+
+/* v118: カード背景は日本語部分だけ。中国語訳はカードの外側に置く */
+.post .posted-card{
+ position:relative !important;
+ display:inline-flex !important;
+ align-items:center !important;
+ justify-content:center !important;
+ height:auto !important;
+ min-height:0 !important;
+ padding:5px 7px !important;
+ margin:0 0 18px 0 !important;
+ line-height:1.15 !important;
+ vertical-align:top !important;
+ overflow:visible !important;
+ box-sizing:border-box !important;
+}
+.post .posted-card > span:first-child{
+ display:inline !important;
+ line-height:1.2 !important;
+ white-space:nowrap !important;
+}
+.post .posted-card > .posted-cn{
+ position:absolute !important;
+ display:block !important;
+ left:50% !important;
+ right:auto !important;
+ top:calc(100% + 3px) !important;
+ bottom:auto !important;
+ transform:translateX(-50%) !important;
+ margin:0 !important;
+ padding:0 !important;
+ background:transparent !important;
+ border:0 !important;
+ box-shadow:none !important;
+ line-height:1.1 !important;
+ white-space:nowrap !important;
+ text-align:center !important;
+}
+
+/* カード下の18pxを各折返し行の実占有高として扱う */
+.posted-row > .post-origin-line,
+.posted-row > .post-answer-line,
+.posted-row > .post-third-line,
+.posted-row > .post-final-line{
+ min-height:0 !important;
+ padding-bottom:0 !important;
+ line-height:1.75 !important;
+ align-items:flex-start !important;
+ align-content:flex-start !important;
+ row-gap:7px !important;
+}
+
 </style>
 </head>
 <body>
@@ -3437,8 +3489,18 @@ function renderPosts(){
   const done=userName!=="あさの"&&hasMeToo(p.id);
   btn.className="me-too-btn"+(done?" liked":"");btn.disabled=done;
   btn.textContent="♥ いい ところ ですね。";
-  btn.onclick=()=>toggleMeToo(p.id);
+  /* v119: いいね操作を投稿カードの長押し削除判定へ伝播させない */
+  ["pointerdown","pointerup","pointercancel","click"].forEach(type=>{
+    btn.addEventListener(type,e=>e.stopPropagation());
+  });
+  btn.onclick=(e)=>{
+    e.stopPropagation();
+    toggleMeToo(p.id);
+  };
   wrap.append(btn);
+  ["pointerdown","pointerup","pointercancel","click"].forEach(type=>{
+    wrap.addEventListener(type,e=>e.stopPropagation());
+  });
   d.appendChild(count);
   d.appendChild(wrap);
 
