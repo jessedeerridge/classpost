@@ -986,6 +986,83 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 .post.own-post{border-left-color:#5f9f52 !important;}
 .post.other-post{border-left-color:#c5ddbb !important;}
 
+
+/* ～と 動詞：相手選択ポップ */
+.partner-modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.18)}
+.partner-modal.show{display:flex}
+.partner-box{width:min(330px,88vw);background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 28px rgba(63,126,46,.16)}
+.partner-title{text-align:center;font-size:15px;color:#62825a;margin-bottom:10px;font-weight:700}
+.partner-choices{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.partner-choice{position:relative;min-height:58px;border:1px solid #76a862;border-radius:10px;background:var(--btn);color:#315f24;font-family:inherit;font-weight:700;cursor:pointer;padding:7px 3px 18px}
+.partner-cn{position:absolute;left:0;right:0;bottom:5px;text-align:center;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-size:10px;font-weight:500;color:#555}
+
+
+/* 相手選択カード：小さく、3枚を均一に */
+#partnerModal .partner-choices{
+ display:flex !important;
+ justify-content:center !important;
+ align-items:center !important;
+ gap:8px !important;
+}
+#partnerModal .partner-choice{
+ box-sizing:border-box !important;
+ width:86px !important;
+ min-width:86px !important;
+ max-width:86px !important;
+ height:48px !important;
+ min-height:48px !important;
+ padding:5px 3px 16px !important;
+ margin:0 !important;
+ border-radius:9px !important;
+ font-size:14px !important;
+ line-height:18px !important;
+ flex:0 0 86px !important;
+}
+#partnerModal .partner-choice .partner-cn{
+ bottom:3px !important;
+ font-size:9px !important;
+ line-height:11px !important;
+}
+
+
+/* 相手選択カード：通常カードと同じ大きさ・均等配置 */
+#partnerModal .partner-choices{
+ display:grid !important;
+ grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+ gap:12px !important;
+ width:100% !important;
+}
+#partnerModal .partner-choice{
+ box-sizing:border-box !important;
+ width:100% !important;
+ min-width:0 !important;
+ max-width:none !important;
+ height:auto !important;
+ min-height:68px !important;
+ padding:9px 5px 21px !important;
+ margin:0 !important;
+ border-radius:10px !important;
+ font-size:16px !important;
+ line-height:22px !important;
+ flex:none !important;
+}
+#partnerModal .partner-choice .partner-cn{
+ bottom:5px !important;
+ font-size:10px !important;
+ line-height:12px !important;
+}
+
+
+
+/* 2文目：名詞なしなら「で、」と動詞カードを詰める */
+.preview-line .noun-card:empty,
+.preview-line .noun-card[style*="display: none"],
+.preview-line .noun-card[style*="display:none"]{margin:0 !important;padding:0 !important;width:0 !important;min-width:0 !important;border:0 !important}
+
+
+/* 2文目：「で」と動詞カードの間の余計な gap を相殺 */
+#inlineVerbCard{margin-left:0 !important;}
+
 </style>
 </head>
 <body>
@@ -996,6 +1073,16 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
  </div>
 </div>
 
+<div id="partnerModal" class="partner-modal" aria-hidden="true">
+ <div class="partner-box">
+  <div id="partnerTitle" class="partner-title">だれ と はなしますか？</div>
+  <div class="partner-choices">
+   <button type="button" class="partner-choice" data-partner="ともだち">ともだち<span class="partner-cn">朋友</span></button>
+   <button type="button" class="partner-choice" data-partner="かぞく">かぞく<span class="partner-cn">家人</span></button>
+   <button type="button" class="partner-choice" data-partner="こいびと">こいびと<span class="partner-cn">恋人</span></button>
+  </div>
+ </div>
+</div>
 <div class="app">
  <div class="board-title"></div>
  <div id="feed" class="feed"><div class="empty">まだ投稿がありません。</div></div>
@@ -1074,6 +1161,7 @@ const verbs=[
  ["～と はなします","说话","to"],["～と でんわします","打电话","to"]
 ];
 let selectedVerb="";
+let selectedPartner="";
 let selectedNoun="";
 let selectedPlace="",selectedPattern="";
 let travelDestination="";
@@ -1244,7 +1332,10 @@ function updateNounPreview(){
  if(icn)icn.textContent=found?found[1]:"";
  const nounCard=document.getElementById("secondInlineNoun");
  if(nounCard)nounCard.style.display=selectedNoun?"inline-flex":"none";
- if(secondWo)secondWo.textContent=selectedNoun?"を":"";
+ if(secondWo){
+  secondWo.textContent=selectedNoun?"を":"";
+  secondWo.style.display=selectedNoun?"inline-block":"none";
+ }
 
  if(nounPreview)nounPreview.style.display="none";
  if(secondLine)secondLine.style.display=isDorm?"none":"flex";
@@ -1262,8 +1353,22 @@ function updateVerbPreview(){
      wo.insertAdjacentElement("afterend",c);
    }
    const f=verbs.find(x=>x[0]===selectedVerb);
-   document.getElementById("inlineVerbJp").textContent=selectedVerb||"";
-   document.getElementById("inlineVerbCn").textContent=f?f[1]:"";
+   const isToVerb=!!(f&&f[2]==="to");
+   let shownVerb=selectedVerb||"";
+   let shownCn=f?f[1]:"";
+   if(isToVerb&&selectedPartner){
+     shownVerb=shownVerb.replace(/^～と\s*/,"");
+   }
+   document.getElementById("inlineVerbJp").textContent=shownVerb.replace(/。$/,"");
+   document.getElementById("inlineVerbCn").textContent=shownCn;
+   let period=document.getElementById("inlineVerbPeriod");
+   if(!period){
+     period=document.createElement("span");
+     period.id="inlineVerbPeriod";
+     c.insertAdjacentElement("afterend",period);
+   }
+   period.textContent=shownVerb?"。":"";
+   period.style.display=(selectedPlace!=="りょう" && selectedVerb)?"inline":"none";
    c.style.display=(selectedPlace!=="りょう" && selectedVerb)?"inline-flex":"none";
  }
  updatePreview();
@@ -1276,11 +1381,19 @@ function renderVerbs(){
    const b=document.createElement("button");
    b.className="choice verb-choice"+(selectedVerb===jp?" selected":"");
    b.dataset.value=jp;
-   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
+   b.innerHTML=`<span class="jp">${jp.replace(/。$/,"")}</span><span class="cn">${cn}</span>`;
    b.onclick=()=>{
      if(b.disabled)return;
-     selectedVerb=selectedVerb===jp?"":jp;
-     /* 動詞を選ぶと、合わない名詞は薄くして押せなくする */
+     if(type==="to"){
+       selectedVerb=selectedVerb===jp?"":jp;
+       selectedPartner="";
+       if(selectedVerb) openPartnerModal(); else closePartnerModal();
+     }else{
+       selectedPartner="";
+       closePartnerModal();
+       selectedVerb=selectedVerb===jp?"":jp;
+     }
+     /* ～と以外の動詞を押したら、相手選択もリセット */
      renderVerbs(); renderNouns(); updateVerbPreview(); updatePreview(); updateNounPreview();
  refreshPostButton();
    };
@@ -1623,7 +1736,7 @@ function postWeekend(){
  posts.push({
    id:Date.now(), author:userName, mode:activityMode, lines,
    place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけます")?travelDestination:"",
-   noun:selectedNoun, verb:selectedVerb, pattern:selectedPattern, meTooCount:0
+   noun:selectedNoun, verb:(selectedPartner&&selectedVerb.startsWith("～と")?selectedVerb.replace(/^～と\s*/,""):selectedVerb),partner:selectedPartner, pattern:selectedPattern, meTooCount:0
  });
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
  syncPostToDB(posts[posts.length-1]);
@@ -1637,7 +1750,7 @@ function postWeekend(){
    if(feedBtn)feedBtn.textContent="▲";
  }
 
- selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; travelDestination="";
+ selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; selectedPartner=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
 }
 const METOO_KEY="weekend_metoo_by_name_v1";
@@ -1692,38 +1805,51 @@ function renderPosts(){
    if(Array.isArray(p.lines)){
      const placeFound=places.find(x=>x[0]===p.place);
      const nounFound=nouns.find(x=>x[0]===p.noun);
-     const verbFound=verbs.find(x=>x[0]===p.verb);
+     const cleanVerb=(p.verb||"").replace(/。+$/,"");
+     const verbFound=verbs.find(x=>{
+       const v=x[0].replace(/^～と\s*/,"").replace(/。+$/,"");
+       return v===cleanVerb;
+     });
      const placeCn=placeFound?placeFound[1]:"";
      const nounCn=nounFound?nounFound[1]:"";
      const verbCn=verbFound?verbFound[1]:"";
 
-     const card=(jp,cn)=>`<span class="posted-card"><span>${jp}</span><span class="posted-cn">${cn}</span></span>`;
+     const card=(jp,cn)=>`<span class="posted-card"><span>${String(jp||"").replace(/。+$/,"")}</span><span class="posted-cn">${cn}</span></span>`;
+     const partnerCnMap={"ともだち":"朋友","かぞく":"家人","こいびと":"恋人"};
+     const postedVerb=()=>{
+       if(!p.verb)return "";
+       const verbCard=card(cleanVerb,verbCn);
+       if(p.partner){
+         return card(p.partner,partnerCnMap[p.partner]||"")+"<span>と</span>"+verbCard+"<span>。</span>";
+       }
+       return verbCard+"<span>。</span>";
+     };
      const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
      const modePrefix=`<span class="posted-mode-prefix">${p.mode==="afternoon"?"ごご、":"しゅうまつ、"}</span>`;
 
      if(p.place==="やまに のぼります"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("やま","山")}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("やま","山")}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="でかけます"){
        const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
        const row1=`<div class="posted-row">${name}${modePrefix}${card("でかけます。","外出")}${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="うち"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("うち",placeCn)}<span>へ かえります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("うち",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("うち",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="りょう"){
-       d.innerHTML=`<div class="posted-row">${name}${modePrefix}${card("りょう",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
+       d.innerHTML=`<div class="posted-row">${name}${modePrefix}${card("りょう",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
      }else if(p.place==="りょこう"){
        const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
        const row1=`<div class="posted-row">${name}${modePrefix}${card("りょこう","旅行")}<span>へ いきます。</span>${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else{
        const row1=`<div class="posted-row">${name}${modePrefix}${card(p.place,placeCn)}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card(p.place,placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card(p.place,placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }
    }else{
@@ -2030,11 +2156,310 @@ setInterval(()=>{
    if(expandBtn)expandBtn.textContent="▼";
  };
 
- document.addEventListener("pointerdown",e=>{
+ document.addEventListener("click",e=>{
    const btn=e.target.closest("button");
-   if(!btn || btn===expandBtn || btn.classList.contains("me-too-btn"))return;
-   collapseFeed();
- },true);
+   if(!btn || btn===expandBtn || btn.classList.contains("me-too-btn") || btn.id==="postBtn")return;
+   /* 押したボタンのclick処理が終わったあとで収納し、指を離した先の誤タップを防ぐ */
+   setTimeout(collapseFeed,0);
+ },false);
+})();
+</script>
+
+
+<script>
+function openPartnerModal(){
+ const m=document.getElementById("partnerModal");
+ const title=document.getElementById("partnerTitle");
+ if(title){
+   const verb=(selectedVerb||"").replace(/^～と\s*/,"").replace(/。$/,"");
+   title.textContent="だれ と "+verb+"か？";
+ }
+ if(m){m.classList.add("show");m.setAttribute("aria-hidden","false");}
+}
+function closePartnerModal(){
+ const m=document.getElementById("partnerModal");
+ if(m){m.classList.remove("show");m.setAttribute("aria-hidden","true");}
+}
+(()=>{
+ const modal=document.getElementById("partnerModal");
+ if(!modal)return;
+ modal.querySelectorAll(".partner-choice").forEach(btn=>{
+   btn.addEventListener("click",()=>{
+     selectedPartner=btn.dataset.partner||"";
+     closePartnerModal();
+     updateVerbPreview(); updatePreview(); refreshPostButton();
+   });
+ });
+ modal.addEventListener("click",e=>{
+   if(e.target===modal){
+     selectedPartner=""; selectedVerb="";
+     closePartnerModal(); renderVerbs(); updateVerbPreview(); updatePreview(); refreshPostButton();
+   }
+ });
+})();
+</script>
+
+<script>
+/* ～と動詞の文表示：［相手カード］と［動詞カード］ */
+(()=>{
+ const verbCard=document.getElementById("inlineVerbCard");
+ if(!verbCard)return;
+
+ const syncPartnerCard=()=>{
+   let card=document.getElementById("inlinePartnerCard");
+   let particle=document.getElementById("inlinePartnerTo");
+
+   if(!(selectedPartner && selectedVerb && selectedVerb.startsWith("～と"))){
+     if(card)card.remove();
+     if(particle)particle.remove();
+     return;
+   }
+
+   if(!card){
+     card=document.createElement("span");
+     card.id="inlinePartnerCard";
+     card.className="preview-place";
+     card.innerHTML='<span id="inlinePartnerJp"></span><span id="inlinePartnerCn" class="preview-cn"></span>';
+     verbCard.parentNode.insertBefore(card,verbCard);
+   }
+   if(!particle){
+     particle=document.createElement("span");
+     particle.id="inlinePartnerTo";
+     particle.textContent="と";
+     verbCard.parentNode.insertBefore(particle,verbCard);
+   }
+
+   const jp=document.getElementById("inlinePartnerJp");
+   const cn=document.getElementById("inlinePartnerCn");
+   if(jp)jp.textContent=selectedPartner;
+   if(cn)cn.textContent=({"ともだち":"朋友","かぞく":"家人","こいびと":"恋人"})[selectedPartner]||"";
+ };
+
+ const observer=new MutationObserver(syncPartnerCard);
+ observer.observe(verbCard,{childList:true,subtree:true,characterData:true,attributes:true});
+ document.addEventListener("click",()=>setTimeout(syncPartnerCard,0));
+ syncPartnerCard();
+})();
+</script>
+
+
+<script>
+/* 記入欄・投稿：最後のカードの直後に「。」 */
+(()=>{
+ function fixComposerPeriod(){
+   const card=document.getElementById("inlineVerbCard");
+   if(!card)return;
+   let p=document.getElementById("inlineVerbPeriod");
+   if(!p){
+     p=document.createElement("span");
+     p.id="inlineVerbPeriod";
+   }
+   if(card.nextSibling!==p) card.insertAdjacentElement("afterend",p);
+   p.textContent=selectedVerb?"。":"";
+   p.style.display=selectedVerb?"inline":"none";
+ }
+
+ function fixPostPeriods(){
+   /* 投稿の句点は renderPosts 側で一度だけ付ける */
+   document.querySelectorAll("#feed .post .post-final-period").forEach(p=>p.remove());
+ }
+
+ const run=()=>{fixComposerPeriod();fixPostPeriods();};
+ document.addEventListener("click",()=>setTimeout(run,0));
+ const feed=document.getElementById("feed");
+ if(feed)new MutationObserver(()=>setTimeout(run,0)).observe(feed,{childList:true,subtree:true});
+ setTimeout(run,0);
+})();
+</script>
+
+
+<script>
+/* カード内には句点を入れない。句点はカードの外だけ。 */
+(()=>{
+ const stripPeriodInsideCards=()=>{
+   document.querySelectorAll(
+     "#inlineVerbCard .jp, #feed .post [class*='card'] .jp, #feed .post [class*='card']"
+   ).forEach(el=>{
+     /* 子要素を持たないカード文字列だけ処理 */
+     if(el.children.length===0){
+       el.textContent=el.textContent.replace(/。+$/,"");
+     }
+   });
+ };
+
+ const run=()=>setTimeout(stripPeriodInsideCards,0);
+ document.addEventListener("click",run);
+ const feed=document.getElementById("feed");
+ if(feed)new MutationObserver(run).observe(feed,{childList:true,subtree:true,characterData:true});
+ stripPeriodInsideCards();
+})();
+</script>
+
+
+<script>
+/* 投稿欄：カード内部の末尾「。」を完全除去し、最後のカード外にだけ句点を置く */
+(()=>{
+ function cleanPost(post){
+   if(!post)return;
+
+   /* 投稿内のカード内部をすべて処理 */
+   post.querySelectorAll("[class*='card']").forEach(card=>{
+     const jp=card.querySelector(".jp");
+     if(jp){
+       jp.textContent=jp.textContent.replace(/。+$/,"");
+     }else{
+       /* カード自身が文字だけの場合 */
+       if(card.children.length===0){
+         card.textContent=card.textContent.replace(/。+$/,"");
+       }
+     }
+   });
+
+   /* 句点は投稿生成側で付ける。後処理では重複させない。 */
+   post.querySelectorAll(".post-final-period").forEach(p=>p.remove());
+ }
+
+ function cleanAll(){
+   document.querySelectorAll("#feed .post").forEach(cleanPost);
+ }
+
+ const feed=document.getElementById("feed");
+ if(feed){
+   let busy=false;
+   new MutationObserver(()=>{
+     if(busy)return;
+     busy=true;
+     requestAnimationFrame(()=>{
+       cleanAll();
+       busy=false;
+     });
+   }).observe(feed,{childList:true,subtree:true});
+ }
+ cleanAll();
+})();
+</script>
+
+
+<script>
+/* 投稿文：～と動詞は［相手］と［動詞］で表示 */
+(()=>{
+ const partnerCn={"ともだち":"朋友","かぞく":"家人","こいびと":"恋人"};
+
+ function fixToPost(post){
+   if(!post)return;
+
+   /* 投稿DOMに残っている「～と」を、カード外の「と」に直す */
+   post.querySelectorAll("[class*='card']").forEach(card=>{
+     const jp=card.querySelector(".jp") || (card.children.length===0 ? card : null);
+     if(!jp)return;
+     const t=jp.textContent.trim();
+
+     if(/^～と/.test(t)){
+       jp.textContent=t.replace(/^～と\s*/,"").replace(/。+$/,"");
+       if(!card.previousElementSibling || !card.previousElementSibling.classList.contains("post-to-particle")){
+         const particle=document.createElement("span");
+         particle.className="post-to-particle";
+         particle.textContent="と";
+         card.insertAdjacentElement("beforebegin",particle);
+       }
+     }
+   });
+
+   /* 既存投稿で「相手と動詞」が一枚のカードになっている場合も分離 */
+   post.querySelectorAll("[class*='card']").forEach(card=>{
+     const jp=card.querySelector(".jp");
+     if(!jp)return;
+     const text=jp.textContent.trim().replace(/。+$/,"");
+     const m=text.match(/^(ともだち|かぞく|こいびと)と(.+)$/);
+     if(!m)return;
+
+     const partner=m[1], verb=m[2];
+     jp.textContent=verb;
+
+     const partnerCard=card.cloneNode(true);
+     partnerCard.classList.add("post-partner-card");
+     const pjp=partnerCard.querySelector(".jp");
+     const pcn=partnerCard.querySelector(".cn");
+     if(pjp)pjp.textContent=partner;
+     if(pcn)pcn.textContent=partnerCn[partner]||"";
+
+     const particle=document.createElement("span");
+     particle.className="post-to-particle";
+     particle.textContent="と";
+
+     card.insertAdjacentElement("beforebegin",partnerCard);
+     card.insertAdjacentElement("beforebegin",particle);
+   });
+ }
+
+ const run=()=>document.querySelectorAll("#feed .post").forEach(fixToPost);
+ const feed=document.getElementById("feed");
+ if(feed)new MutationObserver(()=>setTimeout(run,0)).observe(feed,{childList:true,subtree:true});
+ setTimeout(run,0);
+})();
+</script>
+
+
+<script>
+/* 名詞未選択時の空カード余白を消す */
+(()=>{
+ function fixEmptyNounGap(){
+   const n=document.getElementById("inlineNounCard");
+   if(!n)return;
+   const jp=document.getElementById("inlineNounJp");
+   const empty=!jp || !jp.textContent.trim();
+   n.style.display=empty?"none":"";
+   n.style.margin=empty?"0":"";
+ }
+ document.addEventListener("click",()=>setTimeout(fixEmptyNounGap,0));
+ const n=document.getElementById("inlineNounCard");
+ if(n)new MutationObserver(fixEmptyNounGap).observe(n,{childList:true,subtree:true,characterData:true,attributes:true});
+ setTimeout(fixEmptyNounGap,0);
+})();
+</script>
+
+
+<style>
+/* 2文目：名詞なし時は「で、」→動詞カードを通常の文字間隔で直結 */
+#inlineNounCard.no-noun{
+ display:none !important;
+ margin:0 !important;
+ padding:0 !important;
+ width:0 !important;
+ min-width:0 !important;
+}
+#inlineVerbCard.after-no-noun{
+ margin-left:-7px !important;
+}
+</style>
+<script>
+(()=>{
+ function fixSecondLineNoNounGap(){
+   const noun=document.getElementById("inlineNounCard");
+   const verb=document.getElementById("inlineVerbCard");
+   if(!noun||!verb)return;
+
+   const jp=document.getElementById("inlineNounJp");
+   const empty=!selectedNoun || !jp || !jp.textContent.trim();
+
+   noun.classList.toggle("no-noun",empty);
+   verb.classList.toggle("after-no-noun",empty);
+
+   if(empty){
+     /* noun と verb の間にある空白だけのテキストノードも除去 */
+     let n=noun.nextSibling;
+     while(n && n!==verb){
+       const next=n.nextSibling;
+       if(n.nodeType===3 && !n.textContent.trim()) n.remove();
+       n=next;
+     }
+   }
+ }
+ document.addEventListener("click",()=>requestAnimationFrame(fixSecondLineNoNounGap));
+ const target=document.getElementById("inlineNounCard");
+ if(target)new MutationObserver(()=>requestAnimationFrame(fixSecondLineNoNounGap))
+   .observe(target,{childList:true,subtree:true,characterData:true,attributes:true});
+ setTimeout(fixSecondLineNoNounGap,0);
 })();
 </script>
 
