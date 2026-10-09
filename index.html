@@ -2,2050 +2,1003 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>しゅうまつ、なにをしますか。</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>食材の文を作ろう</title>
 <style>
 *{box-sizing:border-box}
 :root{
-  --bg:#dcebd4;--panel:#fff;--ink:#292929;--line:#9fbe91;
-  --area:#c7e2b9;--btn:#edf7e8;--sel:#79b85d;--dark:#3f7e2e;
+ --bg:#f6f2ea; --ink:#292929; --line:#d9d2c7;
+ --orange:#ffe4cf; --orangeText:#8b431d; --orangeStrong:#f3b27f;
+ --blue:#dceeff; --blueText:#245f8b; --blueStrong:#91c7ec;
+ --green:#ddf1d8; --greenText:#39713a; --greenStrong:#9ed294;
 }
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
-font-family:"Yu Kyokasho","YuKyokasho","BIZ UDPGothic","Noto Sans JP",sans-serif}
-.app{width:min(1050px,96vw);margin:auto;padding:10px 0 24px}
-.board-title{font-size:13px;color:#777;margin:0 0 3px 3px}
-.feed{height:275px;overflow-y:auto;background:rgba(255,255,255,.75);border:1px solid var(--line);
-border-radius:14px;padding:5px;display:flex;flex-direction:column;gap:4px}
+ font-family:"Yu Kyokasho","YuKyokasho","BIZ UDPGothic","Noto Sans JP",sans-serif}
+.app{width:min(1050px,95vw);margin:0 auto;padding:22px 0 55px}
+
+/* 投稿一覧 */
+.board-title{font-size:14px;color:#777;margin:0 0 7px 4px}
+.feed{
+ height:235px; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth;
+ background:rgba(255,255,255,.68); border:1px solid var(--line);
+ border-radius:18px; padding:10px; display:flex; flex-direction:column; gap:8px;
+}
 .empty{height:100%;display:grid;place-items:center;color:#aaa;font-size:14px}
-.post{background:#fff;border:1px solid #dbe6d6;border-left:4px solid var(--sel);
-border-radius:9px;padding:6px;font-size:16px;flex:0 0 auto}
-.composer{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px}
-.guide{font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;color:#666;font-size:14px;margin-bottom:3px}
-.question{text-align:center;font-size:20px;font-weight:600;margin:3px 0 6px}
-.preview{display:flex;justify-content:center;align-items:center;gap:5px;min-height:40px;
-font-size:19px;font-weight:600;white-space:nowrap;margin-bottom:5px}
-.preview-place{
- position:relative;background:var(--area);color:#315f24;border-radius:8px;padding:5px 8px}
-.post-btn{border:0;border-radius:9px;background:var(--dark);color:#fff;padding:8px 16px;font-weight:700;cursor:pointer}
-.post-btn:disabled{opacity:.28;cursor:default}
-.place-box{background:var(--area);border-radius:11px;padding:6px}
-.choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
-.choice{min-height:39px;border:1px solid #76a862;border-radius:7px;background:var(--btn);color:#315f24;
-padding:3px 2px;cursor:pointer;font:inherit}
-.choice.selected{background:var(--sel);border-color:#3f7e2e}
-.jp{display:block;font-size:14px;font-weight:600;line-height:1}
-.cn{display:block;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-size:10px;line-height:1;
-margin-top:3px;opacity:.75}
-.patterns{display:flex;justify-content:center;gap:8px;margin-top:5px}
-.pattern{min-width:120px;border:1px solid #76a862;border-radius:8px;background:var(--btn);color:#315f24;
-padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
-.pattern.selected{background:var(--sel);border-color:#3f7e2e}
-.pattern.disabled{opacity:.18;cursor:default;filter:grayscale(.5)}
-.name-modal{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:99;display:flex;align-items:center;justify-content:center}
-.name-box{background:#fff;border-radius:16px;padding:22px;width:min(340px,90vw);text-align:center}
-.name-input{width:100%;border:1.5px solid #ccc;border-radius:10px;padding:11px;font-size:16px;text-align:center}
-.name-save{margin-top:12px;border:0;border-radius:9px;background:var(--dark);color:#fff;padding:9px 22px;font-weight:700}
-.hidden{display:none!important}
-@media(max-width:700px){
- .app{padding-top:5px}.feed{height:275px}.composer{margin-top:6px;padding:6px}
- .guide{font-size:13px;margin-bottom:1px}.question{font-size:15px;margin:2px 0 3px}
- .preview{font-size:15px;min-height:32px;gap:3px;margin-bottom:3px}.preview-place{padding:4px 5px}
- .choices{grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
- .choice{min-height:34px;padding:2px 1px}.jp{font-size:13px}.cn{font-size:10px;margin-top:2px}
- .patterns{margin-top:4px;gap:5px}.pattern{min-width:105px;padding:5px 7px;font-size:15px}
- .post-btn{padding:6px 10px;font-size:12px}input{font-size:16px!important}
-}
-
-.preview-place,.post-place{position:relative;margin-bottom:10px}
-.preview-cn,.post-cn{
-  position:absolute;left:0;right:0;top:calc(100% + 2px);
-  text-align:center;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
-  font-size:11px;font-weight:500;line-height:1;color:#555;white-space:nowrap
-}
-.post-line{display:flex;align-items:center;gap:3px;white-space:nowrap;min-height:34px}
-.post-place{display:inline-flex;align-items:center;justify-content:center;background:var(--area);
-  color:#315f24;border-radius:7px;padding:4px 6px}
-@media(max-width:700px){
- .preview-cn,.post-cn{font-size:10px;top:calc(100% + 1px)}
- .preview-place,.post-place{margin-bottom:9px}
-}
-
-
-.second-stage{display:none;margin-top:4px}
-.second-stage.show{display:block}
-.second-place-box{background:var(--area);border-radius:11px;padding:6px}
-.second-choice{min-height:39px;border:1px solid #76a862;border-radius:7px;background:var(--btn);
- color:#315f24;padding:3px 2px;font:inherit}
-.second-choice.locked{opacity:.18}
-.second-choice.active{background:var(--sel);border-color:#3f7e2e}
-.second-patterns{display:flex;justify-content:center;margin-top:4px}
-.second-de{min-width:120px;border:1px solid #76a862;border-radius:8px;background:var(--btn);
- color:#315f24;padding:7px 10px;font:600 17px inherit;cursor:pointer}
-.second-de.selected{background:var(--sel);border-color:#3f7e2e}
-
-/* 投稿の訳は日本語の下に固定。文の位置を上げない */
-.post{padding-bottom:13px}
-.post-line{min-height:38px;align-items:flex-start;padding-top:4px}
-.post-place{margin-bottom:0!important}
-.post-cn{top:calc(100% + 2px)!important;transform:none!important;line-height:1!important}
-
-@media(max-width:700px){
- .second-stage{margin-top:3px}
- .second-place-box{padding:3px}
- .second-choice{min-height:34px;padding:2px 1px}
- .second-patterns{margin-top:3px}
- .second-de{min-width:105px;padding:5px 7px;font-size:15px}
- .post{padding-bottom:12px}
- .post-line{min-height:36px;padding-top:3px}
-}
-
-
-/* ===== 2段目簡略化＋訳の重なり修正 ===== */
-.preview{
-  padding-bottom:13px !important;
-  margin-bottom:4px !important;
-  overflow:visible !important;
-}
-.preview-place{
-  margin-bottom:0 !important;
-  overflow:visible !important;
-}
-.preview-cn{
-  z-index:3 !important;
-  top:calc(100% + 2px) !important;
-}
-.place-box{
-  position:relative;
-  z-index:1;
-}
-.place-box.has-de-hint{
-  padding-bottom:31px !important;
-}
-
-.second-stage{display:none;margin-top:4px}
-.second-stage.show{display:block}
-.second-line{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  min-height:42px;
-}
-.second-place{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--area);
-  color:#315f24;
-  border-radius:8px;
-  padding:5px 8px;
-  font-size:17px;
-  font-weight:600;
-  margin-bottom:10px;
-}
-.second-cn{
-  position:absolute;
-  left:0;right:0;
-  top:calc(100% + 2px);
-  text-align:center;
-  font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
-  font-size:11px;
-  font-weight:500;
-  line-height:1;
-  color:#555;
-  white-space:nowrap;
-}
-.second-de{
-  min-width:70px !important;
-  border:1px solid #76a862;
-  border-radius:8px;
-  background:var(--btn);
-  color:#315f24;
-  padding:7px 10px;
-  font:600 17px inherit;
-  cursor:pointer;
-}
-.second-de.selected{background:var(--sel);border-color:#3f7e2e}
-
-@media(max-width:700px){
-  .preview{
-    min-height:44px !important;
-    padding-bottom:11px !important;
-    margin-bottom:3px !important;
-  }
-  .second-stage{margin-top:3px}
-  .second-line{min-height:36px;gap:5px}
-  .second-place{font-size:14px;padding:4px 6px;margin-bottom:9px}
-  .second-cn{font-size:10px;top:calc(100% + 1px)}
-  .second-de{min-width:58px !important;padding:5px 8px;font-size:15px}
-}
-
-
-/* ===== 下段を上段と同じ文スタイルに統一 ===== */
-.second-stage{display:none;margin-top:3px}
-.second-stage.show{display:block}
-.second-preview{
-  margin:0 !important;
-  padding-bottom:13px !important;
-  min-height:42px !important;
-}
-.second-preview .preview-place{
-  margin-bottom:0 !important;
-}
-@media(max-width:700px){
-  .second-stage{margin-top:2px}
-  .second-preview{
-    min-height:44px !important;
-    padding-bottom:11px !important;
-    margin-bottom:0 !important;
-  }
-}
-
-
-/* ===== 投稿欄：文と訳の高さを揃える ===== */
 .post{
-  padding-top:5px !important;
-  padding-bottom:5px !important;
-  overflow:visible !important;
+ flex:0 0 64px; min-height:64px; background:#fff; border:1px solid #e4dfd7;
+ border-radius:12px; display:flex; align-items:center; justify-content:flex-start;
+ gap:6px; white-space:nowrap; font-size:17px; padding:0 10px 0 14px; box-shadow:0 1px 4px rgba(0,0,0,.04)
 }
-.post-line{
+.post-text{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.like-btn{
+ margin-left:auto;flex:0 0 auto;min-height:auto;border:1px solid #e6b8bf;
+ background:#fff7f8;color:#b84e61;border-radius:9px;padding:5px 9px;
+ font:600 12px inherit;cursor:pointer;box-shadow:none
+}
+.like-btn:hover{background:#ffecef}
+.like-btn.liked{background:#ffe1e6;color:#a9364d;border-color:#d98b99}
+.heart-count{margin-left:2px;font-size:13px;color:#b84e61;font-weight:600;white-space:nowrap}
+.post.pending{border-left:4px solid #e2b15d}
+.post.synced{border-left:4px solid #9fc79c}
+.post-word{position:relative;display:inline-flex;align-items:center;justify-content:center;
+ padding:5px 8px;border-radius:8px;line-height:1;vertical-align:baseline}
+.post-word.ing{background:var(--orange);color:var(--orangeText)}
+.post-word.dish{background:var(--green);color:var(--greenText)}
+.post-cn{position:absolute;top:calc(100% + 3px);left:0;right:0;text-align:center;
+ font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-size:12px;line-height:1;color:#555}
+
+/* 下の作成ドロワー */
+.drawer{position:relative;margin-top:28px}
+
+
+.composer{
+ background:#fff;border:1px solid var(--line);border-radius:18px;
+ padding:14px 16px 16px;box-shadow:0 5px 18px rgba(0,0,0,.045)
+}
+.sentence-row{display:flex;align-items:center;gap:10px}
+.sentence{
+ flex:1;min-width:0;display:flex;align-items:center;justify-content:center;
+ gap:6px;white-space:nowrap;font-size:clamp(17px,2vw,24px);font-weight:600;
+ min-height:58px
+}
+.subject{
+ width:135px;height:42px;background:#fff;border:1.5px solid #bdbdbd;border-radius:9px;
+ outline:none;text-align:center;font:inherit;color:var(--ink);padding:4px 7px
+}
+.subject::placeholder{
+ color:#aaa;
+ opacity:.72;
+ font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+ font-size:inherit;
+ font-weight:400;
+}
+.token{position:relative;display:inline-flex;align-items:center;justify-content:center;
+ padding:6px 9px;border-radius:9px;line-height:1}
+.token.ing{background:var(--orange);color:var(--orangeText)}
+.token.dish{background:var(--green);color:var(--greenText)}
+.token.empty-token{background:transparent;color:#999}
+.token-cn{position:absolute;top:calc(100% + 3px);left:0;right:0;text-align:center;
+ font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-size:12px;font-weight:500;
+ color:#666;line-height:1}
+.post-btn{
+ flex:0 0 auto;height:40px;padding:0 17px;border:0;border-radius:10px;
+ background:#333;color:#fff;font:600 14px inherit;cursor:pointer
+}
+.post-btn:disabled{opacity:.28;cursor:default}
+
+/* 選択 */
+.pickers{margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.group{padding:10px;border-radius:14px}
+.group.one{background:var(--orange)}
+.group.two{background:var(--blue);transition:opacity .18s}
+.group.two.waiting{opacity:.42}
+.group.three{background:var(--green)}
+.group-head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:7px;
+ font-size:18px;font-weight:600}
+.group-head .cn-note{font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+ font-weight:400;color:#587084;font-size:15px}
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.choice{
+ min-height:49px;border-radius:9px;cursor:pointer;padding:5px 4px;
+ font:inherit;box-shadow:none
+}
+.one .choice{background:#fff3e9;border:1px solid #e8aa80;color:var(--orangeText)}
+.two .choice{background:#eef7ff;border:1px solid #91bfdf;color:var(--blueText)}
+.three .choice{background:#eff9ec;border:1px solid #9bc796;color:var(--greenText)}
+.one .choice.selected{background:var(--orangeStrong);border-color:#b9612d}
+.two .choice.selected{background:var(--blueStrong);border-color:#4d8fbd}
+.three .choice.selected{background:var(--greenStrong);border-color:#5a9a55}
+.jp{display:block;font-size:clamp(15px,1.65vw,19px);font-weight:600;line-height:1.05}
+.cn{display:block;margin-top:3px;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+ font-size:12px;line-height:1;color:inherit;opacity:.78}
+.bottom{display:flex;justify-content:center;margin-top:10px}
+.reset{border:1px solid #ccc;background:#fff;color:#666;border-radius:8px;
+ padding:6px 15px;font:12px inherit;cursor:pointer}
+
+@media(max-width:720px){
+ .app{width:96vw}
+ .feed{height:330px}
+ .post{font-size:14px}
+ .composer{padding:10px}
+ .sentence-row{gap:5px}
+ .sentence{font-size:14px;gap:3px}
+ .subject{width:90px;height:36px}
+ .token{padding:5px 5px}
+ .post-btn{height:36px;padding:0 10px;font-size:12px}
+ .choices{grid-template-columns:repeat(3,1fr)}
+ .drawer.closed{transform:translateY(360px)}
+}
+
+.name-modal{
+ position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.28);
+ display:flex;align-items:center;justify-content:center;padding:20px
+}
+.name-modal.hidden{display:none}
+.name-box{
+ width:min(360px,92vw);background:#fff;border-radius:18px;padding:24px;
+ box-shadow:0 12px 40px rgba(0,0,0,.16);text-align:center
+}
+.name-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.name-note{font-size:13px;color:#777;margin-bottom:15px}
+.name-input{
+ width:100%;box-sizing:border-box;border:1.5px solid #ddd;border-radius:12px;
+ padding:12px 14px;font-size:18px;text-align:center;outline:none;background:#fff;color:#333
+}
+.name-input::placeholder{color:#b8b8b8;opacity:1;font-weight:400}
+.name-save{
+ margin-top:14px;border:0;border-radius:12px;padding:10px 24px;
+ font-size:16px;font-weight:700;background:#333;color:#fff;cursor:pointer
+}
+
+.like-btn:disabled{cursor:default;opacity:.58}
+
+.delete-modal{
+ position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.28);
+ display:flex;align-items:center;justify-content:center;padding:20px
+}
+.delete-modal.hidden{display:none}
+.delete-box{
+ width:min(320px,90vw);background:#fff;border-radius:18px;padding:22px;
+ box-shadow:0 12px 40px rgba(0,0,0,.16);text-align:center
+}
+.delete-question{font-size:18px;font-weight:700;margin-bottom:18px}
+.delete-actions{display:flex;gap:10px;justify-content:center}
+.delete-actions button{
+ min-width:90px;border:0;border-radius:11px;padding:9px 18px;
+ font-size:15px;font-weight:700;cursor:pointer
+}
+.delete-yes{background:#333;color:#fff}
+.delete-no{background:#eee;color:#444}
+.post{touch-action:pan-y}
+
+.subject-guide{width:100%;box-sizing:border-box;font-size:15px;color:#666;white-space:nowrap;margin:0 0 8px 0;text-align:left}
+
+@media(max-width:700px){
+  input, textarea, select{font-size:16px !important}
+  .subject{font-size:16px !important}
+}
+
+.group-title-two{display:block;text-align:center}
+.two-note,.optional-note{display:block;margin-top:4px}
+
+@media(max-width:700px){
+  .choices{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:5px !important;
+  }
+  .choice{
+    padding:6px 2px !important;
+    min-height:42px !important;
+    border-radius:9px !important;
+  }
+  .choice .jp{font-size:14px !important;line-height:1.1 !important}
+  .choice .cn{font-size:11px !important;line-height:1.1 !important;margin-top:2px !important}
+  .group{padding-left:8px !important;padding-right:8px !important}
+}
+
+/* latest layout adjustments */
+.feed{height:165px !important}
+.subject{width:135px !important}
+
+@media(max-width:700px){
+  .feed{height:135px !important;padding:7px !important;gap:5px !important}
+  .subject{width:90px !important;min-width:90px !important}
+}
+
+.post{display:block !important;padding-left:5px !important;padding-right:6px !important}
+.post-main{width:100%;min-width:0}
+.post-text{
   display:flex !important;
+  justify-content:flex-start !important;
   align-items:center !important;
   gap:3px !important;
-  min-height:42px !important;
-  padding-top:0 !important;
-  padding-bottom:13px !important;
-  line-height:1 !important;
+  width:100%;
+  margin:0 !important;
+  padding:0 !important;
 }
-.post-place{
-  position:relative !important;
-  display:inline-flex !important;
+.post-lead{margin-left:0 !important;padding-left:0 !important}
+.post-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  margin-top:8px;
+  min-height:28px;
+}
+.post-actions .heart-count{margin:0 !important}
+.post-actions .like-btn{margin:0 !important}
+
+@media(max-width:700px){
+  .post{padding-left:3px !important}
+  .post-actions{margin-top:6px}
+}
+
+
+.group-head-two{
+  display:flex !important;
+  flex-direction:column !important;
   align-items:center !important;
   justify-content:center !important;
-  padding:5px 8px !important;
+  gap:3px !important;
+}
+.group-head-two .cn-note{
+  display:block !important;
   margin:0 !important;
-  line-height:1 !important;
 }
-.post-cn{
-  top:calc(100% + 2px) !important;
-  bottom:auto !important;
-  transform:none !important;
+
+.subject{
+  width:135px !important;
+  height:42px !important;
+  box-sizing:border-box !important;
+  background:#fff !important;
+  border:1.5px solid #bdbdbd !important;
+  border-radius:9px !important;
+  box-shadow:none !important;
+  outline:none !important;
+  text-align:center !important;
+  padding:4px 7px !important;
 }
 @media(max-width:700px){
-  .post{padding-top:3px !important;padding-bottom:3px !important}
-  .post-line{
-    min-height:44px !important;
-    padding-top:0 !important;
-    padding-bottom:11px !important;
+  .subject{
+    width:90px !important;
+    min-width:90px !important;
+    height:36px !important;
+    font-size:16px !important;
   }
-  .post-place{padding:4px 5px !important}
-  .post-cn{top:calc(100% + 1px) !important}
 }
 
-
-/* ===== 2段目 名詞群 ===== */
-.noun-area{margin-top:5px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.noun-group{background:#fffbd1;border-radius:14px;padding:7px}
-.noun-group:last-child{grid-column:1 / -1}
-.noun-title{text-align:center;font-size:12px;font-weight:700;margin-bottom:5px;color:#555}
-.noun-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
-.noun-choice{min-height:38px}
-.noun-group:last-child .noun-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-@media(max-width:700px){
- .noun-area{gap:5px;margin-top:3px}
- .noun-group{padding:5px;border-radius:11px}
- .noun-title{font-size:10px;margin-bottom:3px}
- .noun-grid{gap:3px}
- .noun-choice{min-height:34px;font-size:12px}
- .noun-group:last-child .noun-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+/* keep like controls inside each post */
+.post-main{max-width:100%;box-sizing:border-box;overflow:hidden}
+.post-actions{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  padding:0 2px;
 }
-
-
-/* ===== 名詞群は分類せず1つに統一 ===== */
-.noun-area{
- display:grid !important;
- grid-template-columns:repeat(4,minmax(0,1fr)) !important;
- gap:4px !important;
- background:#fffbd1 !important;
- border-radius:14px !important;
- padding:7px !important;
+.post-actions .like-btn{
+  max-width:100%;
+  box-sizing:border-box;
+  white-space:nowrap;
+  flex:0 1 auto;
 }
 @media(max-width:700px){
- .noun-area{
-   grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-   gap:3px !important;
-   padding:5px !important;
-   border-radius:11px !important;
- }
+  .post-actions{
+    gap:4px !important;
+    padding:0 !important;
+  }
+  .post-actions .like-btn{
+    font-size:12px !important;
+    padding:6px 8px !important;
+  }
+  .post-actions .heart-count{
+    font-size:12px !important;
+    flex:0 0 auto;
+  }
 }
 
-
-/* ===== 名詞選択 → 「～を」に反映 ===== */
-.noun-preview{
- margin-top:4px !important;
- margin-bottom:0 !important;
- padding-bottom:13px !important;
- min-height:42px !important;
-}
-@media(max-width:700px){
- .noun-preview{
-   margin-top:3px !important;
-   min-height:44px !important;
-   padding-bottom:11px !important;
- }
-}
-
-
-/* ===== 「を」ガイド＋選択後のみ文に表示 ===== */
-.noun-area{
- position:relative !important;
- padding-bottom:25px !important;
-}
-.noun-area-hint{
- position:absolute;
- left:50%;
- bottom:5px;
- transform:translateX(-50%);
- font-size:20px;
- font-weight:700;
- color:#315f24;
- line-height:1;
- pointer-events:none;
-}
-@media(max-width:700px){
- .noun-area{padding-bottom:22px !important}
- .noun-area-hint{bottom:4px;font-size:19px}
-}
-
-.inside-patterns{margin-top:6px!important;padding-top:5px!important;border-top:1px solid var(--line)}
-@media(max-width:700px){.inside-patterns{margin-top:4px!important;padding-top:4px!important}}
-
-
-
-
-.first-stage-de-hint{
- position:absolute;
- left:50%;
- transform:translateX(-50%);
- bottom:5px;
- z-index:3;
- text-align:center;
- font-size:20px;
- font-weight:700;
- color:#315f24;
- line-height:1;
- pointer-events:none;
-}
-/* ===== 選択前後で文の形・高さを変えない ===== */
-.wo-slot{
- display:inline-block;
- min-width:1em;
- text-align:left;
-}
-.preview-place{
- min-width:2.2em;
-}
-.second-preview,
-#preview{
- align-items:center !important;
-}
-
-
-/* ===== で／へ いきます。は場所ボタンと同じ文字 ===== */
-.inside-patterns .pattern{
- font-family:inherit !important;
- font-size:inherit !important;
- font-weight:inherit !important;
- line-height:inherit !important;
-}
-.inside-patterns .pattern:disabled{
- opacity:1;
- cursor:default;
-}
-.inside-patterns .pattern:not(.selected){
- opacity:.25;
-}
-
-
-/* ===== 投稿：作った文を全部表示、2文目は改行 ===== */
-.post-author{
- font-size:12px;
- margin-bottom:3px;
- color:#555;
-}
-.posted-sentence{
- display:block;
- line-height:1.65;
- white-space:normal;
-}
-.posted-sentence + .posted-sentence{
- margin-top:2px;
-}
-
-
-/* ===== 投稿文：カード＋訳、名前は同じ行 ===== */
 .post{
- overflow:visible !important;
- padding:7px 8px !important;
+  height:auto !important;
+  min-height:82px !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+  padding-top:7px !important;
+  padding-bottom:7px !important;
 }
-.posted-row{
- display:flex;
- align-items:center;
- gap:3px;
- min-height:39px;
- line-height:1;
- white-space:nowrap;
- padding-bottom:11px;
+.post-main{
+  display:flex !important;
+  flex-direction:column !important;
+  width:100% !important;
+  height:auto !important;
 }
-.posted-row-second{
- margin-top:1px;
-}
-.posted-name{
- flex:0 0 auto;
- font-size:13px;
- color:#555;
-}
-.posted-card{
- position:relative;
- display:inline-flex;
- align-items:center;
- justify-content:center;
- background:var(--area);
- color:#315f24;
- border-radius:7px;
- padding:5px 7px;
- line-height:1;
- flex:0 0 auto;
-}
-.posted-cn{
- position:absolute;
- left:0;right:0;
- top:calc(100% + 2px);
- text-align:center;
- font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
- font-size:10px;
- font-weight:500;
- line-height:1;
- color:#555;
- white-space:nowrap;
+.post-actions{
+  position:static !important;
+  margin-top:7px !important;
+  margin-bottom:0 !important;
+  min-height:28px !important;
+  flex-wrap:nowrap !important;
 }
 @media(max-width:700px){
- .post{padding:5px 6px !important}
- .posted-row{min-height:37px;padding-bottom:10px;gap:2px}
- .posted-name{font-size:12px}
- .posted-card{padding:4px 5px}
- .posted-cn{font-size:9px;top:calc(100% + 1px)}
+  .post{
+    min-height:78px !important;
+    padding-top:5px !important;
+    padding-bottom:5px !important;
+  }
+  .post-actions{
+    margin-top:5px !important;
+    min-height:26px !important;
+  }
 }
 
-
-/* 2文目の本文開始位置を1文目と完全に揃える */
-.posted-name-spacer{
- visibility:hidden;
-}
-
-
-/* ===== 動詞群 ===== */
-.verb-area{
- display:grid;
- grid-template-columns:repeat(4,minmax(0,1fr));
- gap:4px;
- background:#bfe8f7;
- border-radius:14px;
- padding:7px;
- margin-top:6px;
-}
-.verb-choice{min-height:38px}
+/* ===== スマホ・縦コンパクト最終調整 ===== */
 @media(max-width:700px){
- .verb-area{
-   grid-template-columns:repeat(3,minmax(0,1fr));
-   gap:3px;
-   padding:5px;
-   margin-top:4px;
-   border-radius:11px;
- }
- .verb-choice{min-height:34px;font-size:12px}
+  .app{width:96vw;padding-top:8px;padding-bottom:20px}
+  .board-title{margin-bottom:3px}
+  .feed{height:110px !important;padding:4px !important;gap:3px !important;border-radius:12px}
+  .post{min-height:66px !important;padding:3px 4px !important;border-radius:9px;font-size:14px}
+  .post-main{min-height:0}
+  .post-text{gap:2px !important}
+  .post-word{padding:4px 5px}
+  .post-cn{top:calc(100% + 2px);font-size:11px}
+  .post-actions{margin-top:2px !important;min-height:22px !important;gap:4px !important;padding:0 !important}
+  .post-actions .heart-count{font-size:12px !important}
+  .post-actions .like-btn{font-size:12px !important;padding:4px 7px !important;border-radius:7px}
+  .drawer{margin-top:10px}
+  .composer{padding:7px 8px 8px;border-radius:13px}
+  .subject-guide{font-size:14px;margin:0 0 3px 0}
+  .sentence-row{gap:5px}
+  .sentence{min-height:44px;font-size:14px;gap:3px}
+  .subject{width:90px !important;min-width:90px !important;height:34px !important;font-size:16px !important;padding:2px 5px !important}
+  .token{padding:4px 5px;border-radius:7px}
+  .token-cn{top:calc(100% + 2px);font-size:11px}
+  .post-btn{height:34px;padding:0 9px;font-size:12px}
+  .pickers{margin-top:7px;gap:4px}
+  .group{padding:5px 7px;border-radius:10px}
+  .group-head{font-size:17px;margin-bottom:3px;line-height:1}
+  .group-head-two{gap:1px}
+  .group-head .cn-note{font-size:12px;line-height:1.1}
+  .choices{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:4px !important}
+  .choice{min-height:37px !important;padding:3px 2px !important;border-radius:7px}
+  .choice .jp{font-size:14px !important;line-height:1}
+  .choice .cn{font-size:11px !important;line-height:1;margin-top:2px !important}
+  input,textarea,select{font-size:16px !important}
 }
 
 
-/* ===== 3段目：選択動詞もカードで文に反映 ===== */
-.verb-preview{
- margin-top:4px !important;
- margin-bottom:0 !important;
- padding-bottom:13px !important;
- min-height:42px !important;
-}
+.question-line{width:100%;text-align:center;font-size:clamp(17px,2vw,24px);font-weight:600;line-height:1.2;margin:2px 0 5px;white-space:nowrap}
+@media(max-width:700px){.question-line{font-size:14px;margin:1px 0 2px;line-height:1.05}}
+
+.origin-practice{margin-top:10px;padding-top:9px;border-top:1px solid #e5e0d8;text-align:center}
+.origin-question{font-size:clamp(17px,2vw,22px);font-weight:600;line-height:1.2;margin-bottom:7px;white-space:nowrap}
+.origin-answer{align-items:center;justify-content:center;gap:5px;font-size:clamp(17px,2vw,22px);font-weight:600;white-space:nowrap}
+.origin-input{width:135px;height:38px;border:1.5px solid #bdbdbd;border-radius:9px;background:#fff;outline:none;padding:3px 7px;text-align:center;font:inherit;color:#292929}
+.origin-input::placeholder{color:#aaa;opacity:.72;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;font-weight:400}
 @media(max-width:700px){
- .verb-preview{
-   margin-top:3px !important;
-   min-height:44px !important;
-   padding-bottom:11px !important;
- }
+ .origin-practice{margin-top:5px;padding-top:5px}
+ .origin-question{font-size:14px;margin-bottom:3px;line-height:1.05}
+ .origin-answer{font-size:14px;gap:3px}
+ .origin-input{width:90px;height:32px;font-size:16px!important;padding:1px 5px;border-radius:7px}
 }
 
 
-/* 2段目・3段目は最初から常時表示 */
-#secondStage{display:block !important}
-
-
-/* 1段目未選択時は2文目だけ隠す */
-#secondPlaceLine.waiting-place{
- visibility:hidden !important;
-}
-
-
-.me-too-wrap{display:flex;justify-content:flex-end;align-items:center;margin-top:4px}
-.me-too-btn{border:1px solid var(--line);background:var(--button);color:#315f24;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700;cursor:pointer}
-.me-too-btn.active{background:var(--sel);color:#fff;border-color:var(--sel)}
-
-
-.choice-disabled{
-  opacity:.28 !important;
-  filter:grayscale(.65);
-  cursor:not-allowed !important;
-  pointer-events:none !important;
-}
-
-
-.choice.choice-disabled,.choice:disabled{
- opacity:.22 !important;
- filter:grayscale(.8);
- cursor:not-allowed !important;
- box-shadow:none !important;
-}
-
-
-.travel-destination-input{
- width:150px; min-width:110px; border:2px solid var(--line); border-radius:8px;
- padding:7px 9px; font-size:16px; font-family:inherit; outline:none; background:#fff;
- color:#315f24;
- -webkit-text-fill-color:#315f24;
- text-align:center;
- opacity:1;
-}
-.travel-destination-input::placeholder{
- color:#888;
- -webkit-text-fill-color:#888;
- opacity:1;
-}
-.travel-destination-input:focus{border-color:var(--sel)}
-.posted-destination{background:#fff;border:1px solid var(--line)}
-
-/* 名前入力欄：白塗り */
-#nameInput{
- background:#fff !important;
- background-color:#fff !important;
- color:#315f24 !important;
- -webkit-text-fill-color:#315f24 !important;
- opacity:1 !important;
-}
-#nameInput::placeholder{
- color:#888 !important;
- -webkit-text-fill-color:#888 !important;
- opacity:1 !important;
-}
-
-
-/* しゅうまつ／ごご 切り替え */
-.mode-switch-wrap{
- display:flex;
- justify-content:flex-start;
- margin:0 0 9px 2px;
-}
-.mode-switch{
- display:inline-flex;
- align-items:center;
- gap:3px;
- padding:3px;
- background:#fff;
- border:1.5px solid #9fbe91;
- border-radius:999px;
- box-shadow:0 2px 7px rgba(63,126,46,.10);
-}
-.mode-switch-btn{
- border:0;
- background:transparent;
- color:#62825a;
- border-radius:999px;
- padding:6px 13px;
- font-family:inherit;
- font-size:14px;
- font-weight:700;
- line-height:1;
- cursor:pointer;
- transition:.15s ease;
-}
-.mode-switch-btn.active{
- background:#79b85d;
- color:#fff;
- box-shadow:0 1px 4px rgba(63,126,46,.18);
-}
-
-
-/* ===== v92 縦方向をできるだけコンパクトに ===== */
-.app{padding-top:4px!important;padding-bottom:8px!important}
-.board-title{margin-bottom:1px!important}
-.feed{height:205px!important;padding:3px!important;gap:2px!important}
-.composer{margin-top:4px!important;padding:5px!important}
-.guide{margin-bottom:1px!important;line-height:1.15!important}
-.mode-switch-wrap{margin:0 0 3px 1px!important}
-.mode-switch{padding:2px!important}
-.mode-switch-btn{padding:4px 10px!important}
-.question{margin:1px 0 2px!important;line-height:1.15!important}
-
-.preview{
- min-height:30px!important;
- margin:0!important;
- padding-bottom:9px!important;
- line-height:1!important;
-}
-.second-stage{margin-top:0!important}
-.second-preview{
- min-height:30px!important;
- margin:0!important;
- padding-bottom:9px!important;
-}
-.preview-place,.second-place{
- padding-top:3px!important;
- padding-bottom:3px!important;
- margin-bottom:0!important;
-}
-.preview-cn,.second-cn{top:calc(100% + 1px)!important}
-
-.place-box{padding:4px!important}
-.place-box.has-de-hint{padding-bottom:24px!important}
-.first-stage-de-hint{bottom:3px!important;font-size:18px!important}
-
-.choices{gap:2px!important}
-.choice{min-height:32px!important;padding:2px 1px!important}
-.jp{line-height:1!important}
-.cn{margin-top:1px!important;line-height:1!important}
-
-.noun-area{
- margin-top:2px!important;
- gap:2px!important;
- padding:4px!important;
- padding-bottom:20px!important;
-}
-.noun-choice{min-height:31px!important}
-.noun-area-hint{bottom:3px!important;font-size:18px!important}
-
-.inside-patterns{margin-top:2px!important;padding-top:2px!important}
-.patterns{margin-top:2px!important}
-
-.post{padding:2px 4px!important}
-.post-line,.posted-row{
- min-height:31px!important;
- padding-top:0!important;
- padding-bottom:8px!important;
-}
-.post-author{margin-bottom:1px!important}
-.posted-sentence{line-height:1.25!important}
-.posted-row{gap:2px!important}
-.posted-card,.post-place{padding-top:3px!important;padding-bottom:3px!important}
-.me-too-wrap{margin-top:1px!important}
-
-@media(max-width:700px){
- .app{padding-top:2px!important;padding-bottom:5px!important}
- .feed{height:185px!important}
- .composer{margin-top:3px!important;padding:4px!important}
- .mode-switch-wrap{margin-bottom:2px!important}
- .mode-switch-btn{padding:3px 9px!important}
- .question{margin:1px 0!important}
- .preview,.second-preview{min-height:27px!important;padding-bottom:8px!important}
- .place-box{padding:3px!important}
- .place-box.has-de-hint{padding-bottom:22px!important}
- .choice{min-height:29px!important}
- .noun-area{margin-top:1px!important;padding:3px!important;padding-bottom:19px!important}
- .noun-choice{min-height:29px!important}
- .post-line,.posted-row{min-height:29px!important;padding-bottom:8px!important}
-}
-
-
-/* ===== v93 重なり防止・適度にコンパクト ===== */
-.feed{height:230px!important;padding:5px!important;gap:4px!important}
-.composer{margin-top:6px!important;padding:7px!important}
-.guide{margin-bottom:4px!important;line-height:1.3!important}
-.mode-switch-wrap{margin:0 0 6px 2px!important}
-.mode-switch-btn{padding:5px 11px!important}
-.question{margin:3px 0 5px!important;line-height:1.3!important}
-
-.preview,.second-preview{
- min-height:38px!important;
- padding-bottom:13px!important;
- line-height:1.2!important;
-}
-.second-stage{margin-top:3px!important}
-.preview-place,.second-place{padding-top:5px!important;padding-bottom:5px!important}
-.preview-cn,.second-cn{top:calc(100% + 2px)!important}
-
-.place-box{padding:6px!important}
-.place-box.has-de-hint{padding-bottom:30px!important}
-.first-stage-de-hint{bottom:5px!important;font-size:19px!important}
-
-.choices{gap:4px!important}
-.choice{min-height:39px!important;padding:4px 2px!important}
-.jp{line-height:1.15!important}
-.cn{margin-top:2px!important;line-height:1.1!important}
-
-.noun-area{
- margin-top:4px!important;
- gap:4px!important;
- padding:6px!important;
- padding-bottom:26px!important;
-}
-.noun-choice{min-height:38px!important}
-.noun-area-hint{bottom:5px!important;font-size:19px!important}
-
-.inside-patterns,.patterns{margin-top:4px!important;padding-top:3px!important}
-
-.post{padding:4px 6px!important}
-.post-line,.posted-row{
- min-height:38px!important;
- padding-bottom:12px!important;
- line-height:1.15!important;
-}
-.posted-row{gap:3px!important}
-.posted-card,.post-place{padding-top:5px!important;padding-bottom:5px!important}
-.me-too-wrap{margin-top:3px!important}
-
-@media(max-width:700px){
- .feed{height:215px!important}
- .composer{padding:6px!important}
- .preview,.second-preview{min-height:36px!important;padding-bottom:12px!important}
- .choice,.noun-choice{min-height:36px!important}
- .noun-area{padding-bottom:25px!important}
- .post-line,.posted-row{min-height:36px!important;padding-bottom:11px!important}
-}
-
-
-/* ===== v95 切替ボタンと疑問文の高さを統一 ===== */
-.mode-switch{
- height:36px!important;
- box-sizing:border-box!important;
-}
-.mode-switch-btn{
- height:30px!important;
- box-sizing:border-box!important;
- padding:0 11px!important;
- display:flex!important;
- align-items:center!important;
- justify-content:center!important;
- line-height:1!important;
-}
-.question{
- height:36px!important;
- min-height:36px!important;
- box-sizing:border-box!important;
- display:flex!important;
- align-items:center!important;
- margin:3px 0 5px!important;
- line-height:1!important;
-}
-@media(max-width:700px){
- .mode-switch{height:34px!important}
- .mode-switch-btn{height:28px!important}
- .question{height:34px!important;min-height:34px!important}
-}
-
-
-/* ===== v96 切替と疑問文を横並び ===== */
-.mode-question-row{
- display:flex!important;
- align-items:center!important;
- justify-content:flex-start!important;
- gap:10px!important;
- margin:0 0 5px 0!important;
-}
-.mode-switch-wrap{
- margin:0!important;
- flex:0 0 auto!important;
-}
-.question{
- margin:0!important;
- flex:0 0 auto!important;
-}
-@media(max-width:700px){
- .mode-question-row{
-   gap:8px!important;
-   flex-wrap:nowrap!important;
- }
-}
-
-
-/* v97 responsive 私も */
-.post{position:relative!important}
-.me-too-wrap{display:flex!important;align-items:center!important;gap:5px!important;width:max-content!important;max-width:100%!important}
-.post.metoo-inline .me-too-wrap{position:absolute!important;right:6px!important;bottom:4px!important;margin:0!important}
-.post.metoo-row2 .me-too-wrap,.post.metoo-row3 .me-too-wrap{position:static!important;margin-top:3px!important;margin-left:auto!important}
-.post.metoo-row2 .me-too-count{position:absolute!important;right:6px!important;top:4px!important}
-.post.metoo-row3 .me-too-count,.post.metoo-inline .me-too-count{position:static!important}
-
-
-/* ===== v98 私も配置・実測版 ===== */
-.post{position:relative!important}
-.me-too-wrap{box-sizing:border-box!important}
-
-.post.metoo-inline .me-too-wrap{
- position:absolute!important;
- margin:0!important;
- z-index:3!important;
-}
-.post.metoo-row2 .me-too-wrap,
-.post.metoo-row3 .me-too-wrap{
- position:relative!important;
- left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
- margin:3px 0 0 auto!important;
- width:max-content!important;
-}
-.post.metoo-row2 .me-too-count{
- position:absolute!important;
- z-index:4!important;
-}
-.post.metoo-row3 .me-too-count,
-.post.metoo-inline .me-too-count{
- position:static!important;
-}
-
-
-/* v100: 私もが2段目のとき、✋×Nは一段目の右端 */
-.post.metoo-row2 .me-too-count{
- left:auto!important;
- right:6px!important;
- bottom:auto!important;
- margin:0!important;
-}
-
-
-/* v101: 2段目時のカウントは post 直下。一段目右端に固定 */
-.post.metoo-row2 > .me-too-count{
- position:absolute!important;
- left:auto!important;
- right:6px!important;
- z-index:10!important;
- margin:0!important;
-}
-
-
-/* ===== v102：2段目のときの✋×Nは「1段目そのもの」の右端 ===== */
-.post.metoo-row2 .posted-row:first-child{
- position:relative!important;
- padding-right:52px!important;
-}
-.post.metoo-row2 .posted-row:first-child > .me-too-count{
- position:absolute!important;
- right:0!important;
- left:auto!important;
- top:50%!important;
- bottom:auto!important;
- transform:translateY(-50%)!important;
- margin:0!important;
- z-index:10!important;
- white-space:nowrap!important;
-}
-
-
-/* ===== v103：2段目時の✋×Nは右端に独立表示 ===== */
-.post.metoo-row2 .posted-row:first-child{
- padding-right:0!important;
-}
-.post.metoo-row2 .posted-row:first-child > .me-too-count{
- position:absolute!important;
- right:6px!important;
- left:auto!important;
- top:3px!important;
- transform:none!important;
- margin:0!important;
- z-index:10!important;
- white-space:nowrap!important;
-}
-
-
-/* ===== v104 最終指定 ===== */
-.post.metoo-row2 > .me-too-count{
- position:absolute!important;
- right:6px!important;
- left:auto!important;
- bottom:auto!important;
- transform:none!important;
- margin:0!important;
- z-index:20!important;
- white-space:nowrap!important;
-}
-.post.metoo-row2 .posted-row:first-child{
- padding-right:0!important;
-}
-
-
-/* v105: 私もが2段目なら count は必ず1段目右端 */
-.post.metoo-inline > .me-too-count,
-.post.metoo-row2 > .me-too-count{
- position:absolute!important;
- right:6px!important;
- left:auto!important;
- z-index:30!important;
- white-space:nowrap!important;
-}
-
-
-/* ===== v106：✋×N は行レイアウトに一切参加させない ===== */
-.post.metoo-inline > .me-too-count,
-.post.metoo-row2 > .me-too-count{
- position:absolute!important;
- display:block!important;
- width:max-content!important;
- max-width:none!important;
- right:6px!important;
- left:auto!important;
- bottom:auto!important;
- margin:0!important;
- padding:0!important;
- transform:none!important;
- z-index:30!important;
- white-space:nowrap!important;
- pointer-events:none!important;
-}
-.post.metoo-inline .posted-row,
-.post.metoo-row2 .posted-row{
- flex-wrap:nowrap!important;
-}
-
-
-/* ===== v107：私もボタンは常に右詰め ===== */
-.me-too-wrap{
- margin-left:auto!important;
- margin-right:0!important;
- justify-content:flex-end!important;
-}
-.post.metoo-inline .me-too-wrap{
- left:auto!important;
- right:6px!important;
-}
-.post.metoo-row2 .me-too-wrap,
-.post.metoo-row3 .me-too-wrap{
- margin-left:auto!important;
- margin-right:0!important;
-}
-
-
-/* ===== v108：✋×N は常に一段目の右端 ===== */
-.post > .me-too-count{
- position:absolute!important;
- right:6px!important;
- left:auto!important;
- bottom:auto!important;
- margin:0!important;
- transform:none!important;
- z-index:40!important;
- white-space:nowrap!important;
- pointer-events:none!important;
-}
-
-
-/* ===== v109：✋×N 最終固定 ===== */
-.post{position:relative!important}
-.post > .me-too-count{
- position:absolute!important;
- right:6px!important;
- left:auto!important;
- bottom:auto!important;
- margin:0!important;
- transform:none!important;
- display:block!important;
- width:max-content!important;
- white-space:nowrap!important;
- z-index:99!important;
- pointer-events:none!important;
-}
-
-
-/* food版と同じ投稿欄操作 */
-.board-title{display:none !important;}
+/* 投稿一覧の展開ボタン */
+.board-title{height:16px;margin-left:0 !important}
 .feed-expand-btn{
- display:block !important;
- width:38px !important;
- height:24px !important;
- margin:-1px auto 4px !important;
- padding:0 !important;
- border:1px solid var(--line) !important;
- border-top:0 !important;
- border-radius:0 0 10px 10px !important;
- background:rgba(255,255,255,.9) !important;
- color:#66835d !important;
- font-size:14px !important;
- line-height:22px !important;
- font-weight:700 !important;
- cursor:pointer !important;
- box-shadow:0 2px 4px rgba(63,126,46,.08) !important;
- position:relative !important;
- z-index:5 !important;
+ display:block;
+ width:38px;
+ height:24px;
+ margin:-1px auto 0;
+ padding:0;
+ border:1px solid var(--line);
+ border-top:0;
+ border-radius:0 0 10px 10px;
+ background:rgba(255,255,255,.9);
+ color:#777;
+ font-size:14px;
+ line-height:22px;
+ cursor:pointer;
+ box-shadow:0 2px 4px rgba(0,0,0,.04);
 }
-.feed.expanded{height:72vh !important;}
+.feed.expanded{
+ height:72vh !important;
+}
+.feed.has-posts:not(.expanded){
+ height:275px !important;
+}
+@media(max-width:700px){
+ .feed.has-posts:not(.expanded){
+   height:275px !important;
+ }
+ .feed-expand-btn{
+   height:23px;
+   line-height:21px;
+ }
+}
 
-/* 投稿左リボン：この緑UIになじむ色 */
-.post.own-post{border-left-color:#5f9f52 !important;}
-.post.other-post{border-left-color:#c5ddbb !important;}
+/* 投稿がある時は一覧が高くなるので、▲も一覧の下へ自然に下がる */
+
+
+/* 左上の接続状態テキストは表示しない */
+.board-title{display:none !important;}
+#syncStatus{display:none !important;}
+
+
+/* 投稿左リボン：自分は濃い緑、ほかの人は薄い緑 */
+.post.own-post{border-left-color:#70a978 !important;}
+.post.other-post{border-left-color:#b9d7b9 !important;}
 
 </style>
+
+<style>
+@media(max-width:700px){
+  .feed{height:275px !important;}
+}
+</style>
+
 </head>
 <body>
-<div id="nameModal" class="name-modal">
+
+<div id="nameModal" class="name-modal hidden">
  <div class="name-box">
-  <input id="nameInput" class="name-input" placeholder="请输入姓名" maxlength="20">
-  <button class="name-save" onclick="saveName()">确定</button>
+  
+  
+  <input id="userNameInput" class="name-input" type="text" maxlength="20" autocomplete="name" placeholder="请输入姓名">
+  <br>
+  <button class="name-save" onclick="saveUserName()">确定</button>
+ </div>
+</div>
+
+<div id="deleteModal" class="delete-modal hidden">
+ <div class="delete-box">
+  <div class="delete-question">消しますか？</div>
+  <div class="delete-actions">
+   <button class="delete-yes" onclick="confirmDeletePost()">はい</button>
+   <button class="delete-no" onclick="cancelDeletePost()">いいえ</button>
+  </div>
  </div>
 </div>
 
 <div class="app">
- <div class="board-title"></div>
- <div id="feed" class="feed"><div class="empty">まだ投稿がありません。</div></div>
- <button id="feedExpandBtn" class="feed-expand-btn" type="button" aria-label="展开投稿">▼</button>
+  <div class="board-title"><span id="syncStatus" style="font-size:11px;color:#999">● オフライン</span></div>
+  <section class="feed" id="feed">
+    <div class="empty" id="empty">まだ投稿がありません。</div>
+  </section>
+  <button id="feedExpandBtn" class="feed-expand-btn" type="button" aria-label="展开投稿">▼</button>
 
- <div class="composer">
-  <div class="guide"><span id="modeGuideText">发布一下自己的周末安排吧。</span></div>
-  <div class="mode-question-row">
-<div class="mode-switch-wrap">
-  <div class="mode-switch" role="group" aria-label="時間帯切り替え">
-    <button type="button" id="weekendModeBtn" class="mode-switch-btn active" onclick="setActivityMode('weekend')">周末</button>
-    <button type="button" id="afternoonModeBtn" class="mode-switch-btn" onclick="setActivityMode('afternoon')">下午</button>
-  </div>
-</div>
-<div class="question">しゅうまつ、なにをしますか。</div>
-</div>
+  <section class="drawer" id="drawer">
+    <div class="composer">
+      <div class="subject-guide">介绍一下中国料理吧：</div>
+<div id="questionLine" class="question-line" style="display:none"></div>
 
-  <div class="preview">
-   <span id="previewPlace" class="preview-place"><span id="previewPlaceJp">＿＿</span><span id="previewPlaceCn" class="preview-cn"></span></span>
-   <span id="previewPattern">＿＿＿＿</span>
-   <button id="postBtn" class="post-btn" onclick="postWeekend()" disabled>发布</button>
-  </div>
+<div class="sentence-row">
+        <div class="sentence">
+          <input class="subject" id="subject" type="text" autocomplete="off" placeholder="请输入料理名">
+          <span>は</span>
+          <span class="token ing empty-token" id="t1"><span id="t1jp">＿＿</span><span class="token-cn" id="t1cn"></span></span>
+          <span id="and" style="display:none">と</span>
+          <span class="token ing" id="t2" style="display:none"><span id="t2jp"></span><span class="token-cn" id="t2cn"></span></span>
+          <span>の</span>
+          <span class="token dish empty-token" id="t3"><span id="t3jp">＿＿</span><span class="token-cn" id="t3cn"></span></span>
+          <span>です。</span>
+        </div>
+        <button class="post-btn" id="postBtn" onclick="postSentence()" disabled>发布</button>
+      </div>
 
-  <div class="place-box">
-   <div id="places" class="choices"></div>
-  </div>
+      <div class="pickers">
+        <div class="group one">
+          <div class="choices" id="row1"></div>
+        </div>
 
+        <div class="group two waiting" id="group2">
+          <div class="group-head group-head-two"><span>と</span><span class="cn-note">如果还要选一种食材，请点击。</span></div>
+          <div class="choices" id="row2"></div>
+        </div>
 
-  <div id="secondStage" class="second-stage">
-   <div id="secondPlaceLine" class="preview second-preview">
-    <span id="secondPlace" class="preview-place"></span>
-    <span id="secondDe">で</span>
-    <span id="secondInlineNoun" class="preview-place"><span id="secondInlineNounJp"></span><span id="secondInlineNounCn" class="preview-cn"></span></span>
-    <span id="secondWo" class="wo-slot"></span>
-   </div>
-   <div id="nounArea" class="noun-area"><span class="noun-area-hint">を</span></div>
-   <div class="preview noun-preview">
-    <span id="nounPreview" class="preview-place"><span id="nounPreviewJp">＿＿</span><span id="nounPreviewCn" class="preview-cn"></span></span>
-    <span>を</span>
-   </div>
-   <div id="verbArea" class="verb-area"></div>
-   
-  
-  </div>
- </div>
+        <div class="group three">
+          <div class="group-head">の</div>
+          <div class="choices" id="row3"></div>
+        </div>
+      </div>
+
+      <div class="origin-practice">
+        <div id="originQuestion" class="origin-question" style="display:none"></div>
+        <div id="originAnswer" class="origin-answer" style="display:none">
+          <input id="originInput" class="origin-input" type="text" autocomplete="off" placeholder="请输入国家名">
+          <span>の りょうりです。</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
 </div>
 
 <script>
-const places=[
- ["りょう","宿舍"],
- ["そと","外面"],["おみせ","商店"],["そとのおみせ","外面商店"],["がっこう","学校"],
- ["としょかん","图书馆"],["ショッピングモール","购物中心"],["しょくどう","食堂"],["スーパー","超市"],
- ["グラウンド","运动场"],["コート","球场"],["たいいくかん","体育馆"],["こうえん","公园"],
- ["カラオケ","卡拉OK"],["うち","家"],["りょこう","旅行"],["やまに のぼります","爬山"],["でかけます","外出"]
+const ingredients=[
+ ["とりにく","鸡肉"],["ぎゅうにく","牛肉"],["ぶたにく","猪肉"],
+ ["やさい","蔬菜"],["たまご","鸡蛋"],["さかな","鱼"],
+ ["トマト","西红柿"],["えび","虾"],["とうふ","豆腐"],["ごはん","米饭"],
+  ["じゃがいも","土豆"],
+  ["きのこ","蘑菇"]
 ];
-const nouns=[
- ["ごはん","饭"],["ビール","啤酒"],
- ["バスケ","篮球"],["サッカー","足球"],["卓球","乒乓球"],["ビリヤード","台球"],
- ["バレーボール","排球"],["バドミントン","羽毛球"],["ゲーム","游戏"],["ダンス","舞蹈"],
- ["りょうり","做饭"],["アルバイト","打工"],["パーティー","聚会"],["バーベキュー","烧烤"],
- ["スマホ","手机"],["アニメ","动漫"],["ドラマ","电视剧"],["えいが","电影"],
- ["まんが","漫画"],["しょうせつ","小说"],["おんがく","音乐"],["ふく","衣服"],
- ["おかし","零食"],["え","画"],["にほんご","日语"],["えいご","英语"],["しゃしん","照片"]
+const dishes=[
+ ["りょうり","料理"],["スープ","汤"],
+ ["カレー","咖喱"],["米粉","米粉"],["ラーメン","拉面"],["なべ","火锅"]
 ];
-const verbs=[
- ["たべます。","吃","wo"],["のみます。","喝","wo"],["します。","做","wo"],
- ["みます。","看","wo"],["ききます。","听","wo"],["よみます。","读","wo"],
- ["かいます。","买","wo"],["かきます。","写／画","wo"],["べんきょうします。","学习","wo"],
- ["つくります。","制作／做饭","wo"],["とります。","拍（照片）／拿","wo"],
- ["かいものします。","购物","other"],["うんどうします。","运动","other"],
- ["あるきます。","走路","other"],["さんぽします。","散步","other"],
- ["はしります。","跑步","other"],["そうじします。","打扫","other"],
- ["うたいます。","唱歌","other"],
- 
- ["～と あいます","和～见面","to"],["～と あそびます","一起玩","to"],
- ["～と はなします","说话","to"],["～と でんわします","打电话","to"]
-];
-let selectedVerb="";
-let selectedNoun="";
-let selectedPlace="",selectedPattern="";
-let travelDestination="";
-let userName=localStorage.getItem("weekend_user_name_v1")||"";
-let posts=JSON.parse(localStorage.getItem("weekend_posts_v1")||"[]");
 
-function saveName(){
- const v=document.getElementById("nameInput").value.trim();
- if(!v)return;
- userName=v;
- localStorage.setItem("weekend_user_name_v1",userName);
- document.getElementById("nameModal").style.display="none";
-}
-function renderPlaces(){
- const box=document.getElementById("places");box.innerHTML="";
- places.forEach(([jp,cn])=>{
-  const b=document.createElement("button");
-  b.className="choice"+(selectedPlace===jp?" selected":"");
-  b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
-  b.onclick=()=>selectPlace(jp);box.appendChild(b);
- });
+let s1=null,s2=null,s3=null;
+
+const cnOf=(list,v)=>(list.find(x=>x[0]===v)||["",""])[1];
+
+function makeChoice(item,selected,onClick){
+ const b=document.createElement("button");
+ b.className="choice"+(selected===item[0]?" selected":"");
+ b.innerHTML=`<span class="jp">${item[0]}</span><span class="cn">${item[1]}</span>`;
+ b.onclick=()=>onClick(item[0]);
+ return b;
 }
 
-/* 選択内容に合わせて、不自然な組み合わせを押せなくする */
-const nounVerbMap={
- "ごはん":["たべます。","つくります。","かいます。"],
- "ビール":["のみます。","かいます。"],
- "バスケ":["します。","みます。"],"サッカー":["します。","みます。"],"卓球":["します。","みます。"],"ビリヤード":["します。","みます。"],
- "バレーボール":["します。","みます。"],"バドミントン":["します。","みます。"],"ゲーム":["します。","みます。","かいます。"],"ダンス":["します。","みます。"],
- "りょうり":["します。","つくります。"],"アルバイト":["します。"],"パーティー":["します。"],"バーベキュー":["します。"],
- "スマホ":["みます。","かいます。"],"アニメ":["みます。"],"ドラマ":["みます。"],"えいが":["みます。"],
- "まんが":["よみます。","かいます。"],"しょうせつ":["よみます。","かいます。","かきます。"],
- "おんがく":["ききます。"],"ふく":["かいます。"],"おかし":["たべます。","かいます。","つくります。"],
- "え":["かきます。","みます。"],"にほんご":["べんきょうします。","ききます。","よみます。"],"えいご":["べんきょうします。","ききます。","よみます。"],
- "しゃしん":["とります。","みます。"]
-};
-const noNounVerbs=new Set([
- "かいものします。","うんどうします。","あるきます。","さんぽします。",
- "はしります。","そうじします。","うたいます。",
- 
- "～と あいます","～と あそびます","～と はなします","～と でんわします"
-]);
+function render(){
+ const r1=document.getElementById("row1"),r2=document.getElementById("row2"),r3=document.getElementById("row3");
+ r1.innerHTML=r2.innerHTML=r3.innerHTML="";
 
-/* 場所×名詞：可能性が少しでもある組み合わせは許可。
-   「その場所でその名詞を目的語にする活動」が明らかに不自然な場合だけ除外する。 */
-/* 場所×名詞：ユーザー指定＋残りは「確実に不自然」なものだけ禁止 */
-const sportsNouns=new Set(["バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン"]);
+ ingredients.forEach(x=>r1.appendChild(makeChoice(x,s1,v=>{
+   const old=s1;s1=(s1===v?null:v);
+   if(s2===s1 || (old && s2===v)) s2=null;
+   render();
+ })));
 
-const placeNounBlocked={
- "りょう":["アルバイト","バーベキュー"],
- "そと":[],
- "がっこう":[],
- "としょかん":["ごはん","ビール","バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン","りょうり","ゲーム","ダンス","しゃしん","ふく","おかし","パーティー","バーベキュー"],
- "おみせ":[],
- "そとのおみせ":[],
- "ショッピングモール":[],
- "しょくどう":[],
- "スーパー":["バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン","にほんご","えいご","スマホ","アニメ","ドラマ","えいが","まんが","しょうせつ","しゃしん","りょうり","ゲーム","パーティー","ダンス","バーベキュー","え","おんがく","ふく"],
+ ingredients.filter(x=>x[0]!==s1).forEach(x=>r2.appendChild(makeChoice(x,s2,v=>{
+   s2=(s2===v?null:v);render();
+ })));
 
- /* 以下は「わりとあり得るなら許可」で、明確に変なものだけ */
- "グラウンド":["りょうり","えいが","しょうせつ","ふく"],
- "コート":["ごはん","ビール","ゲーム","りょうり","アルバイト","パーティー","バーベキュー","スマホ","アニメ","ドラマ","えいが","まんが","しょうせつ","おんがく","ふく","おかし","え","にほんご","えいご","しゃしん"],
- "たいいくかん":["ごはん","ビール","ゲーム","りょうり","アルバイト","パーティー","バーベキュー","スマホ","アニメ","ドラマ","えいが","まんが","しょうせつ","おんがく","ふく","おかし","え","にほんご","えいご","しゃしん"],
- "こうえん":[],
- "カラオケ":["バスケ","サッカー","卓球","ビリヤード","バレーボール","バドミントン","りょうり","バーベキュー"],
- "うち":[],
- "りょこう":[]
-};
-function nounFitsPlace(noun,place){
- if(!place)return true;
- return !(placeNounBlocked[place]||[]).includes(noun);
+ dishes.forEach(x=>r3.appendChild(makeChoice(x,s3,v=>{
+   s3=(s3===v?null:v);render();
+ })));
+
+ setToken("t1",s1,ingredients,"＿＿");
+ setToken("t3",s3,dishes,"＿＿");
+
+ document.getElementById("and").style.display=s2?"inline":"none";
+ document.getElementById("t2").style.display=s2?"inline-flex":"none";
+ document.getElementById("t2jp").textContent=s2||"";
+ document.getElementById("t2cn").textContent=s2?cnOf(ingredients,s2):"";
+ document.getElementById("group2").classList.toggle("waiting",!s2);
+ validate();
 }
 
-/* 名詞単体では成立しても、その場所で「スポーツをする」だけは不自然な場合 */
-function comboFitsPlace(noun,verb,place){
- if(!place)return true;
- if(place==="しょくどう" && verb==="かいます。" && !["ごはん","ビール"].includes(noun))return false;
- if(place==="しょくどう" && noun==="ダンス" && verb==="します。")return false;
- if(verb==="します。" && sportsNouns.has(noun) && ["りょう","しょくどう","スーパー","カラオケ"].includes(place)) return false;
- return true;
+function setToken(id,val,list,placeholder){
+ const box=document.getElementById(id);
+ document.getElementById(id+"jp").textContent=val||placeholder;
+ document.getElementById(id+"cn").textContent=val?cnOf(list,val):"";
+ box.classList.toggle("empty-token",!val);
 }
 
-function nounFitsVerb(noun,verb){
- if(!verb)return true;
- if(noNounVerbs.has(verb))return false;
- return (nounVerbMap[noun]||[]).includes(verb);
-}
-function verbFitsNoun(verb,noun){
- if(!noun)return true;
- return nounFitsVerb(noun,verb);
-}
-function verbFitsPlace(verb,place){
- if(!place)return true;
- if(["たいいくかん","コート"].includes(place) && new Set(["かいものします。","そうじします。","うたいます。","～と でんわします","～と あいます"]).has(verb))return false;
- if(place==="スーパー" && verb==="たべます。")return false;
- if(verb==="かいます。" && ["カラオケ","コート","たいいくかん","グラウンド","うち","としょかん"].includes(place))return false;
- if(place==="カラオケ" && new Set(["うんどうします。","かいものします。","あるきます。","さんぽします。","はしります。","そうじします。","～と でんわします","～と あいます"]).has(verb))return false;
- /* 場所が意味上ほぼ決まる動詞だけ制限する */
- if(verb==="やまに のぼります。")return place==="やま";
- 
- if(verb==="つくります。" && ["りょう","としょかん","スーパー"].includes(place))return false;
- if(verb==="かいます。" && ["りょう","としょかん"].includes(place))return false;
- return true;
-}
-function hasAvailableVerbForNoun(noun){
- /* 現在の場所で、この名詞を選んだあと1つでも選べる動詞が残るか */
- return verbs.some(([v])=>
-   nounFitsVerb(noun,v) &&
-   verbFitsPlace(v,selectedPlace) &&
-   comboFitsPlace(noun,v,selectedPlace)
- );
-}
-function refreshCompatibility(){
- document.querySelectorAll("#nounArea .noun-choice").forEach(btn=>{
-   const n=btn.dataset.value;
-   const placeOK=nounFitsPlace(n,selectedPlace);
-   const currentVerbOK=!selectedVerb || (nounFitsVerb(n,selectedVerb) && comboFitsPlace(n,selectedVerb,selectedPlace));
-   const leavesVerb=hasAvailableVerbForNoun(n);
-   const ok=placeOK && currentVerbOK && leavesVerb;
-   btn.disabled=!ok;
-   btn.classList.toggle("choice-disabled",!ok);
- });
- document.querySelectorAll("#verbArea .verb-choice").forEach(btn=>{
-   const v=btn.dataset.value;
-   const verbData=verbs.find(x=>x[0]===v);
-   const type=verbData?verbData[2]:"";
-   const needsNoun=type==="wo";
-   const ok=(!needsNoun || !!selectedNoun) &&
-            verbFitsNoun(v,selectedNoun) &&
-            verbFitsPlace(v,selectedPlace) &&
-            (!selectedNoun || comboFitsPlace(selectedNoun,v,selectedPlace));
-   btn.disabled=!ok;
-   btn.classList.toggle("choice-disabled",!ok);
- });
-}
-function renderNouns(){
- const area=document.getElementById("nounArea");
- area.innerHTML="";
- nouns.forEach(([jp,cn])=>{
-   const b=document.createElement("button");
-   b.className="choice noun-choice"+(selectedNoun===jp?" selected":"");
-   b.dataset.value=jp;
-   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
-   b.onclick=()=>{
-     if(b.disabled)return;
-     const oldNoun=selectedNoun;
-     selectedNoun=selectedNoun===jp?"":jp;
-     if(selectedVerb && oldNoun!==selectedNoun) selectedVerb="";
-     renderNouns(); renderVerbs(); updateNounPreview(); updateVerbPreview();
- refreshPostButton();
-   };
-   area.appendChild(b);
- });
- const hint=document.createElement("span");
- hint.className="noun-area-hint"; hint.textContent="を"; area.appendChild(hint);
- refreshCompatibility();
-}
-function updateNounPreview(){
- const ijp=document.getElementById("secondInlineNounJp");
- const icn=document.getElementById("secondInlineNounCn");
- const secondWo=document.getElementById("secondWo");
- const nounPreview=document.querySelector(".noun-preview");
- const secondLine=document.getElementById("secondPlaceLine");
- const found=nouns.find(x=>x[0]===selectedNoun);
- const isDorm=selectedPlace==="りょう";
+function validate(){
+ const subjectValue=document.getElementById("subject").value.trim();
+ const questionLine=document.getElementById("questionLine");
+ const originQuestion=document.getElementById("originQuestion");
+ const originAnswer=document.getElementById("originAnswer");
 
- if(ijp)ijp.textContent=selectedNoun||"";
- if(icn)icn.textContent=found?found[1]:"";
- const nounCard=document.getElementById("secondInlineNoun");
- if(nounCard)nounCard.style.display=selectedNoun?"inline-flex":"none";
- if(secondWo)secondWo.textContent=selectedNoun?"を":"";
+ if(subjectValue){
+   questionLine.textContent=subjectValue+"は なんの りょうり ですか。";
+   questionLine.style.display="block";
 
- if(nounPreview)nounPreview.style.display="none";
- if(secondLine)secondLine.style.display=isDorm?"none":"flex";
-
- /* 寮の場合も、名詞を選ぶたび上の一文を更新 */
- updatePreview();
-}
-function updateVerbPreview(){
- const wo=document.getElementById("secondWo");
- if(wo){
-   let c=document.getElementById("inlineVerbCard");
-   if(!c){
-     c=document.createElement("span"); c.id="inlineVerbCard"; c.className="preview-place";
-     c.innerHTML='<span id="inlineVerbJp"></span><span id="inlineVerbCn" class="preview-cn"></span>';
-     wo.insertAdjacentElement("afterend",c);
-   }
-   const f=verbs.find(x=>x[0]===selectedVerb);
-   document.getElementById("inlineVerbJp").textContent=selectedVerb||"";
-   document.getElementById("inlineVerbCn").textContent=f?f[1]:"";
-   c.style.display=(selectedPlace!=="りょう" && selectedVerb)?"inline-flex":"none";
- }
- updatePreview();
-}
-function renderVerbs(){
- const area=document.getElementById("verbArea");
- if(!area)return;
- area.innerHTML="";
- verbs.forEach(([jp,cn,type])=>{
-   const b=document.createElement("button");
-   b.className="choice verb-choice"+(selectedVerb===jp?" selected":"");
-   b.dataset.value=jp;
-   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
-   b.onclick=()=>{
-     if(b.disabled)return;
-     selectedVerb=selectedVerb===jp?"":jp;
-     /* 動詞を選ぶと、合わない名詞は薄くして押せなくする */
-     renderVerbs(); renderNouns(); updateVerbPreview(); updatePreview(); updateNounPreview();
- refreshPostButton();
-   };
-   area.appendChild(b);
- });
- refreshCompatibility();
-}
-function renderSecondStage(){
- const stage=document.getElementById("secondStage");
- const placeEl=document.getElementById("secondPlace");
- const secondLine=document.getElementById("secondPlaceLine");
- if(secondLine){
-   secondLine.classList.toggle("waiting-place",!selectedPlace);
-   secondLine.style.visibility="";
- }
- const show=true;
- stage.classList.add("show");
- renderNouns();
- renderVerbs();
- setTimeout(refreshCompatibility,0);
- updateVerbPreview();
- updateNounPreview();
- if(!selectedPlace){placeEl.innerHTML="";return}
- const found=places.find(x=>x[0]===selectedPlace);
- const secondDe=document.getElementById("secondDe");
- if(secondDe)secondDe.style.display="";
- if(placeEl)placeEl.style.display="inline-flex";
- if(selectedPlace==="りょこう" || selectedPlace==="でかけます"){
-   updateTravelSecondPlace();
- }else if(selectedPlace==="やまに のぼります"){
-   placeEl.innerHTML=`<span>やま</span><span class="preview-cn">山</span>`;
+   originQuestion.textContent=subjectValue+"は どこの りょうり ですか。";
+   originQuestion.style.display="block";
+   originAnswer.style.display="flex";
  }else{
-   placeEl.innerHTML=`<span>${selectedPlace}</span><span class="preview-cn">${found?found[1]:""}</span>`;
+   questionLine.textContent="";
+   questionLine.style.display="none";
+
+   originQuestion.textContent="";
+   originQuestion.style.display="none";
+   originAnswer.style.display="none";
  }
+ document.getElementById("postBtn").disabled=!(subjectValue && s1 && s3);
 }
-function selectPlace(v){
- if(v!==selectedPlace && (v==="りょこう"||v==="でかけます"))travelDestination="";
- selectedPlace=v;
- if(selectedNoun && !nounFitsPlace(selectedNoun,v)) selectedNoun="";
- if(selectedNoun && selectedVerb && !comboFitsPlace(selectedNoun,selectedVerb,v)) selectedVerb="";
- if(selectedVerb && !verbFitsPlace(selectedVerb,v)) selectedVerb="";
- selectedNoun="";
- selectedVerb="";
- selectedPattern=v==="うち"?"かえります":(v==="やまに のぼります"?"のぼります":(v==="でかけます"?"でかけます":(v==="りょう"?"で":"へいきます")));
- renderPlaces();
- updatePatterns();
- updatePreview();
- renderSecondStage();
- renderNouns();
- renderVerbs();
- refreshPostButton();
+document.getElementById("subject").addEventListener("input",validate);
+
+function esc(v){
+ return v.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
 }
-function selectPattern(v){
- /* 場所を選ぶと自動決定。手動変更はしない */
+function postWord(jp,cn,type){
+ return `<span class="post-word ${type}"><span>${jp}</span><span class="post-cn">${cn}</span></span>`;
 }
-function updatePatterns(){
- /* パターン選択ボタンは廃止。場所に応じて自動決定する */
-}
-function updatePreview(){
- const firstPlaceBox=document.querySelector(".place-box");
- if(firstPlaceBox)firstPlaceBox.classList.remove("has-de-hint");
- const oldDeHint=document.getElementById("firstStageDeHint");
- if(oldDeHint)oldDeHint.remove();
- const placeJp=document.getElementById("previewPlaceJp");
- const placeCn=document.getElementById("previewPlaceCn");
- const pat=document.getElementById("previewPattern");
- const placeCard=document.getElementById("previewPlace");
- const found=places.find(x=>x[0]===selectedPlace);
+function likePost(btn){
+ const item=btn.closest(".post");
+ const id=item.dataset.id;
+ const post=postsById[id];
+ if(!post || hasLiked(id)) return;
 
- let noun=document.getElementById("upperDormNoun");
- let wo=document.getElementById("upperDormWo");
- let travelInput=document.getElementById("travelDestinationInput");
+ rememberLike(id);
+ post.likes=(post.likes||0)+1;
+ saveLocalPost(post);
+ renderHeart(item,post.likes);
+ btn.disabled=true;
+ btn.classList.add("liked");
+ queueLikeSync(post);
+}function postSentence(){
+ const subject=document.getElementById("subject").value.trim();
+ if(!subject||!s1||!s3)return;
 
- if(selectedPlace==="りょこう" || selectedPlace==="でかけます"){
-   const isOuting=selectedPlace==="でかけます";
-   placeCard.style.display="inline-flex";
-   placeJp.textContent=isOuting?"でかけます。":"りょこう";
-   placeCn.textContent=isOuting?"外出":"旅行";
-   if(!travelInput){
-     travelInput=document.createElement("input");
-     travelInput.id="travelDestinationInput";
-     travelInput.className="travel-destination-input";
-     travelInput.placeholder="用中文输入目的地";
-     travelInput.value=travelDestination;
-     travelInput.addEventListener("input",e=>{
-       travelDestination=e.target.value.trim();
-       updateTravelSecondPlace();
-       refreshPostButton();
-       refreshPostButton();
-     });
-     pat.insertAdjacentElement("afterend",travelInput);
-     const go2=document.createElement("span");
-     go2.id="travelGoText";
-     go2.textContent="へ いきます。";
-     travelInput.insertAdjacentElement("afterend",go2);
-   }
-   travelInput.style.display="inline-block";
-   const go2=document.getElementById("travelGoText"); if(go2)go2.style.display="inline";
-   pat.textContent=isOuting?"":"へ いきます。";
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove();
-   if(wo)wo.remove();
-   refreshPostButton();
-   updateTravelSecondPlace();
-   return;
- }else{
-   placeCard.style.display="inline-flex";
-   if(travelInput)travelInput.remove();
-   const go2=document.getElementById("travelGoText"); if(go2)go2.remove();
- }
+ const post={
+   id:makeId(),
+   subject,
+   s1,
+   s2:s2||"",
+   s3,
+   likes:0,
+   createdAt:Date.now(),
+   clientId,
+   author:userName,
+   pending:true
+ };
 
- placeJp.textContent=selectedPlace||"＿＿";
- placeCn.textContent=found?found[1]:"";
-
- if(selectedPlace==="やまに のぼります"){
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove(); if(wo)wo.remove();
-   placeJp.textContent="やま"; placeCn.textContent="山";
-   pat.textContent="に のぼります。";
- }else if(selectedPlace==="でかけます"){
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove(); if(wo)wo.remove();
-   placeJp.textContent="でかけます。"; placeCn.textContent="外出";
-   pat.textContent="";
- }else if(selectedPlace==="うち"){
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove();
-   if(wo)wo.remove();
-   pat.textContent="へ かえります。";
- }else if(selectedPlace==="りょう"){
-   pat.textContent="で";
-   let deHint=document.getElementById("firstStageDeHint");
-   if(!deHint){
-     deHint=document.createElement("span");
-     deHint.id="firstStageDeHint";
-     deHint.className="first-stage-de-hint";
-     const firstBox=document.querySelector(".place-box");
-     if(firstBox){
-       firstBox.classList.add("has-de-hint");
-       firstBox.appendChild(deHint);
-     }
-   }
-   deHint.textContent="で";
-   if(!noun){
-     noun=document.createElement("span");
-     noun.id="upperDormNoun";
-     noun.className="preview-place";
-     noun.innerHTML='<span id="upperDormNounJp"></span><span id="upperDormNounCn" class="preview-cn"></span>';
-     pat.insertAdjacentElement("afterend",noun);
-   }
-   if(!wo){
-     wo=document.createElement("span");
-     wo.id="upperDormWo";
-     noun.insertAdjacentElement("afterend",wo);
-   }
-   const nf=nouns.find(x=>x[0]===selectedNoun);
-   document.getElementById("upperDormNounJp").textContent=selectedNoun||"";
-   document.getElementById("upperDormNounCn").textContent=nf?nf[1]:"";
-   noun.style.display=selectedNoun?"inline-flex":"none";
-   wo.textContent=selectedNoun?"を":"";
-   let vc=document.getElementById("upperDormVerb");
-   if(!vc && wo){
-     vc=document.createElement("span"); vc.id="upperDormVerb"; vc.className="preview-place";
-     vc.innerHTML='<span id="upperDormVerbJp"></span><span id="upperDormVerbCn" class="preview-cn"></span>';
-     wo.insertAdjacentElement("afterend",vc);
-   }
-   if(vc){
-     const vf=verbs.find(x=>x[0]===selectedVerb);
-     document.getElementById("upperDormVerbJp").textContent=selectedVerb||"";
-     document.getElementById("upperDormVerbCn").textContent=vf?vf[1]:"";
-     vc.style.display=selectedVerb?"inline-flex":"none";
-   }
- }else{
-   const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
-   if(noun)noun.remove();
-   if(wo)wo.remove();
-   pat.textContent=selectedPattern==="へいきます"?"へ いきます。":(selectedPattern||"＿＿＿＿");
- }
- refreshPostButton();
-}
-function updateTravelSecondPlace(){
- if(selectedPlace!=="りょこう" && selectedPlace!=="でかけます")return;
- const placeEl=document.getElementById("secondPlace");
- const secondLine=document.getElementById("secondPlaceLine");
- if(secondLine)secondLine.style.visibility="visible";
- if(placeEl){
-   placeEl.innerHTML=travelDestination ? `<span>${travelDestination}</span>` : "";
-   placeEl.style.display=travelDestination?"inline-flex":"none";
- }
- const secondDe=document.getElementById("secondDe");
- if(secondDe)secondDe.style.display=travelDestination?"":"none";
-}
-
-function refreshPostButton(){
- const btn=document.getElementById("postBtn");
- if(!btn)return;
- const placeOK=!!selectedPlace;
- const verbOK=!!selectedVerb;
- const destinationOK=!["りょこう","でかけます"].includes(selectedPlace) || !!travelDestination;
- btn.disabled=!(placeOK && verbOK && destinationOK);
-}
-
-let activityMode="weekend";
-function setActivityMode(mode){
- activityMode=mode;
- const wb=document.getElementById("weekendModeBtn");
- const ab=document.getElementById("afternoonModeBtn");
- if(wb)wb.classList.toggle("active",mode==="weekend");
- if(ab)ab.classList.toggle("active",mode==="afternoon");
- const guide=document.getElementById("modeGuideText");
- if(guide)guide.textContent=mode==="weekend"?"发布一下自己的周末安排吧。":"发布一下自己下午的安排吧。";
-
- // 見えている質問文だけを切り替える
- const nodes=[...document.querySelectorAll("body *")].filter(el=>el.children.length===0);
- nodes.forEach(el=>{
-   if(el.dataset.modeQuestion==="1"){
-     el.textContent=mode==="weekend"?"しゅうまつ、なにをしますか。":"ごご、なにをしますか。";
-   }else if(el.textContent.trim()==="しゅうまつ、なにをしますか。" || el.textContent.trim()==="ごご、なにをしますか。"){
-     el.dataset.modeQuestion="1";
-     el.textContent=mode==="weekend"?"しゅうまつ、なにをしますか。":"ごご、なにをしますか。";
-   }
- });
-}
-
-function layoutMeTooButtons(){
- requestAnimationFrame(()=>{
-  document.querySelectorAll(".post").forEach(post=>{
-   const wrap=post.querySelector(".me-too-wrap");
-   const rows=[...post.querySelectorAll(".posted-row")];
-   if(!wrap||!rows.length)return;
-
-   let count=wrap.querySelector(".me-too-count") || post.querySelector(":scope > .me-too-count");
-   post.classList.remove("metoo-inline","metoo-row2","metoo-row3");
-   wrap.removeAttribute("style");
-
-   // ✋×N は常に一段目右端。行レイアウトから完全に外す。
-   if(count && count.textContent){
-     if(count.parentElement!==post) post.appendChild(count);
-     count.removeAttribute("style");
-     const pr=post.getBoundingClientRect();
-     const first=rows[0].getBoundingClientRect();
-     const ch=count.getBoundingClientRect().height||16;
-     count.style.position="absolute";
-     count.style.right="6px";
-     count.style.left="auto";
-     count.style.top=(first.top-pr.top+(first.height-ch)/2)+"px";
-     count.style.bottom="auto";
-     count.style.margin="0";
-     count.style.transform="none";
-   }else if(count && count.parentElement!==wrap){
-     wrap.insertBefore(count,wrap.firstChild);
-   }
-
-   const lastRow=rows[rows.length-1];
-   const content=[...lastRow.children].filter(el=>{
-     const cs=getComputedStyle(el);
-     return !el.classList.contains("me-too-count") &&
-            !el.closest(".me-too-wrap") &&
-            cs.display!=="none" && cs.visibility!=="hidden";
-   });
-   const lastContent=content[content.length-1]||lastRow;
-   const pr=post.getBoundingClientRect();
-   const rr=lastRow.getBoundingClientRect();
-   const cr=lastContent.getBoundingClientRect();
-
-   // countを含まないボタン幅だけ測る
-   wrap.style.position="absolute";
-   wrap.style.visibility="hidden";
-   wrap.style.width="max-content";
-   wrap.style.maxWidth="none";
-   const wr=wrap.getBoundingClientRect();
-   const ww=Math.ceil(wr.width), wh=Math.ceil(wr.height);
-   const available=Math.floor(pr.right-6-cr.right);
-
-   if(available>=ww+7){
-     post.classList.add("metoo-inline");
-     wrap.style.left="auto";
-     wrap.style.right="6px";
-     wrap.style.top=(rr.top-pr.top+(rr.height-wh)/2)+"px";
-     wrap.style.bottom="auto";
-   }else{
-     wrap.removeAttribute("style");
-     post.classList.add(rows.length===1?"metoo-row2":"metoo-row3");
-   }
-   wrap.style.visibility="";
-  });
- });
-}
-window.addEventListener("resize",layoutMeTooButtons);
-window.addEventListener("orientationchange",layoutMeTooButtons);
-function postWeekend(){
- if(!selectedPlace||!selectedPattern||!userName)return;
- const lastThree=posts.slice(-3);
- if(lastThree.length===3 && lastThree.every(p=>p.author===userName)){
-   alert("发了这么多，谢谢你！");
-   return;
- }
- if(!selectedVerb)return;
- if(["りょこう","でかけます"].includes(selectedPlace) && !travelDestination)return;
- 
-
- let lines=[];
- if(selectedPlace==="やまに のぼります"){
-   const line1="やまに のぼります。";
-   let line2="やまで";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }else if(selectedPlace==="でかけます"){
-   const line1="でかけます。"+(travelDestination?travelDestination+"へ いきます。":"");
-   let line2=(travelDestination?travelDestination:"")+"で";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }else if(selectedPlace==="うち"){
-   const line1="うちへ かえります。";
-   let line2="うちで";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }else if(selectedPlace==="りょう"){
-   let line="りょうで";
-   if(selectedNoun) line+=selectedNoun+"を";
-   if(selectedVerb) line+=selectedVerb;
-   lines=[line];
- }else if(selectedPlace==="りょこう"){
-   const line1="りょこうへ いきます。"+(travelDestination?travelDestination+"へ いきます。":"");
-   let line2=(travelDestination?travelDestination:"")+"で";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }else{
-   const line1=selectedPlace+"へ いきます。";
-   let line2=selectedPlace+"で";
-   if(selectedNoun) line2+=selectedNoun+"を";
-   if(selectedVerb) line2+=selectedVerb;
-   lines=[line1,line2];
- }
-
- posts.push({
-   id:Date.now(), author:userName, mode:activityMode, lines,
-   place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけます")?travelDestination:"",
-   noun:selectedNoun, verb:selectedVerb, pattern:selectedPattern, meTooCount:0
- });
- localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- syncPostToDB(posts[posts.length-1]);
- renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
+ postsById[post.id]=post;
+ saveLocalPost(post);
+ renderPost(post,true);
+ enqueue(post.id);
 
  /* 投稿したら投稿欄を下へ展開 */
  const feed=document.getElementById("feed");
  const feedBtn=document.getElementById("feedExpandBtn");
  if(feed){
    feed.classList.add("expanded");
-   if(feedBtn)feedBtn.textContent="▲";
+   if(feedBtn) feedBtn.textContent="▲";
  }
 
- selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; travelDestination="";
- renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
-}
-const METOO_KEY="weekend_metoo_by_name_v1";
-function meTooMap(){try{return JSON.parse(localStorage.getItem(METOO_KEY))||{}}catch{return {}}}
-function meTooKey(id){return userName+"::"+id}
-function hasMeToo(id){return !!meTooMap()[meTooKey(id)]}
-function rememberMeToo(id){
- const m=meTooMap(); m[meTooKey(id)]=true;
- localStorage.setItem(METOO_KEY,JSON.stringify(m));
-}
-function toggleMeToo(id){
- const p=posts.find(x=>x.id===id);
- const unlimited=userName==="あさの";
- if(!p || (!unlimited && hasMeToo(id)))return;
- if(!unlimited)rememberMeToo(id);
- if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
- p.meTooCount++;
- incrementMeTooDB(id);
- localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
- renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
-}
-function enableAdminLongPress(el,postId){
- let timer=null, startX=0,startY=0;
- const clear=()=>{if(timer!==null){clearTimeout(timer);timer=null;}};
- el.addEventListener("pointerdown",e=>{
-   if(userName!=="あさの" || e.target.closest("button"))return;
-   startX=e.clientX;startY=e.clientY;
-   clear();
-   timer=setTimeout(()=>{
-     timer=null;
-     if(userName!=="あさの")return;
-     if(confirm("この投稿を削除しますか？（确定删除这条投稿吗？）")){
-       posts=posts.filter(p=>p.id!==postId);
-       syncDeleteFromDB(postId);
-       localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
-       renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
-     }
-   },750);
- });
- el.addEventListener("pointermove",e=>{if(Math.abs(e.clientX-startX)>12||Math.abs(e.clientY-startY)>12)clear();});
- ["pointerup","pointercancel","pointerleave"].forEach(t=>el.addEventListener(t,clear));
- el.addEventListener("contextmenu",e=>{if(userName==="あさの" && !e.target.closest("button"))e.preventDefault();});
-}
-function renderPosts(){
- const feed=document.getElementById("feed");
- feed.innerHTML="";
- posts.slice().reverse().forEach(p=>{
-   const d=document.createElement("div");
-   const isOwnPost=!!userName && (p.author||"").trim()===userName.trim();
-   d.className="post "+(isOwnPost?"own-post":"other-post");
+ document.getElementById("subject").value="";
+ s1=s2=s3=null;
+ render();
 
-   if(Array.isArray(p.lines)){
-     const placeFound=places.find(x=>x[0]===p.place);
-     const nounFound=nouns.find(x=>x[0]===p.noun);
-     const verbFound=verbs.find(x=>x[0]===p.verb);
-     const placeCn=placeFound?placeFound[1]:"";
-     const nounCn=nounFound?nounFound[1]:"";
-     const verbCn=verbFound?verbFound[1]:"";
-
-     const card=(jp,cn)=>`<span class="posted-card"><span>${jp}</span><span class="posted-cn">${cn}</span></span>`;
-     const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
-     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="afternoon"?"ごご、":"しゅうまつ、"}</span>`;
-
-     if(p.place==="やまに のぼります"){
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("やま","山")}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else if(p.place==="でかけます"){
-       const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("でかけます。","外出")}${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else if(p.place==="うち"){
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("うち",placeCn)}<span>へ かえります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("うち",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else if(p.place==="りょう"){
-       d.innerHTML=`<div class="posted-row">${name}${modePrefix}${card("りょう",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-     }else if(p.place==="りょこう"){
-       const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("りょこう","旅行")}<span>へ いきます。</span>${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }else{
-       const row1=`<div class="posted-row">${name}${modePrefix}${card(p.place,placeCn)}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card(p.place,placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${p.verb?card(p.verb,verbCn):""}</div>`;
-       d.innerHTML=row1+row2;
-     }
-   }else{
-     d.textContent=(p.author?`（${p.author}）`:"")+(p.text||"");
-   }
-
-   {
-     const verbText=p.verb||"";
-     if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
-     const wrap=document.createElement("div");
-     wrap.className="me-too-wrap";
-     const count=document.createElement("span");
-     count.className="me-too-count";
-     count.textContent=p.meTooCount>0?`✋×${p.meTooCount}`:"";
-     const btn=document.createElement("button");
-     const done=userName!=="あさの" && hasMeToo(p.id);
-     btn.className="me-too-btn"+(done?" liked":"");
-     btn.disabled=done;
-     btn.textContent=verbText?`✋ 私も ${verbText}`:"✋ 私も";
-     btn.onclick=()=>toggleMeToo(p.id);
-     wrap.appendChild(count);
-     wrap.appendChild(btn);
-     d.appendChild(wrap);
-   }
-   enableAdminLongPress(d,p.id);
-   feed.appendChild(d);
- });
-}
-document.getElementById("nameInput").value=userName;
-document.getElementById("nameModal").style.display="flex";
-document.getElementById("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")saveName()});
-renderPlaces();updatePatterns();updatePreview();renderSecondStage();renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
-refreshPostButton();
-
-if(document.fonts&&document.fonts.ready){document.fonts.ready.then(layoutMeTooButtons);}
-
-function forceMeTooCountTopRight(){
- requestAnimationFrame(()=>{
-  document.querySelectorAll(".post").forEach(post=>{
-   const firstRow=post.querySelector(".posted-row");
-   if(!firstRow)return;
-
-   // wrap内・行内・post直下のどこにいても拾う
-   const count=post.querySelector(".me-too-count");
-   if(!count || !count.textContent.trim())return;
-
-   // 必ず投稿カード直下へ移動
-   if(count.parentElement!==post) post.appendChild(count);
-
-   const pr=post.getBoundingClientRect();
-   const fr=firstRow.getBoundingClientRect();
-   const ch=count.getBoundingClientRect().height || 16;
-
-   count.style.setProperty("position","absolute","important");
-   count.style.setProperty("right","6px","important");
-   count.style.setProperty("left","auto","important");
-   count.style.setProperty("top",(fr.top-pr.top+(fr.height-ch)/2)+"px","important");
-   count.style.setProperty("bottom","auto","important");
-   count.style.setProperty("margin","0","important");
-   count.style.setProperty("transform","none","important");
-   count.style.setProperty("display","block","important");
-   count.style.setProperty("width","max-content","important");
-   count.style.setProperty("white-space","nowrap","important");
-   count.style.setProperty("z-index","99","important");
-  });
- });
+ if(firebaseConnected) flushQueue();
 }
 
-window.addEventListener("load",forceMeTooCountTopRight);
-window.addEventListener("resize",forceMeTooCountTopRight);
-window.addEventListener("orientationchange",forceMeTooCountTopRight);
-
-/* ===== v110 Firebase Realtime Database 同期 ===== */
-const firebaseConfig={
- apiKey:"AIzaSyCaLCM4TXURROKyDKD_Mga8ZnWr1-Wk9Wg",
- authDomain:"database-s-9e4b3.firebaseapp.com",
- databaseURL:"https://database-s-9e4b3-default-rtdb.asia-southeast1.firebasedatabase.app",
- projectId:"database-s-9e4b3",
- storageBucket:"database-s-9e4b3.firebasestorage.app",
- messagingSenderId:"13648984683",
- appId:"1:13648984683:web:c782d2963c253df69b8f2e",
- measurementId:"G-FV2NMNQW4C"
-};
-let db=null, dbRef=null, dbSet=null, dbRemove=null, dbOnValue=null, dbRunTransaction=null;
-let firebaseReady=false;
-const DB_POSTS_PATH="weekendSentence/posts";
-
-async function initFirebaseSync(){
- try{
-  const appMod=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js");
-  const dbMod=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js");
-  const app=appMod.initializeApp(firebaseConfig);
-  db=dbMod.getDatabase(app);
-  dbRef=dbMod.ref;
-  dbSet=dbMod.set;
-  dbRemove=dbMod.remove;
-  dbOnValue=dbMod.onValue;
-  dbRunTransaction=dbMod.runTransaction;
-  firebaseReady=true;
-
-  let firstDbLoad=true;
-  dbOnValue(dbRef(db,DB_POSTS_PATH),async(snap)=>{
-   const val=snap.val()||{};
-   const remote=Object.entries(val).map(([id,p])=>({
-    ...p,
-    id:p.id ?? id,
-    meTooCount:Number(p.meTooCount||0)
-   }));
-
-   if(firstDbLoad){
-    firstDbLoad=false;
-    const remoteIds=new Set(remote.map(p=>String(p.id)));
-    const localOnly=posts.filter(p=>!remoteIds.has(String(p.id)));
-    for(const p of localOnly){
-     try{
-      await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(p.id)),{
-       ...p, createdAt:p.createdAt||Number(p.id)||Date.now()
-      });
-     }catch(e){console.error("local migration error",e)}
-    }
-    if(localOnly.length)return;
-   }
-
-   posts=remote.sort((a,b)=>Number(a.createdAt||a.id||0)-Number(b.createdAt||b.id||0));
-   localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
-   renderPosts();
-   layoutMeTooButtons();
-   forceMeTooCountTopRight();
-  });
- }catch(err){
-  console.error("Firebase sync error:",err);
- }
-}
-initFirebaseSync();
-
-async function syncPostToDB(post){
- if(!firebaseReady||!post)return;
- try{
-  await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(post.id)),{
-   ...post,
-   createdAt:post.createdAt||Date.now()
-  });
- }catch(e){console.error("post sync error",e)}
+function resetSelection(){
+ s1=s2=s3=null; render();
 }
 
-async function syncDeleteFromDB(id){
- if(!firebaseReady)return;
- try{await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(id)));}
- catch(e){console.error("delete sync error",e)}
+function toggleDrawer(){
+ const drawer=document.getElementById("drawer");
+ const handle=document.getElementById("handle");
+ const closed=drawer.classList.toggle("closed");
+ handle.textContent=closed?"▲ 選択を戻す":"▼ 選択を半分閉じる";
 }
 
-async function incrementMeTooDB(id){
- if(!firebaseReady)return false;
- try{
-  const r=dbRef(db,DB_POSTS_PATH+"/"+String(id)+"/meTooCount");
-  await dbRunTransaction(r,v=>Number(v||0)+1);
-  return true;
- }catch(e){
-  console.error("reaction sync error",e);
-  return false;
- }
-}
-
-/* ===== v112 オフライン操作キュー ===== */
-const OFFLINE_QUEUE_KEY="weekend_offline_queue_v1";
-function readOfflineQueue(){
- try{return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY))||[]}
- catch{return []}
-}
-function writeOfflineQueue(q){
- localStorage.setItem(OFFLINE_QUEUE_KEY,JSON.stringify(q));
-}
-function queueOfflineOp(op){
- const q=readOfflineQueue();
- q.push({...op,qid:Date.now()+"_"+Math.random().toString(36).slice(2)});
- writeOfflineQueue(q);
-}
-async function flushOfflineQueue(){
- if(!firebaseReady || !navigator.onLine)return;
- const q=readOfflineQueue();
- if(!q.length)return;
- const remain=[];
- for(const op of q){
-  try{
-   if(op.type==="post"){
-    await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(op.post.id)),{
-     ...op.post,createdAt:op.post.createdAt||Number(op.post.id)||Date.now()
-    });
-   }else if(op.type==="delete"){
-    await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(op.id)));
-   }else if(op.type==="metoo"){
-    await dbRunTransaction(
-     dbRef(db,DB_POSTS_PATH+"/"+String(op.id)+"/meTooCount"),
-     v=>Number(v||0)+Number(op.amount||1)
-    );
-   }
-  }catch(e){
-   remain.push(op);
-  }
- }
- writeOfflineQueue(remain);
-}
-
-/* 既存DB関数をオフライン対応版へ上書き */
-syncPostToDB=async function(post){
- if(!post)return;
- if(!firebaseReady || !navigator.onLine){
-  queueOfflineOp({type:"post",post});
-  return;
- }
- try{
-  await dbSet(dbRef(db,DB_POSTS_PATH+"/"+String(post.id)),{
-   ...post,createdAt:post.createdAt||Number(post.id)||Date.now()
-  });
- }catch(e){
-  queueOfflineOp({type:"post",post});
- }
-};
-
-syncDeleteFromDB=async function(id){
- if(!firebaseReady || !navigator.onLine){
-  queueOfflineOp({type:"delete",id});
-  return;
- }
- try{
-  await dbRemove(dbRef(db,DB_POSTS_PATH+"/"+String(id)));
- }catch(e){
-  queueOfflineOp({type:"delete",id});
- }
-};
-
-incrementMeTooDB=async function(id){
- if(!firebaseReady || !navigator.onLine){
-  queueOfflineOp({type:"metoo",id,amount:1});
-  return false;
- }
- try{
-  await dbRunTransaction(
-   dbRef(db,DB_POSTS_PATH+"/"+String(id)+"/meTooCount"),
-   v=>Number(v||0)+1
-  );
-  return true;
- }catch(e){
-  queueOfflineOp({type:"metoo",id,amount:1});
-  return false;
- }
-};
-
-/* ネット復帰時は、ページを開いたままでも自動送信 */
-window.addEventListener("online",()=>{
- setTimeout(flushOfflineQueue,300);
-});
-
-/* Firebase接続成功後にも未送信キューを送る */
-const _originalInitFirebaseSync=initFirebaseSync;
-initFirebaseSync=async function(){
- await _originalInitFirebaseSync();
- if(firebaseReady)await flushOfflineQueue();
-};
-
-setTimeout(flushOfflineQueue,1200);
-setInterval(()=>{
- if(firebaseReady && navigator.onLine && readOfflineQueue().length)flushOfflineQueue();
-},5000);
+render();
 </script>
 
 <script>
-/* 投稿欄：▼で展開、▲で収納。入力欄を押したら収納 */
+/* ---------- Offline-first storage ---------- */
+const LOCAL_POSTS_KEY="shokuzai_posts_v1";
+const OUTBOX_KEY="shokuzai_outbox_v1";
+const CLIENT_KEY="shokuzai_client_id_v1";
+const clientId=localStorage.getItem(CLIENT_KEY)||("c_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2));
+localStorage.setItem(CLIENT_KEY,clientId);
+
+const USER_NAME_KEY="shokuzai_user_name_v1";
+const LIKED_KEY="shokuzai_liked_by_name_v1";
+let userName=(localStorage.getItem(USER_NAME_KEY)||"").trim();
+
+function likedMap(){ return readJSON(LIKED_KEY,{}); }
+function likeKey(postId){ return userName+"::"+postId; }
+function hasLiked(postId){ return !!likedMap()[likeKey(postId)]; }
+function rememberLike(postId){
+ const m=likedMap();
+ m[likeKey(postId)]=true;
+ writeJSON(LIKED_KEY,m);
+}
+
+function openNameModal(){
+ const modal=document.getElementById("nameModal");
+ const input=document.getElementById("userNameInput");
+ if(input) input.value=userName;
+ modal.classList.remove("hidden");
+ setTimeout(()=>{
+   if(input){
+     input.focus();
+     input.select();
+   }
+ },50);
+}
+function saveUserName(){
+ const input=document.getElementById("userNameInput");
+ const name=(input.value||"").trim();
+ if(!name){input.focus();return}
+ userName=name;
+ localStorage.setItem(USER_NAME_KEY,userName);
+ document.getElementById("nameModal").classList.add("hidden");
+ Object.values(postsById)
+   .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))
+   .forEach(p=>renderPost(p,false));
+}
+document.getElementById("userNameInput")?.addEventListener("keydown",e=>{
+ if(e.key==="Enter")saveUserName();
+});
+
+let postsById={};
+let firebaseConnected=false;
+let firebaseAPI=null;
+
+function makeId(){
+ return clientId+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);
+}
+function readJSON(key,fallback){
+ try{return JSON.parse(localStorage.getItem(key))||fallback}catch{return fallback}
+}
+function writeJSON(key,value){
+ try{localStorage.setItem(key,JSON.stringify(value))}catch{}
+}
+function saveLocalPost(post){
+ postsById[post.id]={...(postsById[post.id]||{}),...post};
+ writeJSON(LOCAL_POSTS_KEY,postsById);
+}
+function getOutbox(){return readJSON(OUTBOX_KEY,[])}
+function setOutbox(v){writeJSON(OUTBOX_KEY,[...new Set(v)])}
+function enqueue(id){
+ const q=getOutbox();
+ if(!q.includes(id))q.push(id);
+ setOutbox(q);
+ markPostState(id,false);
+}
+function dequeue(id){setOutbox(getOutbox().filter(x=>x!==id))}
+function renderHeart(item,count){
+ const el=item.querySelector(".heart-count");
+ el.textContent=count>0?"♥×"+count:"";
+}
+function markPostState(id,synced){
+ const el=document.querySelector(`.post[data-id="${CSS.escape(id)}"]`);
+ if(!el)return;
+ el.classList.toggle("synced",synced);
+ el.classList.toggle("pending",!synced);
+}
+function postHTML(post){
+ return `<div class="post-main"><div class="post-text">`+
+   `<span class="post-lead">${post.author?`（${esc(post.author)}）`:""}${esc(post.subject)} は</span>`+
+   postWord(post.s1,cnOf(ingredients,post.s1),"ing")+
+   (post.s2?`<span>と</span>${postWord(post.s2,cnOf(ingredients,post.s2),"ing")}`:"")+
+   `<span>の</span>${postWord(post.s3,cnOf(dishes,post.s3),"dish")}<span>です。</span>`+
+   `</div><div class="post-actions"><span class="heart-count">${post.likes>0?"♥×"+post.likes:""}</span>`+
+   `<button class="like-btn${hasLiked(post.id)?" liked":""}" ${hasLiked(post.id)?"disabled":""} onclick="likePost(this)">♥ この料理がすきです</button></div></div>`;
+}
+function renderPost(post,scroll=false){
+ const feed=document.getElementById("feed");
+ const empty=document.getElementById("empty"); if(empty)empty.remove();
+
+ let item=document.querySelector(`.post[data-id="${CSS.escape(post.id)}"]`);
+ if(!item){
+   item=document.createElement("div");
+   item.className="post";
+   item.dataset.id=post.id;
+   feed.appendChild(item);
+ }
+ item.innerHTML=postHTML(post);
+ const isOwnPost=!!userName && (post.author||"").trim()===userName.trim();
+ item.classList.toggle("own-post",isOwnPost);
+ item.classList.toggle("other-post",!isOwnPost);
+ item.classList.toggle("pending",!!post.pending);
+ item.classList.toggle("synced",!post.pending);
+ attachLongPress(item);
+ if(scroll)feed.scrollTo({top:feed.scrollHeight,behavior:"smooth"});
+}
+function loadLocalPosts(){
+ postsById=readJSON(LOCAL_POSTS_KEY,{});
+ Object.values(postsById)
+  .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))
+  .forEach(p=>renderPost(p,false));
+}
+function setStatus(online,label=""){
+ const el=document.getElementById("syncStatus");
+ if(!el)return;
+ if(label){
+   el.textContent="● "+label;
+   el.style.color="#b1843f";
+   return;
+ }
+ el.textContent=online?"● 接続中":"● オフライン";
+ el.style.color=online?"#5d9661":"#999";
+}
+async function flushQueue(){
+ if(!firebaseConnected||!firebaseAPI)return;
+ const q=getOutbox();
+ for(const id of q){
+   const post=postsById[id];
+   if(!post){dequeue(id);continue}
+   try{
+     await firebaseAPI.sendPost({...post,pending:false});
+     post.pending=false;
+     saveLocalPost(post);
+     dequeue(id);
+     markPostState(id,true);
+   }catch(e){
+     console.warn("Firebase write failed; keeping local post pending.",e);
+     post.pending=true;
+     saveLocalPost(post);
+     markPostState(id,false);
+     setStatus(false,"送信待ち");
+     break;
+   }
+ }
+}
+async function queueLikeSync(post){
+ saveLocalPost(post);
+ if(firebaseConnected&&firebaseAPI){
+   try{await firebaseAPI.setLikes(post.id,post.likes)}
+   catch{enqueue(post.id)}
+ }else enqueue(post.id);
+}
+
+/* Called by Firebase module when remote data arrives */
+window.receiveRemotePost=function(remote){
+ if(!remote||!remote.id)return;
+ const local=postsById[remote.id];
+ const merged={
+   ...(local||{}),
+   ...remote,
+   likes:Math.max(local?.likes||0,remote.likes||0),
+   pending:false
+ };
+ postsById[merged.id]=merged;
+ saveLocalPost(merged);
+ dequeue(merged.id);
+ renderPost(merged,false);
+ markPostState(merged.id,true);
+};
+window.firebaseConnectionChanged=function(connected,api){
+ firebaseConnected=connected;
+ if(api)firebaseAPI=api;
+ setStatus(connected);
+ if(connected)flushQueue();
+};
+
+
+let deleteTargetId=null;
+let pressTimer=null;
+let pressStartX=0, pressStartY=0;
+
+function isAdminName(){
+ return userName==="あさの";
+}
+function attachLongPress(item){
+ if(item.dataset.longPressReady==="1")return;
+ item.dataset.longPressReady="1";
+
+ const start=e=>{
+   if(!isAdminName())return;
+   if(e.target.closest("button"))return;
+   const point=e.touches?e.touches[0]:e;
+   pressStartX=point.clientX; pressStartY=point.clientY;
+   clearTimeout(pressTimer);
+   pressTimer=setTimeout(()=>{
+     deleteTargetId=item.dataset.id;
+     document.getElementById("deleteModal").classList.remove("hidden");
+   },1000);
+ };
+ const move=e=>{
+   if(!pressTimer)return;
+   const point=e.touches?e.touches[0]:e;
+   if(Math.abs(point.clientX-pressStartX)>12 || Math.abs(point.clientY-pressStartY)>12){
+     clearTimeout(pressTimer); pressTimer=null;
+   }
+ };
+ const end=()=>{clearTimeout(pressTimer);pressTimer=null};
+
+ item.addEventListener("mousedown",start);
+ item.addEventListener("mousemove",move);
+ item.addEventListener("mouseup",end);
+ item.addEventListener("mouseleave",end);
+ item.addEventListener("touchstart",start,{passive:true});
+ item.addEventListener("touchmove",move,{passive:true});
+ item.addEventListener("touchend",end);
+ item.addEventListener("touchcancel",end);
+}
+function cancelDeletePost(){
+ deleteTargetId=null;
+ document.getElementById("deleteModal").classList.add("hidden");
+}
+async function confirmDeletePost(){
+ const id=deleteTargetId;
+ cancelDeletePost();
+ if(!id || !isAdminName())return;
+
+ delete postsById[id];
+ writeJSON(LOCAL_POSTS_KEY,postsById);
+ dequeue(id);
+ document.querySelector(`.post[data-id="${CSS.escape(id)}"]`)?.remove();
+
+ if(firebaseConnected && firebaseAPI){
+   try{await firebaseAPI.deletePost(id)}
+   catch(e){console.warn("delete sync failed",e)}
+ }
+}
+loadLocalPosts();
+setStatus(false);
+openNameModal();
+</script>
+
+<script type="module">
+/* ---------- Firebase Realtime Database ---------- */
+try{
+ const {initializeApp}=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js");
+ const {getDatabase,ref,onValue,set,update,remove}=await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js");
+
+ const firebaseConfig={
+   apiKey:"AIzaSyCaLCM4TXURROKyDKD_Mga8ZnWr1-Wk9Wg",
+   authDomain:"database-s-9e4b3.firebaseapp.com",
+   databaseURL:"https://database-s-9e4b3-default-rtdb.asia-southeast1.firebasedatabase.app",
+   projectId:"database-s-9e4b3",
+   storageBucket:"database-s-9e4b3.firebasestorage.app",
+   messagingSenderId:"13648984683",
+   appId:"1:13648984683:web:c782d2963c253df69b8f2e",
+   measurementId:"G-FV2NMNQW4C"
+ };
+
+ const app=initializeApp(firebaseConfig);
+ const db=getDatabase(app);
+ const postsRef=ref(db,"shokuzaiSentence/posts");
+
+ const api={
+   sendPost:post=>set(ref(db,"shokuzaiSentence/posts/"+post.id),{
+     id:post.id,subject:post.subject,s1:post.s1,s2:post.s2||"",s3:post.s3,
+     likes:post.likes||0,createdAt:post.createdAt||Date.now(),clientId:post.clientId||"",author:post.author||""
+   }),
+   setLikes:(id,likes)=>update(ref(db,"shokuzaiSentence/posts/"+id),{likes}),
+   deletePost:id=>remove(ref(db,"shokuzaiSentence/posts/"+id))
+ };
+
+ onValue(ref(db,".info/connected"),snap=>{
+   window.firebaseConnectionChanged?.(snap.val()===true,api);
+ });
+
+ onValue(postsRef,snap=>{
+   const data=snap.val()||{};
+   Object.values(data).forEach(post=>window.receiveRemotePost?.(post));
+ },err=>{
+   console.warn("Firebase read denied/unavailable; local mode continues.",err);
+   setStatus(false,"DB未接続");
+ });
+}catch(err){
+ console.warn("Firebase unavailable; local mode continues.",err);
+ window.firebaseConnectionChanged?.(false,null);
+}
+</script>
+
+
+<script>
+/* 投稿一覧：投稿済みなら高さを下げ、▲で展開/縮小 */
 (()=>{
  const feed=document.getElementById("feed");
  const btn=document.getElementById("feedExpandBtn");
  if(!feed||!btn)return;
 
- const collapse=()=>{
-   feed.classList.remove("expanded");
-   btn.textContent="▼";
- };
+ function sync(){
+   const hasPosts=!!feed.querySelector(".post");
+   feed.classList.toggle("has-posts",hasPosts);
+   btn.textContent=feed.classList.contains("expanded")?"▲":"▼";
+ }
  btn.addEventListener("click",()=>{
-   const opening=!feed.classList.contains("expanded");
-   feed.classList.toggle("expanded",opening);
-   btn.textContent=opening?"▲":"▼";
+   feed.classList.toggle("expanded");
+   sync();
  });
- document.addEventListener("pointerdown",e=>{
-   if(e.target && e.target.id==="travelDestinationInput") collapse();
- },true);
- document.addEventListener("focusin",e=>{
-   if(e.target && e.target.id==="travelDestinationInput") collapse();
- });
+ new MutationObserver(sync).observe(feed,{childList:true});
+ requestAnimationFrame(sync);
 })();
 </script>
 
 
 <script>
-/* 投稿欄が展開中なら、操作ボタンを押した時点で収納する。
-   週末／午後の切替ボタンも含む。三角ボタン自身は除外。 */
+/* 料理名入力ボックスを押したら、展開した投稿欄を元の高さへ戻す */
 (()=>{
+ const subject=document.getElementById("subject");
  const feed=document.getElementById("feed");
- const expandBtn=document.getElementById("feedExpandBtn");
- if(!feed)return;
-
- const collapseFeed=()=>{
-   if(!feed.classList.contains("expanded"))return;
+ const btn=document.getElementById("feedExpandBtn");
+ if(!subject||!feed)return;
+ const collapse=()=>{
    feed.classList.remove("expanded");
-   if(expandBtn)expandBtn.textContent="▼";
+   if(btn) btn.textContent="▼";
  };
-
- document.addEventListener("pointerdown",e=>{
-   const btn=e.target.closest("button");
-   if(!btn || btn===expandBtn || btn.classList.contains("me-too-btn"))return;
-   collapseFeed();
- },true);
+ subject.addEventListener("focus",collapse);
+ subject.addEventListener("pointerdown",collapse);
 })();
 </script>
-
 </body>
 </html>
-
-<style>
-.me-too-wrap{display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:4px}
-.me-too-count{font-size:13px;color:#3f7e2e;font-weight:700;white-space:nowrap}
-.me-too-btn{border:1px solid #9fbe91;background:#f5fbf2;color:#3f7e2e;border-radius:9px;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer}
-.me-too-btn:hover{background:#edf7e8}
-.me-too-btn.liked{background:#d8ebcf;color:#315f24;border-color:#8eb47c}
-.me-too-btn:disabled{cursor:default;opacity:.58}
-</style>
