@@ -1064,6 +1064,28 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 #inlineVerbCard{margin-left:0 !important;}
 
 </style>
+<style>
+/* 投稿はカード単位で折り返し、長い名前や単語も枠内に収める。 */
+.feed > .post{min-width:0;max-width:100%;}
+.feed .post .posted-row,.feed .post .post-line{
+ flex-wrap:wrap!important;
+ white-space:normal!important;
+ min-width:0;
+ max-width:100%;
+ row-gap:15px!important;
+}
+.feed .post .posted-row > *,.feed .post .post-line > *{
+ min-width:0;
+ max-width:100%;
+ overflow-wrap:anywhere;
+ white-space:normal;
+}
+.feed .post .posted-card,.feed .post .post-place,.feed .post .posted-name{
+ flex-shrink:1;
+}
+.feed .post .posted-card > span:first-child{min-width:0;overflow-wrap:anywhere;}
+.feed .post .posted-cn,.feed .post .post-cn{white-space:normal;overflow-wrap:anywhere;}
+</style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
