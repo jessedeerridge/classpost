@@ -1110,6 +1110,23 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 .feed .post .posted-name{line-height:1.5;}
 </style>
+<style>
+/* 投稿の更新では自動移動せず、手動スクロールで読む。 */
+.feed{overflow-y:auto!important;overflow-anchor:none;scroll-behavior:auto!important;}
+</style>
+<script>
+function preserveFeedPosition(feed){
+ const top=feed.scrollTop;
+ const edge=feed.getBoundingClientRect().top;
+ const anchor=[...feed.querySelectorAll(":scope > .post")].find(post=>post.getBoundingClientRect().bottom>edge);
+ const id=anchor?.dataset.id;
+ const offset=anchor?anchor.getBoundingClientRect().top-edge:0;
+ return ()=>{
+   const current=id?[...feed.querySelectorAll(":scope > .post")].find(post=>post.dataset.id===id):null;
+   feed.scrollTop=current?feed.scrollTop+current.getBoundingClientRect().top-feed.getBoundingClientRect().top-offset:top;
+ };
+}
+</script>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
@@ -1844,6 +1861,7 @@ function enableAdminLongPress(el,postId){
 }
 function renderPosts(){
  const feed=document.getElementById("feed");
+ const restorePosition=preserveFeedPosition(feed);
  feed.innerHTML="";
  posts.slice().reverse().forEach(p=>{
    const d=document.createElement("div");
@@ -1931,9 +1949,12 @@ function renderPosts(){
      });
      row.appendChild(body);
    });
+   d.dataset.id=p.id;
    feed.appendChild(d);
  });
  layoutMeTooButtons();
+ restorePosition();
+ requestAnimationFrame(restorePosition);
 }
 document.getElementById("nameInput").value=userName;
 document.getElementById("nameModal").style.display="flex";

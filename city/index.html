@@ -4389,6 +4389,23 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 </style>
+<style>
+/* 投稿の更新では自動移動せず、手動スクロールで読む。 */
+.feed{overflow-y:auto!important;overflow-anchor:none;scroll-behavior:auto!important;}
+</style>
+<script>
+function preserveFeedPosition(feed){
+ const top=feed.scrollTop;
+ const edge=feed.getBoundingClientRect().top;
+ const anchor=[...feed.querySelectorAll(":scope > .post")].find(post=>post.getBoundingClientRect().bottom>edge);
+ const id=anchor?.dataset.id;
+ const offset=anchor?anchor.getBoundingClientRect().top-edge:0;
+ return ()=>{
+   const current=id?[...feed.querySelectorAll(":scope > .post")].find(post=>post.dataset.id===id):null;
+   feed.scrollTop=current?feed.scrollTop+current.getBoundingClientRect().top-feed.getBoundingClientRect().top-offset:top;
+ };
+}
+</script>
 </head>
 <body>
 
@@ -4878,6 +4895,7 @@ function renderPosts(){
 
  const feed=document.querySelector(".feed");
  if(!feed)return;
+ const restorePosition=preserveFeedPosition(feed);
  feed.innerHTML="";
  posts.forEach(p=>{
   const d=document.createElement("div");d.className="post "+(p.author===userName?"own-post":"other-post");
@@ -5004,6 +5022,8 @@ function renderPosts(){
   d.addEventListener("pointerleave",cancel);d.addEventListener("pointercancel",cancel);
   feed.appendChild(d);
  });
+ restorePosition();
+ requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(restorePosition)));
 }
 function deletePost(id){
  if(userName!=="あさの")return;

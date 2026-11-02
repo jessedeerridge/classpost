@@ -434,6 +434,23 @@ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
 }
 </style>
 
+<style>
+/* 投稿の更新では自動移動せず、手動スクロールで読む。 */
+.feed{overflow-y:auto!important;overflow-anchor:none;scroll-behavior:auto!important;}
+</style>
+<script>
+function preserveFeedPosition(feed){
+ const top=feed.scrollTop;
+ const edge=feed.getBoundingClientRect().top;
+ const anchor=[...feed.querySelectorAll(":scope > .post")].find(post=>post.getBoundingClientRect().bottom>edge);
+ const id=anchor?.dataset.id;
+ const offset=anchor?anchor.getBoundingClientRect().top-edge:0;
+ return ()=>{
+   const current=id?[...feed.querySelectorAll(":scope > .post")].find(post=>post.dataset.id===id):null;
+   feed.scrollTop=current?feed.scrollTop+current.getBoundingClientRect().top-feed.getBoundingClientRect().top-offset:top;
+ };
+}
+</script>
 </head>
 <body>
 
@@ -635,7 +652,7 @@ function likePost(btn){
 
  postsById[post.id]=post;
  saveLocalPost(post);
- renderPost(post,true);
+ renderPost(post);
  enqueue(post.id);
 
  /* 投稿したら投稿欄を下へ展開 */
@@ -760,8 +777,9 @@ function postHTML(post){
    `</div><div class="post-actions"><span class="heart-count">${post.likes>0?"♥×"+post.likes:""}</span>`+
    `<button class="like-btn${hasLiked(post.id)?" liked":""}" ${hasLiked(post.id)?"disabled":""} onclick="likePost(this)">♥ この料理がすきです</button></div></div>`;
 }
-function renderPost(post,scroll=false){
+function renderPost(post){
  const feed=document.getElementById("feed");
+ const restorePosition=preserveFeedPosition(feed);
  const empty=document.getElementById("empty"); if(empty)empty.remove();
 
  let item=document.querySelector(`.post[data-id="${CSS.escape(post.id)}"]`);
@@ -778,7 +796,7 @@ function renderPost(post,scroll=false){
  item.classList.toggle("pending",!!post.pending);
  item.classList.toggle("synced",!post.pending);
  attachLongPress(item);
- if(scroll)feed.scrollTo({top:feed.scrollHeight,behavior:"smooth"});
+ restorePosition();
 }
 function loadLocalPosts(){
  postsById=readJSON(LOCAL_POSTS_KEY,{});
