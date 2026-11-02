@@ -1132,9 +1132,14 @@ function preserveFeedPosition(feed){
 .lunch-food-input{width:100%;min-width:0;padding:10px;border:1px solid #76a862;border-radius:7px;font:inherit;text-align:center;}
 </style>
 <style>
-.outing-choices{display:flex;justify-content:center;gap:10px;margin:5px 0 8px;}
+.outing-choices{display:flex;justify-content:center;gap:4px;margin:5px 0 8px;padding:7px;border:1px solid #3688cd;border-radius:14px;background:#bfe8f7;}
+.outing-choice{flex:0 0 calc((100% - 12px)/4);}
+@media(max-width:700px){
+ .outing-choices{gap:3px;padding:5px;border-radius:11px;}
+ .outing-choice{flex-basis:calc((100% - 6px)/3);}
+}
 .outing-choices[hidden]{display:none;}
-.outing-choice{border:2px solid #3688cd;border-radius:8px;background:#fff;color:#24669e;padding:7px 20px;font:inherit;cursor:pointer;}
+.outing-choice{border-color:#3688cd;background:#fff;color:#24669e;}
 .outing-choice.active{background:#dceeff;border-color:#1767a8;}
 </style>
 <style>
@@ -1189,8 +1194,8 @@ function preserveFeedPosition(feed){
   </div>
 
   <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへ いきますか" hidden>
-   <button type="button" id="outingYesBtn" class="outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')">はい</button>
-   <button type="button" id="outingNoBtn" class="outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')">いいえ</button>
+   <button type="button" id="outingYesBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')"><span class="jp">はい</span><span class="cn" aria-hidden="true">&nbsp;</span></button>
+   <button type="button" id="outingNoBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')"><span class="jp">いいえ</span><span class="cn" aria-hidden="true">&nbsp;</span></button>
   </div>
   <div class="place-box">
    <div id="places" class="choices"></div>
@@ -1373,6 +1378,13 @@ function hasAvailableVerbForNoun(noun){
  );
 }
 function refreshCompatibility(){
+ if(activityMode!=="lunch" && !outingAnswer){
+   document.querySelectorAll("#places button,#nounArea button,#verbArea button,#postBtn").forEach(btn=>{
+     btn.disabled=true;
+     btn.classList.add("choice-disabled");
+   });
+   return;
+ }
  if(activityMode==="lunch"){
    document.querySelectorAll("#verbArea .verb-choice").forEach(btn=>{
      btn.disabled=false;
@@ -1702,6 +1714,25 @@ function updatePreview(){
    pat.textContent=selectedPattern==="へいきます"?"へ いきます。":(selectedPattern||"＿＿＿＿");
  }
  refreshPostButton();
+ updateLunchFoodTags();
+}
+function updateLunchFoodTags(){
+ document.querySelectorAll(".lunch-food-extra").forEach(el=>el.remove());
+ if(activityMode!=="lunch")return;
+ const foods=lunchFoods.map(name=>name.trim()).filter(Boolean);
+ for(const [cardId,textId] of [["upperDormNoun","upperDormNounJp"],["secondInlineNoun","secondInlineNounJp"]]){
+   const first=document.getElementById(cardId),text=document.getElementById(textId);
+   if(!first||!text)continue;
+   text.textContent=foods[0]||"";
+   if(foods.length<2)continue;
+   const separator=document.createElement("span");
+   separator.className="lunch-food-extra";
+   separator.textContent="と";
+   const second=document.createElement("span");
+   second.className="preview-place lunch-food-extra";
+   second.textContent=foods[1];
+   first.after(separator,second);
+ }
 }
 function updateTravelSecondPlace(){
  if(selectedPlace!=="りょこう" && selectedPlace!=="でかけます")return;
@@ -1719,6 +1750,7 @@ function updateTravelSecondPlace(){
 function refreshPostButton(){
  const btn=document.getElementById("postBtn");
  if(!btn)return;
+ btn.classList.remove("choice-disabled");
  const placeOK=!!selectedPlace && placeAllowed(selectedPlace);
  const verbOK=!!selectedVerb;
  const destinationOK=!["りょこう","でかけます"].includes(selectedPlace) || !!travelDestination;
@@ -1889,6 +1921,7 @@ function postWeekend(){
  posts.push({
    id:Date.now(), author:userName, mode:activityMode, lines,
    place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけます")?travelDestination:"",
+   foods:activityMode==="lunch"?lunchFoods.map(name=>name.trim()):[],
    noun:selectedNoun, verb:(selectedPartner&&selectedVerb.startsWith("～と")?selectedVerb.replace(/^～と\s*/,""):selectedVerb),partner:selectedPartner, pattern:selectedPattern, meTooCount:0
  });
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
@@ -1972,6 +2005,9 @@ function renderPosts(){
 
      const escapeText=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
      const card=(jp,cn)=>`<span class="posted-card"><span>${escapeText(String(jp||"").replace(/。+$/,""))}</span><span class="posted-cn">${escapeText(cn)}</span></span>`;
+     const foodCards=Array.isArray(p.foods)&&p.foods.length
+       ?p.foods.map(food=>card(food,"")).join("<span>と</span>")
+       :(p.noun?card(p.noun,nounCn):"");
      const partnerCnMap={"ともだち":"朋友","かぞく":"家人","こいびと":"恋人"};
      const postedVerb=()=>{
        if(!p.verb)return "";
@@ -1986,27 +2022,27 @@ function renderPosts(){
 
      if(p.place==="やまに のぼります"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("やま","山")}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("やま","山")}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="でかけます"){
        const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
        const row1=`<div class="posted-row">${name}${modePrefix}${card("でかけます。","外出")}${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="うち"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("うち",placeCn)}<span>へ かえります。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("うち",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("うち",placeCn)}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="りょう"){
-       d.innerHTML=`<div class="posted-row">${name}${modePrefix}${card("りょう",placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
+       d.innerHTML=`<div class="posted-row">${name}${modePrefix}${card("りょう",placeCn)}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
      }else if(p.place==="りょこう"){
        const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
        const row1=`<div class="posted-row">${name}${modePrefix}${card("りょこう","旅行")}<span>へ いきます。</span>${dest}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else{
        const row1=`<div class="posted-row">${name}${modePrefix}${card(p.place,placeCn)}<span>へ いきます。</span></div>`;
-       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card(p.place,placeCn)}<span>で</span>${p.noun?card(p.noun,nounCn):""}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
+       const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card(p.place,placeCn)}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }
    }else{
