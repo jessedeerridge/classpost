@@ -1128,8 +1128,8 @@ function preserveFeedPosition(feed){
 }
 </script>
 <style>
-#nounArea.lunch-noun-area{display:block;padding:6px!important;}
-#lunchFoodInput{width:100%;min-width:0;padding:10px;border:1px solid #76a862;border-radius:7px;font:inherit;}
+#nounArea.lunch-noun-area{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:min(100%,600px);margin-left:auto;margin-right:auto;padding:6px!important;}
+.lunch-food-input{width:100%;min-width:0;padding:10px;border:1px solid #76a862;border-radius:7px;font:inherit;text-align:center;}
 </style>
 </head>
 <body>
@@ -1231,6 +1231,7 @@ const verbs=[
 let selectedVerb="";
 let selectedPartner="";
 let selectedNoun="";
+let lunchFoods=["",""];
 let selectedPlace="",selectedPattern="";
 let travelDestination="";
 let userName=localStorage.getItem("weekend_user_name_v1")||"";
@@ -1379,19 +1380,24 @@ function renderNouns(){
  area.innerHTML="";
  area.classList.toggle("lunch-noun-area",activityMode==="lunch");
  if(activityMode==="lunch"){
-   const input=document.createElement("input");
-   input.id="lunchFoodInput";
-   input.type="text";
-   input.maxLength=80;
-   input.placeholder="たべるものを入力";
-   input.setAttribute("aria-label","たべるものを入力");
-   input.value=selectedNoun;
-   input.addEventListener("input",()=>{
-     selectedNoun=input.value.trim();
-     updateNounPreview();
-     refreshPostButton();
+   lunchFoods.forEach((value,index)=>{
+     const input=document.createElement("input");
+     input.id="lunchFoodInput"+(index+1);
+     input.className="lunch-food-input";
+     input.type="text";
+     input.maxLength=80;
+     input.placeholder="请输入食物名称（可以用中文）";
+     input.setAttribute("aria-label","食物"+(index+1)+"：请输入食物名称（可以用中文）");
+     input.value=value;
+     input.addEventListener("input",()=>{
+       lunchFoods[index]=input.value;
+       selectedNoun=lunchFoods.map(name=>name.trim()).filter(Boolean).join("と");
+       updateNounPreview();
+       refreshPostButton();
+     });
+     area.appendChild(input);
    });
-   area.appendChild(input);
+   selectedNoun=lunchFoods.map(name=>name.trim()).filter(Boolean).join("と");
    return;
  }
  nouns.forEach(([jp,cn])=>{
@@ -1687,16 +1693,18 @@ function refreshPostButton(){
  const placeOK=!!selectedPlace;
  const verbOK=!!selectedVerb;
  const destinationOK=!["りょこう","でかけます"].includes(selectedPlace) || !!travelDestination;
- btn.disabled=!(placeOK && verbOK && destinationOK && (activityMode!=="lunch" || !!selectedNoun));
+ btn.disabled=!(placeOK && verbOK && destinationOK && (activityMode!=="lunch" || lunchReady()));
 }
 
 let activityMode="lunch";
 const lunchPlaces=["りょう","そと","おみせ","そとのおみせ","しょくどう","ショッピングモール"];
-const lunchVerbs={"たべます。":"たべる","のみます。":"のむ","かいます。":"かう"};
+const lunchVerbs={"たべます。":"たべます","かいます。":"かいます"};
+function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.every(name=>!!name.trim());}
 function setActivityMode(mode){
  const changed=activityMode!==mode;
  activityMode=mode;
  if(changed){
+   lunchFoods=["",""];
    selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
    closePartnerModal();
  }
@@ -1793,7 +1801,7 @@ function postWeekend(){
    alert("发了这么多，谢谢你！");
    return;
  }
- if(!selectedVerb || (activityMode==="lunch" && !selectedNoun))return;
+ if(!selectedVerb || (activityMode==="lunch" && !lunchReady()))return;
  if(["りょこう","でかけます"].includes(selectedPlace) && !travelDestination)return;
  
 
@@ -1852,6 +1860,7 @@ function postWeekend(){
    if(feedBtn)feedBtn.textContent="▲";
  }
 
+ lunchFoods=["",""];
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; selectedPartner=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
 }
