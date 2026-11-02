@@ -546,7 +546,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 
-/* ごご／よる／しゅうまつ 切り替え */
+/* おひる／よる／しゅうまつ 切り替え */
 .mode-switch-wrap{
  display:flex;
  justify-content:flex-start;
@@ -1127,6 +1127,10 @@ function preserveFeedPosition(feed){
  };
 }
 </script>
+<style>
+#nounArea.lunch-noun-area{display:block;padding:6px!important;}
+#lunchFoodInput{width:100%;min-width:0;padding:10px;border:1px solid #76a862;border-radius:7px;font:inherit;}
+</style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
@@ -1152,16 +1156,16 @@ function preserveFeedPosition(feed){
  <button id="feedExpandBtn" class="feed-expand-btn" type="button" aria-label="展开投稿">▼</button>
 
  <div class="composer">
-  <div class="guide"><span id="modeGuideText">发布一下自己晚上的安排吧。</span></div>
+  <div class="guide"><span id="modeGuideText">发布一下自己中午的安排吧。</span></div>
   <div class="mode-question-row">
 <div class="mode-switch-wrap">
   <div class="mode-switch" role="group" aria-label="時間帯切り替え">
-    <button type="button" id="afternoonModeBtn" class="mode-switch-btn" onclick="setActivityMode('afternoon')">下午</button>
-    <button type="button" id="nightModeBtn" class="mode-switch-btn active" onclick="setActivityMode('night')">晚上</button>
-    <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
+    <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">お昼</button>
+    <button type="button" id="nightModeBtn" class="mode-switch-btn" onclick="setActivityMode('night')">夜</button>
+    <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">週末</button>
   </div>
 </div>
-<div class="question">よる、なにをしますか。</div>
+<div class="question">どこへ行きますか。</div>
 </div>
 
   <div class="preview">
@@ -1241,7 +1245,8 @@ function saveName(){
 }
 function renderPlaces(){
  const box=document.getElementById("places");box.innerHTML="";
- places.forEach(([jp,cn])=>{
+ const availablePlaces=activityMode==="lunch"?lunchPlaces.map(name=>places.find(p=>p[0]===name)):places;
+ availablePlaces.forEach(([jp,cn])=>{
   const b=document.createElement("button");
   b.className="choice"+(selectedPlace===jp?" selected":"");
   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
@@ -1340,6 +1345,13 @@ function hasAvailableVerbForNoun(noun){
  );
 }
 function refreshCompatibility(){
+ if(activityMode==="lunch"){
+   document.querySelectorAll("#verbArea .verb-choice").forEach(btn=>{
+     btn.disabled=false;
+     btn.classList.remove("choice-disabled");
+   });
+   return;
+ }
  document.querySelectorAll("#nounArea .noun-choice").forEach(btn=>{
    const n=btn.dataset.value;
    const placeOK=nounFitsPlace(n,selectedPlace);
@@ -1365,6 +1377,23 @@ function refreshCompatibility(){
 function renderNouns(){
  const area=document.getElementById("nounArea");
  area.innerHTML="";
+ area.classList.toggle("lunch-noun-area",activityMode==="lunch");
+ if(activityMode==="lunch"){
+   const input=document.createElement("input");
+   input.id="lunchFoodInput";
+   input.type="text";
+   input.maxLength=80;
+   input.placeholder="たべるものを入力";
+   input.setAttribute("aria-label","たべるものを入力");
+   input.value=selectedNoun;
+   input.addEventListener("input",()=>{
+     selectedNoun=input.value.trim();
+     updateNounPreview();
+     refreshPostButton();
+   });
+   area.appendChild(input);
+   return;
+ }
  nouns.forEach(([jp,cn])=>{
    const b=document.createElement("button");
    b.className="choice noun-choice"+(selectedNoun===jp?" selected":"");
@@ -1442,11 +1471,11 @@ function renderVerbs(){
  const area=document.getElementById("verbArea");
  if(!area)return;
  area.innerHTML="";
- verbs.forEach(([jp,cn,type])=>{
+ verbs.filter(([jp])=>activityMode!=="lunch" || jp in lunchVerbs).forEach(([jp,cn,type])=>{
    const b=document.createElement("button");
    b.className="choice verb-choice"+(selectedVerb===jp?" selected":"");
    b.dataset.value=jp;
-   b.innerHTML=`<span class="jp">${jp.replace(/。$/,"")}</span><span class="cn">${cn}</span>`;
+   b.innerHTML=`<span class="jp">${activityMode==="lunch"?lunchVerbs[jp]:jp.replace(/。$/,"")}</span><span class="cn">${cn}</span>`;
    b.onclick=()=>{
      if(b.disabled)return;
      if(type==="to"){
@@ -1658,19 +1687,27 @@ function refreshPostButton(){
  const placeOK=!!selectedPlace;
  const verbOK=!!selectedVerb;
  const destinationOK=!["りょこう","でかけます"].includes(selectedPlace) || !!travelDestination;
- btn.disabled=!(placeOK && verbOK && destinationOK);
+ btn.disabled=!(placeOK && verbOK && destinationOK && (activityMode!=="lunch" || !!selectedNoun));
 }
 
-let activityMode="night";
+let activityMode="lunch";
+const lunchPlaces=["りょう","そと","おみせ","そとのおみせ","しょくどう","ショッピングモール"];
+const lunchVerbs={"たべます。":"たべる","のみます。":"のむ","かいます。":"かう"};
 function setActivityMode(mode){
+ const changed=activityMode!==mode;
  activityMode=mode;
- for(const name of ["afternoon","night","weekend"]){
+ if(changed){
+   selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
+   closePartnerModal();
+ }
+ for(const name of ["lunch","night","weekend"]){
    document.getElementById(name+"ModeBtn")?.classList.toggle("active",mode===name);
  }
  const guide=document.getElementById("modeGuideText");
- if(guide)guide.textContent={afternoon:"发布一下自己下午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
+ if(guide)guide.textContent={lunch:"发布一下自己中午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={afternoon:"ごご、なにをしますか。",night:"よる、なにをしますか。",weekend:"しゅうまつ、なにをしますか。"}[mode];
+ if(question)question.textContent={lunch:"どこへ行きますか。",night:"よる、なにをしますか。",weekend:"しゅうまつ、なにをしますか。"}[mode];
+ renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
 function layoutMeTooButtons(){
@@ -1756,7 +1793,7 @@ function postWeekend(){
    alert("发了这么多，谢谢你！");
    return;
  }
- if(!selectedVerb)return;
+ if(!selectedVerb || (activityMode==="lunch" && !selectedNoun))return;
  if(["りょこう","でかけます"].includes(selectedPlace) && !travelDestination)return;
  
 
@@ -1880,7 +1917,8 @@ function renderPosts(){
      const nounCn=nounFound?nounFound[1]:"";
      const verbCn=verbFound?verbFound[1]:"";
 
-     const card=(jp,cn)=>`<span class="posted-card"><span>${String(jp||"").replace(/。+$/,"")}</span><span class="posted-cn">${cn}</span></span>`;
+     const escapeText=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+     const card=(jp,cn)=>`<span class="posted-card"><span>${escapeText(String(jp||"").replace(/。+$/,""))}</span><span class="posted-cn">${escapeText(cn)}</span></span>`;
      const partnerCnMap={"ともだち":"朋友","かぞく":"家人","こいびと":"恋人"};
      const postedVerb=()=>{
        if(!p.verb)return "";
@@ -1891,7 +1929,7 @@ function renderPosts(){
        return verbCard+"<span>。</span>";
      };
      const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
-     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="afternoon"?"ごご、":p.mode==="night"?"よる、":"しゅうまつ、"}</span>`;
+     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"おひる、":p.mode==="night"?"よる、":"しゅうまつ、"}</span>`;
 
      if(p.place==="やまに のぼります"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼります。</span></div>`;
@@ -2222,7 +2260,7 @@ setInterval(()=>{
 
 <script>
 /* 投稿欄が展開中なら、操作ボタンを押した時点で収納する。
-   午後／夜／週末の切替ボタンも含む。三角ボタン自身は除外。 */
+   お昼／夜／週末の切替ボタンも含む。三角ボタン自身は除外。 */
 (()=>{
  const feed=document.getElementById("feed");
  const expandBtn=document.getElementById("feedExpandBtn");
