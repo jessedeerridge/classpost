@@ -1165,7 +1165,7 @@ function preserveFeedPosition(feed){
     <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
   </div>
 </div>
-<div class="question">どこへ行きますか。</div>
+<div class="question">おひる、どこへいきますか。</div>
 </div>
 
   <div class="preview">
@@ -1706,7 +1706,7 @@ function setActivityMode(mode){
  const guide=document.getElementById("modeGuideText");
  if(guide)guide.textContent={lunch:"发布一下自己中午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={lunch:"どこへ行きますか。",night:"よる、なにをしますか。",weekend:"しゅうまつ、なにをしますか。"}[mode];
+ if(question)question.textContent={lunch:"おひる、どこへいきますか。",night:"よる、なにをしますか。",weekend:"しゅうまつ、なにをしますか。"}[mode];
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
