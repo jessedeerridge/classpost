@@ -1139,7 +1139,7 @@ function preserveFeedPosition(feed){
  .outing-choice{flex-basis:calc((100% - 6px)/3);}
 }
 .outing-choices[hidden]{display:none;}
-.outing-choice{border-color:#3688cd;background:#fff;color:#24669e;}
+.outing-choice{border-color:#3688cd;background:#fff;color:#24669e;display:flex;align-items:center;justify-content:center;flex:0 0 auto!important;}
 .outing-choice.active{background:#dceeff;border-color:#1767a8;}
 </style>
 <style>
@@ -1194,8 +1194,8 @@ function preserveFeedPosition(feed){
   </div>
 
   <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへ いきますか" hidden>
-   <button type="button" id="outingYesBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')"><span class="jp">はい</span><span class="cn" aria-hidden="true">&nbsp;</span></button>
-   <button type="button" id="outingNoBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')"><span class="jp">いいえ</span><span class="cn" aria-hidden="true">&nbsp;</span></button>
+   <button type="button" id="outingYesBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')"><span class="jp">はい</span></button>
+   <button type="button" id="outingNoBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')"><span class="jp">いいえ</span></button>
   </div>
   <div class="place-box">
    <div id="places" class="choices"></div>
@@ -1267,6 +1267,17 @@ function saveName(){
  localStorage.setItem("weekend_user_name_v1",userName);
  document.getElementById("nameModal").style.display="none";
 }
+function syncOutingButtonSizes(){
+ const place=document.querySelector("#places .choice");
+ if(!place)return;
+ const size=place.getBoundingClientRect();
+ document.querySelectorAll(".outing-choice").forEach(button=>{
+   button.style.width=size.width+"px";
+   button.style.height=size.height+"px";
+ });
+}
+window.addEventListener("resize",syncOutingButtonSizes);
+document.fonts?.ready?.then(syncOutingButtonSizes);
 function renderPlaces(){
  const choices=document.getElementById("outingChoices");
  choices.hidden=activityMode==="lunch";
@@ -1285,6 +1296,7 @@ function renderPlaces(){
   b.classList.toggle("choice-disabled",b.disabled);
   b.onclick=()=>selectPlace(jp);box.appendChild(b);
  });
+ syncOutingButtonSizes();
 }
 
 /* 選択内容に合わせて、不自然な組み合わせを押せなくする */
