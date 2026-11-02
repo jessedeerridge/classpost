@@ -1086,6 +1086,28 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 .feed .post .posted-card > span:first-child{min-width:0;overflow-wrap:anywhere;}
 .feed .post .posted-cn,.feed .post .post-cn{white-space:normal;overflow-wrap:anywhere;}
 </style>
+<style>
+/* 名前の列と本文の列を分け、折り返しも本文の左端に揃える。 */
+.feed .post .posted-row{
+ display:grid;
+ grid-template-columns:minmax(0,min(var(--posted-name-width,0px),30%)) minmax(0,1fr);
+ align-items:start;
+}
+.feed .post .posted-body{
+ display:flex;
+ flex-wrap:wrap!important;
+ align-items:center;
+ gap:15px 3px;
+ min-width:0;
+}
+.feed .post .posted-body > *{
+ min-width:0;
+ max-width:100%;
+ white-space:normal;
+ overflow-wrap:anywhere;
+}
+.feed .post .posted-name{line-height:1.5;}
+</style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
@@ -1637,6 +1659,16 @@ function layoutMeTooButtons(){
   document.querySelectorAll(".post").forEach(post=>{
    const wrap=post.querySelector(".me-too-wrap");
    const rows=[...post.querySelectorAll(".posted-row")];
+   const name=rows[0]?.querySelector(".posted-name");
+   if(name){
+     const range=document.createRange();
+     range.selectNodeContents(name);
+     // 測定時だけ折り返しを解除し、画面幅に応じて名前列を最大30%に抑える。
+     const previous=name.style.whiteSpace;
+     name.style.whiteSpace="nowrap";
+     post.style.setProperty("--posted-name-width",Math.ceil(range.getBoundingClientRect().width)+"px");
+     name.style.whiteSpace=previous;
+   }
    if(!wrap||!rows.length)return;
 
    let count=wrap.querySelector(".me-too-count") || post.querySelector(":scope > .me-too-count");
@@ -1889,8 +1921,17 @@ function renderPosts(){
      d.appendChild(wrap);
    }
    enableAdminLongPress(d,p.id);
+   d.querySelectorAll(".posted-row").forEach(row=>{
+     const body=document.createElement("span");
+     body.className="posted-body";
+     [...row.childNodes].forEach(node=>{
+       if(node.nodeType!==1 || !node.classList.contains("posted-name"))body.appendChild(node);
+     });
+     row.appendChild(body);
+   });
    feed.appendChild(d);
  });
+ layoutMeTooButtons();
 }
 document.getElementById("nameInput").value=userName;
 document.getElementById("nameModal").style.display="flex";
