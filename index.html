@@ -1137,6 +1137,14 @@ function preserveFeedPosition(feed){
 .outing-choice{border:2px solid #3688cd;border-radius:8px;background:#fff;color:#24669e;padding:7px 20px;font:inherit;cursor:pointer;}
 .outing-choice.active{background:#dceeff;border-color:#1767a8;}
 </style>
+<style>
+#nounArea.lunch-noun-area{margin-inline:auto!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+#verbArea.lunch-verb-area{display:flex;justify-content:center;}
+#verbArea.lunch-verb-area > .verb-choice{flex:0 0 calc((100% - 12px)/4);}
+@media(max-width:700px){
+ #verbArea.lunch-verb-area > .verb-choice{flex-basis:calc((100% - 6px)/3);}
+}
+</style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
@@ -1171,7 +1179,7 @@ function preserveFeedPosition(feed){
     <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
   </div>
 </div>
-<div class="question">おひる、どこへいきますか。</div>
+<div class="question">おひる、どこへ いきますか。</div>
 </div>
 
   <div class="preview">
@@ -1180,7 +1188,7 @@ function preserveFeedPosition(feed){
    <button id="postBtn" class="post-btn" onclick="postWeekend()" disabled>发布</button>
   </div>
 
-  <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへいきますか" hidden>
+  <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへ いきますか" hidden>
    <button type="button" id="outingYesBtn" class="outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')">はい</button>
    <button type="button" id="outingNoBtn" class="outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')">いいえ</button>
   </div>
@@ -1495,6 +1503,7 @@ function updateVerbPreview(){
 function renderVerbs(){
  const area=document.getElementById("verbArea");
  if(!area)return;
+ area.classList.toggle("lunch-verb-area",activityMode==="lunch");
  area.innerHTML="";
  verbs.filter(([jp])=>activityMode!=="lunch" || jp in lunchVerbs).forEach(([jp,cn,type])=>{
    const b=document.createElement("button");
@@ -1748,7 +1757,7 @@ function setActivityMode(mode){
  const guide=document.getElementById("modeGuideText");
  if(guide)guide.textContent={lunch:"发布一下自己中午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={lunch:"おひる、どこへいきますか。",night:"よる、どこかへ いきますか。",weekend:"しゅうまつ、どこかへ いきますか。"}[mode];
+ if(question)question.textContent={lunch:"おひる、どこへ いきますか。",night:"よる、どこかへ いきますか。",weekend:"しゅうまつ、どこかへ いきますか。"}[mode];
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
