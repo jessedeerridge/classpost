@@ -1892,7 +1892,7 @@ function postWeekend(){
  posts.push({
    id:Date.now(), author:userName, mode:activityMode, lines,
    place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけます")?travelDestination:"",
-   foods:activityMode==="lunch"?lunchFoods.map(name=>name.trim()):[],
+   foods:activityMode==="lunch"?lunchFoods.map(name=>name.trim()).filter(Boolean):[],
    noun:selectedNoun, verb:(selectedPartner&&selectedVerb.startsWith("～と")?selectedVerb.replace(/^～と\s*/,""):selectedVerb),partner:selectedPartner, pattern:selectedPattern, meTooCount:0
  });
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
@@ -1976,8 +1976,9 @@ function renderPosts(){
 
      const escapeText=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
      const card=(jp,cn)=>`<span class="posted-card"><span>${escapeText(String(jp||"").replace(/。+$/,""))}</span><span class="posted-cn">${escapeText(cn)}</span></span>`;
-     const foodCards=Array.isArray(p.foods)&&p.foods.length
-       ?p.foods.map(food=>card(food,"")).join("<span>と</span>")
+     const foods=Array.isArray(p.foods)?p.foods.map(food=>String(food??"").trim()).filter(Boolean):[];
+     const foodCards=foods.length
+       ?foods.map(food=>card(food,"")).join("<span>と</span>")
        :(p.noun?card(p.noun,nounCn):"");
      const partnerCnMap={"ともだち":"朋友","かぞく":"家人","こいびと":"恋人"};
      const postedVerb=()=>{
