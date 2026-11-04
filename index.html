@@ -546,7 +546,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 
-/* おひる／よる／しゅうまつ 切り替え */
+/* よる／よる／しゅうまつ 切り替え */
 .mode-switch-wrap{
  display:flex;
  justify-content:flex-start;
@@ -1164,16 +1164,16 @@ function preserveFeedPosition(feed){
  <button id="feedExpandBtn" class="feed-expand-btn" type="button" aria-label="展开投稿">▼</button>
 
  <div class="composer">
-  <div class="guide"><span id="modeGuideText">发布一下自己中午的安排吧。</span></div>
+  <div class="guide"><span id="modeGuideText">发布一下自己晚上的安排吧。</span></div>
   <div class="mode-question-row">
 <div class="mode-switch-wrap">
   <div class="mode-switch" role="group" aria-label="時間帯切り替え">
-    <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">中午</button>
-    <button type="button" id="nightModeBtn" class="mode-switch-btn" onclick="setActivityMode('night')">晚上</button>
-    <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
+    <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">晚上</button>
+    <button type="button" id="nightModeBtn" disabled class="mode-switch-btn" onclick="setActivityMode('night')">晚上</button>
+    <button type="button" id="weekendModeBtn" disabled class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
   </div>
 </div>
-<div class="question">おひる、どこへ いきますか。</div>
+<div class="question">よる、どこへ いきますか。</div>
 </div>
 
   <div class="preview">
@@ -1729,6 +1729,13 @@ function refreshPostButton(){
 }
 
 let activityMode="lunch";
+let modeSwitchUnlocked=false;
+function refreshModeButtons(){
+ for(const mode of ["lunch","night","weekend"]){
+   const button=document.getElementById(mode+"ModeBtn");
+   button.disabled=mode!==activityMode && !modeSwitchUnlocked;
+ }
+}
 function placeAllowed(place){
  if(activityMode==="lunch")return lunchPlaces.includes(place);
  return places.some(([name])=>name===place);
@@ -1738,7 +1745,10 @@ const lunchVerbs={"たべます。":"たべます","かいます。":"かいま�
 function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.some(name=>!!name.trim());}
 function setActivityMode(mode){
  const changed=activityMode!==mode;
+ if(changed && !modeSwitchUnlocked)return;
  activityMode=mode;
+ if(changed)modeSwitchUnlocked=false;
+ refreshModeButtons();
  if(changed){
    lunchFoods=["",""];
    selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
@@ -1748,9 +1758,9 @@ function setActivityMode(mode){
    document.getElementById(name+"ModeBtn")?.classList.toggle("active",mode===name);
  }
  const guide=document.getElementById("modeGuideText");
- if(guide)guide.textContent={lunch:"发布一下自己中午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
+ if(guide)guide.textContent={lunch:"发布一下自己晚上的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={lunch:"おひる、どこへ いきますか。",night:"よる、どこへ いきますか。",weekend:"しゅうまつ、どこへ いきますか。"}[mode];
+ if(question)question.textContent={lunch:"よる、どこへ いきますか。",night:"よる、なにをしますか。",weekend:"しゅうまつ、どこへ いきますか。"}[mode];
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
@@ -1887,6 +1897,8 @@ function postWeekend(){
  });
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
  syncPostToDB(posts[posts.length-1]);
+ modeSwitchUnlocked=true;
+ refreshModeButtons();
  renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 
  /* 投稿したら投稿欄を下へ展開 */
@@ -1977,7 +1989,7 @@ function renderPosts(){
        return verbCard+"<span>。</span>";
      };
      const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
-     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"おひる、":p.mode==="night"?"よる、":"しゅうまつ、"}</span>`;
+     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"よる、":p.mode==="night"?"よる、":"しゅうまつ、"}</span>`;
 
      if(p.place==="やまに のぼります"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼります。</span></div>`;
