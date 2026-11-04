@@ -1143,6 +1143,14 @@ function preserveFeedPosition(feed){
 .outing-options{display:flex;justify-content:center;gap:6px;margin:6px 0;flex-wrap:wrap}
 .outing-options .choice{padding:7px 12px}
 </style>
+<style>
+@keyframes modeLockedFlash{
+  0%,100%{background:#ededed;color:#999}
+  25%,75%{background:#d6d6d6;color:#888}
+  50%{background:#f4f4f4;color:#aaa}
+}
+.mode-switch-btn.mode-locked-flash{animation:modeLockedFlash .6s ease-in-out}
+</style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
@@ -1173,8 +1181,8 @@ function preserveFeedPosition(feed){
 <div class="mode-switch-wrap">
   <div class="mode-switch" role="group" aria-label="時間帯切り替え">
     <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">晚上</button>
-    <button type="button" id="nightModeBtn" disabled class="mode-switch-btn" onclick="setActivityMode('night')">晚上</button>
-    <button type="button" id="weekendModeBtn" disabled class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
+    <button type="button" id="nightModeBtn" aria-disabled="true" class="mode-switch-btn" onclick="setActivityMode('night')">晚上</button>
+    <button type="button" id="weekendModeBtn" aria-disabled="true" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
   </div>
 </div>
 <div class="question">よる、どこへ いきますか。</div>
@@ -1756,7 +1764,7 @@ const unlockedModes=new Set(["lunch"]);
 function refreshModeButtons(){
  for(const mode of ["lunch","night","weekend"]){
    const button=document.getElementById(mode+"ModeBtn");
-   button.disabled=!unlockedModes.has(mode);
+   button.setAttribute("aria-disabled",String(!unlockedModes.has(mode)));
  }
 }
 function placeAllowed(place){
@@ -1768,7 +1776,13 @@ const lunchVerbs={"たべます。":"たべます","かいます。":"かいま�
 function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.some(name=>!!name.trim());}
 function setActivityMode(mode){
  const changed=activityMode!==mode;
- if(!unlockedModes.has(mode))return;
+ if(!unlockedModes.has(mode)){
+   const button=document.getElementById(mode+"ModeBtn");
+   button.classList.remove("mode-locked-flash");
+   void button.offsetWidth;
+   button.classList.add("mode-locked-flash");
+   return;
+ }
  activityMode=mode;
  refreshModeButtons();
  if(changed){
