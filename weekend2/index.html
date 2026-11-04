@@ -1132,17 +1132,6 @@ function preserveFeedPosition(feed){
 .lunch-food-input{width:100%;min-width:0;padding:10px;border:1px solid #76a862;border-radius:7px;font:inherit;text-align:center;}
 </style>
 <style>
-.outing-choices{display:flex;justify-content:center;gap:4px;margin:5px 0 8px;padding:7px;border:1px solid #3688cd;border-radius:14px;background:#bfe8f7;}
-.outing-choice{flex:0 0 calc((100% - 12px)/4);}
-@media(max-width:700px){
- .outing-choices{gap:3px;padding:5px;border-radius:11px;}
- .outing-choice{flex-basis:calc((100% - 6px)/3);}
-}
-.outing-choices[hidden]{display:none;}
-.outing-choice{border-color:#3688cd;background:#fff;color:#24669e;display:flex;align-items:center;justify-content:center;flex:0 0 auto!important;}
-.outing-choice.active{background:#dceeff;border-color:#1767a8;}
-</style>
-<style>
 #nounArea.lunch-noun-area{margin-inline:auto!important;grid-template-columns:minmax(0,1fr)!important;width:min(100%,300px);}
 #verbArea.lunch-verb-area{display:flex;justify-content:center;}
 #verbArea.lunch-verb-area > .verb-choice{flex:0 0 calc((100% - 12px)/4);}
@@ -1193,10 +1182,6 @@ function preserveFeedPosition(feed){
    <button id="postBtn" class="post-btn" onclick="postWeekend()" disabled>发布</button>
   </div>
 
-  <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへ いきますか" hidden>
-   <button type="button" id="outingYesBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')"><span class="jp">はい</span></button>
-   <button type="button" id="outingNoBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')"><span class="jp">いいえ</span></button>
-  </div>
   <div class="place-box">
    <div id="places" class="choices"></div>
   </div>
@@ -1267,25 +1252,7 @@ function saveName(){
  localStorage.setItem("weekend_user_name_v1",userName);
  document.getElementById("nameModal").style.display="none";
 }
-function syncOutingButtonSizes(){
- const place=document.querySelector("#places .choice");
- if(!place)return;
- const size=place.getBoundingClientRect();
- document.querySelectorAll(".outing-choice").forEach(button=>{
-   button.style.width=size.width+"px";
-   button.style.height=size.height+"px";
- });
-}
-window.addEventListener("resize",syncOutingButtonSizes);
-document.fonts?.ready?.then(syncOutingButtonSizes);
 function renderPlaces(){
- const choices=document.getElementById("outingChoices");
- choices.hidden=activityMode==="lunch";
- for(const [answer,id] of [["yes","outingYesBtn"],["no","outingNoBtn"]]){
-   const button=document.getElementById(id);
-   button.classList.toggle("active",outingAnswer===answer);
-   button.setAttribute("aria-pressed",String(outingAnswer===answer));
- }
  const box=document.getElementById("places");box.innerHTML="";
  const availablePlaces=activityMode==="lunch"?lunchPlaces.map(name=>places.find(p=>p[0]===name)):places;
  availablePlaces.forEach(([jp,cn])=>{
@@ -1296,7 +1263,6 @@ function renderPlaces(){
   b.classList.toggle("choice-disabled",b.disabled);
   b.onclick=()=>selectPlace(jp);box.appendChild(b);
  });
- syncOutingButtonSizes();
 }
 
 /* 選択内容に合わせて、不自然な組み合わせを押せなくする */
@@ -1390,13 +1356,6 @@ function hasAvailableVerbForNoun(noun){
  );
 }
 function refreshCompatibility(){
- if(activityMode!=="lunch" && !outingAnswer){
-   document.querySelectorAll("#places button,#nounArea button,#verbArea button,#postBtn").forEach(btn=>{
-     btn.disabled=true;
-     btn.classList.add("choice-disabled");
-   });
-   return;
- }
  if(activityMode==="lunch"){
    document.querySelectorAll("#verbArea .verb-choice").forEach(btn=>{
      btn.disabled=false;
@@ -1437,8 +1396,8 @@ function renderNouns(){
      input.className="lunch-food-input";
      input.type="text";
      input.maxLength=80;
-     input.placeholder="请输入食物名称（可以用中文）";
-     input.setAttribute("aria-label","食物"+(index+1)+"：请输入食物名称（可以用中文）");
+     input.placeholder=index===1?"可以不填":"请输入食物名称（可以用中文）";
+     input.setAttribute("aria-label","食物"+(index+1)+"："+input.placeholder);
      input.value=value;
      input.addEventListener("input",()=>{
        lunchFoods[index]=input.value;
@@ -1770,27 +1729,17 @@ function refreshPostButton(){
 }
 
 let activityMode="lunch";
-let outingAnswer="";
 function placeAllowed(place){
  if(activityMode==="lunch")return lunchPlaces.includes(place);
- return outingAnswer==="yes"?place!=="りょう":outingAnswer==="no"?place==="りょう":false;
-}
-function setOutingAnswer(answer){
- outingAnswer=answer;
- if(selectedPlace && !placeAllowed(selectedPlace)){
-   selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
-   closePartnerModal();
- }
- renderPlaces();updatePreview();renderSecondStage();refreshPostButton();
+ return places.some(([name])=>name===place);
 }
 const lunchPlaces=["りょう","そと","おみせ","そとのおみせ","しょくどう","ショッピングモール"];
 const lunchVerbs={"たべます。":"たべます","かいます。":"かいます"};
-function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.every(name=>!!name.trim());}
+function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.some(name=>!!name.trim());}
 function setActivityMode(mode){
  const changed=activityMode!==mode;
  activityMode=mode;
  if(changed){
-   outingAnswer="";
    lunchFoods=["",""];
    selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
    closePartnerModal();
@@ -1801,7 +1750,7 @@ function setActivityMode(mode){
  const guide=document.getElementById("modeGuideText");
  if(guide)guide.textContent={lunch:"发布一下自己中午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={lunch:"おひる、どこへ いきますか。",night:"よる、どこかへ いきますか。",weekend:"しゅうまつ、どこかへ いきますか。"}[mode];
+ if(question)question.textContent={lunch:"おひる、どこへ いきますか。",night:"よる、どこへ いきますか。",weekend:"しゅうまつ、どこへ いきますか。"}[mode];
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
@@ -1947,8 +1896,6 @@ function postWeekend(){
    feed.classList.add("expanded");
    if(feedBtn)feedBtn.textContent="▲";
  }
-
- outingAnswer="";
  lunchFoods=["",""];
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; selectedPartner=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
