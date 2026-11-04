@@ -1139,6 +1139,10 @@ function preserveFeedPosition(feed){
  #verbArea.lunch-verb-area > .verb-choice{flex-basis:calc((100% - 6px)/3);}
 }
 </style>
+<style>
+.outing-options{display:flex;justify-content:center;gap:6px;margin:6px 0;flex-wrap:wrap}
+.outing-options .choice{padding:7px 12px}
+</style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
@@ -1182,6 +1186,10 @@ function preserveFeedPosition(feed){
    <button id="postBtn" class="post-btn" onclick="postWeekend()" disabled>发布</button>
   </div>
 
+  <div class="outing-options" role="group" aria-label="外出の予定">
+   <button type="button" id="outingGoBtn" class="choice" aria-pressed="false" onclick="setOutingPlan('go')">～へ いきます</button>
+   <button type="button" id="outingStayBtn" class="choice" aria-pressed="false" onclick="setOutingPlan('stay')">どこへも いきません</button>
+  </div>
   <div class="place-box">
    <div id="places" class="choices"></div>
   </div>
@@ -1253,6 +1261,11 @@ function saveName(){
  document.getElementById("nameModal").style.display="none";
 }
 function renderPlaces(){
+ for(const [plan,id] of [["go","outingGoBtn"],["stay","outingStayBtn"]]){
+   const button=document.getElementById(id);
+   button.classList.toggle("selected",outingPlan===plan);
+   button.setAttribute("aria-pressed",String(outingPlan===plan));
+ }
  const box=document.getElementById("places");box.innerHTML="";
  const availablePlaces=activityMode==="lunch"?lunchPlaces.map(name=>places.find(p=>p[0]===name)):places;
  availablePlaces.forEach(([jp,cn])=>{
@@ -1729,6 +1742,16 @@ function refreshPostButton(){
 }
 
 let activityMode="lunch";
+let outingPlan="";
+function setOutingPlan(plan){
+ outingPlan=plan;
+ if(selectedPlace && !placeAllowed(selectedPlace)){
+   selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
+   lunchFoods=["",""];
+   closePartnerModal();
+ }
+ renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
+}
 let modeSwitchUnlocked=false;
 function refreshModeButtons(){
  for(const mode of ["lunch","night","weekend"]){
@@ -1737,6 +1760,7 @@ function refreshModeButtons(){
  }
 }
 function placeAllowed(place){
+ if(outingPlan==="stay" && place!=="りょう")return false;
  if(activityMode==="lunch")return lunchPlaces.includes(place);
  return places.some(([name])=>name===place);
 }
@@ -1750,6 +1774,7 @@ function setActivityMode(mode){
  if(changed)modeSwitchUnlocked=false;
  refreshModeButtons();
  if(changed){
+   outingPlan="";
    lunchFoods=["",""];
    selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
    closePartnerModal();
@@ -1908,6 +1933,7 @@ function postWeekend(){
    feed.classList.add("expanded");
    if(feedBtn)feedBtn.textContent="▲";
  }
+ outingPlan="";
  lunchFoods=["",""];
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; selectedPartner=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
