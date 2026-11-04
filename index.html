@@ -1186,11 +1186,10 @@ function preserveFeedPosition(feed){
    <button id="postBtn" class="post-btn" onclick="postWeekend()" disabled>发布</button>
   </div>
 
-  <div class="outing-options" role="group" aria-label="外出の予定">
-   <button type="button" id="outingGoBtn" class="choice" aria-pressed="false" onclick="setOutingPlan('go')">～へ いきます</button>
-   <button type="button" id="outingStayBtn" class="choice" aria-pressed="false" onclick="setOutingPlan('stay')">どこへも いきません</button>
-  </div>
   <div class="place-box">
+   <div class="outing-options">
+    <button type="button" id="outingStayBtn" class="choice" aria-pressed="false" onclick="setOutingPlan(outingPlan==='stay'?'':'stay')">どこへも いきません</button>
+   </div>
    <div id="places" class="choices"></div>
   </div>
 
@@ -1261,7 +1260,7 @@ function saveName(){
  document.getElementById("nameModal").style.display="none";
 }
 function renderPlaces(){
- for(const [plan,id] of [["go","outingGoBtn"],["stay","outingStayBtn"]]){
+ for(const [plan,id] of [["stay","outingStayBtn"]]){
    const button=document.getElementById(id);
    button.classList.toggle("selected",outingPlan===plan);
    button.setAttribute("aria-pressed",String(outingPlan===plan));
@@ -1745,7 +1744,7 @@ let activityMode="lunch";
 let outingPlan="";
 function setOutingPlan(plan){
  outingPlan=plan;
- if(selectedPlace && !placeAllowed(selectedPlace)){
+ if(plan==="stay" || (selectedPlace && !placeAllowed(selectedPlace))){
    selectedPlace="";selectedPattern="";selectedNoun="";selectedVerb="";selectedPartner="";travelDestination="";
    lunchFoods=["",""];
    closePartnerModal();
