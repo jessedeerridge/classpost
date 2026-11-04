@@ -1145,14 +1145,16 @@ function preserveFeedPosition(feed){
 </style>
 <style>
 @keyframes modeLockedFlash{
-  0%,100%{background:#ededed;color:#999}
-  25%,75%{background:#d6d6d6;color:#888}
-  50%{background:#f4f4f4;color:#aaa}
+  50%{background:#e5e5e5;color:#999}
 }
-.mode-switch-btn.mode-locked-flash{animation:modeLockedFlash .6s ease-in-out}
+.mode-switch-btn.mode-locked-flash{animation:modeLockedFlash .4s ease-in-out 1}
+.choice.stay-muted{opacity:.28;filter:grayscale(.65)}
+.post-first-toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:200;background:#111;color:#fff;padding:12px 20px;border-radius:9px;font-size:15px;pointer-events:none;white-space:nowrap}
+.post-first-toast[hidden]{display:none}
 </style>
 </head>
 <body>
+<div id="postFirstToast" class="post-first-toast" role="status" hidden>まずこれをポストして</div>
 <div id="nameModal" class="name-modal">
  <div class="name-box">
   <input id="nameInput" class="name-input" placeholder="请输入姓名" maxlength="20">
@@ -1279,6 +1281,7 @@ function renderPlaces(){
   const b=document.createElement("button");
   b.className="choice"+(selectedPlace===jp?" selected":"");
   b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
+  b.classList.toggle("stay-muted",outingPlan==="stay" && jp!=="りょう");
   b.disabled=!placeAllowed(jp);
   b.classList.toggle("choice-disabled",b.disabled);
   b.onclick=()=>selectPlace(jp);box.appendChild(b);
@@ -1761,6 +1764,7 @@ function setOutingPlan(plan){
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 const unlockedModes=new Set(["lunch"]);
+let postFirstToastTimer;
 function refreshModeButtons(){
  for(const mode of ["lunch","night","weekend"]){
    const button=document.getElementById(mode+"ModeBtn");
@@ -1781,6 +1785,10 @@ function setActivityMode(mode){
    button.classList.remove("mode-locked-flash");
    void button.offsetWidth;
    button.classList.add("mode-locked-flash");
+   const toast=document.getElementById("postFirstToast");
+   clearTimeout(postFirstToastTimer);
+   toast.hidden=false;
+   postFirstToastTimer=setTimeout(()=>{toast.hidden=true;},1000);
    return;
  }
  activityMode=mode;
