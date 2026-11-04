@@ -1142,6 +1142,7 @@ function preserveFeedPosition(feed){
 <style>
 .outing-options{display:flex;justify-content:center;gap:6px;margin:6px 0;flex-wrap:wrap}
 .outing-options .choice{padding:7px 12px}
+.outing-options[hidden]{display:none}
 </style>
 <style>
 @keyframes modeLockedFlash{
@@ -1270,6 +1271,7 @@ function saveName(){
  document.getElementById("nameModal").style.display="none";
 }
 function renderPlaces(){
+ document.querySelector(".outing-options").hidden=activityMode==="night";
  for(const [plan,id] of [["stay","outingStayBtn"]]){
    const button=document.getElementById(id);
    button.classList.toggle("selected",outingPlan===plan);
