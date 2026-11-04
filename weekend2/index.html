@@ -1752,11 +1752,11 @@ function setOutingPlan(plan){
  }
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
-let modeSwitchUnlocked=false;
+const unlockedModes=new Set(["lunch"]);
 function refreshModeButtons(){
  for(const mode of ["lunch","night","weekend"]){
    const button=document.getElementById(mode+"ModeBtn");
-   button.disabled=mode!==activityMode && !modeSwitchUnlocked;
+   button.disabled=!unlockedModes.has(mode);
  }
 }
 function placeAllowed(place){
@@ -1768,9 +1768,8 @@ const lunchVerbs={"たべます。":"たべます","かいます。":"かいま�
 function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.some(name=>!!name.trim());}
 function setActivityMode(mode){
  const changed=activityMode!==mode;
- if(changed && !modeSwitchUnlocked)return;
+ if(!unlockedModes.has(mode))return;
  activityMode=mode;
- if(changed)modeSwitchUnlocked=false;
  refreshModeButtons();
  if(changed){
    outingPlan="";
@@ -1921,8 +1920,8 @@ function postWeekend(){
  });
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
  syncPostToDB(posts[posts.length-1]);
- modeSwitchUnlocked=true;
- refreshModeButtons();
+ const nextMode={lunch:"night",night:"weekend",weekend:"weekend"}[activityMode];
+ unlockedModes.add(nextMode);
  renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 
  /* 投稿したら投稿欄を下へ展開 */
@@ -1935,7 +1934,7 @@ function postWeekend(){
  outingPlan="";
  lunchFoods=["",""];
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; selectedPartner=""; travelDestination="";
- renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
+ setActivityMode(nextMode);
 }
 const METOO_KEY="weekend_metoo_by_name_v1";
 function meTooMap(){try{return JSON.parse(localStorage.getItem(METOO_KEY))||{}}catch{return {}}}
