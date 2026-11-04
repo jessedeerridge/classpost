@@ -1554,6 +1554,7 @@ function renderSecondStage(){
 }
 function selectPlace(v){
  if(!placeAllowed(v))return;
+ if(v!=="りょう" && outingPlan==="stay")outingPlan="";
  if(v!==selectedPlace && (v==="りょこう"||v==="でかけます"))travelDestination="";
  selectedPlace=v;
  if(selectedNoun && !nounFitsPlace(selectedNoun,v)) selectedNoun="";
@@ -1759,7 +1760,6 @@ function refreshModeButtons(){
  }
 }
 function placeAllowed(place){
- if(outingPlan==="stay" && place!=="りょう")return false;
  if(activityMode==="lunch")return lunchPlaces.includes(place);
  return places.some(([name])=>name===place);
 }
