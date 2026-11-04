@@ -1270,6 +1270,7 @@ function saveName(){
  userName=v;
  localStorage.setItem("weekend_user_name_v1",userName);
  document.getElementById("nameModal").style.display="none";
+ refreshModeButtons();
 }
 function renderPlaces(){
  document.querySelector(".outing-options").hidden=activityMode==="night";
@@ -1768,10 +1769,23 @@ function setOutingPlan(plan){
 }
 const unlockedModes=new Set(["lunch"]);
 let postFirstToastTimer;
+function hasRecentOwnPost(mode){
+ const now=Date.now();
+ return !!userName.trim() && posts.some(post=>{
+   const time=Number(post.createdAt||post.id);
+   return (post.author||"").trim()===userName.trim() && post.mode===mode &&
+     Number.isFinite(time) && time<=now && now-time<60*60*1000;
+ });
+}
 function refreshModeButtons(){
+ unlockedModes.clear();
+ unlockedModes.add("lunch");
+ if(hasRecentOwnPost("lunch") || hasRecentOwnPost("night"))unlockedModes.add("night");
+ if(hasRecentOwnPost("night") || hasRecentOwnPost("weekend"))unlockedModes.add("weekend");
  for(const mode of ["lunch","night","weekend"]){
    const button=document.getElementById(mode+"ModeBtn");
    button.setAttribute("aria-disabled",String(!unlockedModes.has(mode)));
+   button.dataset.posted=String(hasRecentOwnPost(mode));
  }
 }
 function placeAllowed(place){
@@ -1782,6 +1796,7 @@ const lunchPlaces=["りょう","そと","おみせ","そとのおみせ","しょ
 const lunchVerbs={"たべます。":"たべます","かいます。":"かいます"};
 function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.some(name=>!!name.trim());}
 function setActivityMode(mode){
+ refreshModeButtons();
  const changed=activityMode!==mode;
  if(!unlockedModes.has(mode)){
    const button=document.getElementById(mode+"ModeBtn");
@@ -1938,7 +1953,7 @@ function postWeekend(){
  }
 
  posts.push({
-   id:Date.now(), author:userName, mode:activityMode, lines,
+   id:Date.now(), createdAt:Date.now(), author:userName, mode:activityMode, lines,
    place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけます")?travelDestination:"",
    foods:activityMode==="lunch"?lunchFoods.map(name=>name.trim()).filter(Boolean):[],
    noun:selectedNoun, verb:(selectedPartner&&selectedVerb.startsWith("～と")?selectedVerb.replace(/^～と\s*/,""):selectedVerb),partner:selectedPartner, pattern:selectedPattern, meTooCount:0
@@ -1946,7 +1961,6 @@ function postWeekend(){
  localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
  syncPostToDB(posts[posts.length-1]);
  const nextMode={lunch:"night",night:"weekend",weekend:"weekend"}[activityMode];
- unlockedModes.add(nextMode);
  renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 
  /* 投稿したら投稿欄を下へ展開 */
@@ -2003,6 +2017,7 @@ function enableAdminLongPress(el,postId){
  el.addEventListener("contextmenu",e=>{if(userName==="あさの" && !e.target.closest("button"))e.preventDefault();});
 }
 function renderPosts(){
+ refreshModeButtons();
  const feed=document.getElementById("feed");
  const restorePosition=preserveFeedPosition(feed);
  feed.innerHTML="";
