@@ -1146,16 +1146,17 @@ function preserveFeedPosition(feed){
 </style>
 <style>
 @keyframes modeLockedFlash{
-  50%{background:#e5e5e5;color:#999}
+  from{background:#e5e5e5;color:#999}
+  to{background:#e5e5e5;color:#999}
 }
-.mode-switch-btn.mode-locked-flash{animation:modeLockedFlash .4s ease-in-out 1}
+.mode-switch-btn.mode-locked-flash{animation:modeLockedFlash .4s linear 1}
 .choice.stay-muted{opacity:.28;filter:grayscale(.65)}
-.post-first-toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:200;background:#111;color:#fff;padding:12px 20px;border-radius:9px;font-size:15px;pointer-events:none;white-space:nowrap}
+.post-first-toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:200;background:#555;color:#fff;padding:12px 20px;border-radius:9px;font-size:15px;pointer-events:none;white-space:nowrap}
 .post-first-toast[hidden]{display:none}
 </style>
 </head>
 <body>
-<div id="postFirstToast" class="post-first-toast" role="status" hidden>まずこれをポストして</div>
+<div id="postFirstToast" class="post-first-toast" role="status" hidden>请先发布当前内容</div>
 <div id="nameModal" class="name-modal">
  <div class="name-box">
   <input id="nameInput" class="name-input" placeholder="请输入姓名" maxlength="20">
