@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>しゅうまつ、なにをしますか。</title>
+<title>しゅうまつ、なにをしましたか。</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -352,7 +352,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 
-/* ===== で／へ いきます。は場所ボタンと同じ文字 ===== */
+/* ===== で／へ いきました。は場所ボタンと同じ文字 ===== */
 .inside-patterns .pattern{
  font-family:inherit !important;
  font-size:inherit !important;
@@ -1161,7 +1161,7 @@ function preserveFeedPosition(feed){
 
 <div id="partnerModal" class="partner-modal" aria-hidden="true">
  <div class="partner-box">
-  <div id="partnerTitle" class="partner-title">だれ と はなしますか？</div>
+  <div id="partnerTitle" class="partner-title">だれ と はなしましたか？</div>
   <div class="partner-choices">
    <button type="button" class="partner-choice" data-partner="ともだち">ともだち<span class="partner-cn">朋友</span></button>
    <button type="button" class="partner-choice" data-partner="かぞく">かぞく<span class="partner-cn">家人</span></button>
@@ -1184,7 +1184,7 @@ function preserveFeedPosition(feed){
     <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
   </div>
 </div>
-<div class="question">おひる、どこへ いきますか。</div>
+<div class="question">おひる、どこへ いきましたか。</div>
 </div>
 
   <div class="preview">
@@ -1193,7 +1193,7 @@ function preserveFeedPosition(feed){
    <button id="postBtn" class="post-btn" onclick="postWeekend()" disabled>发布</button>
   </div>
 
-  <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへ いきますか" hidden>
+  <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへ いきましたか" hidden>
    <button type="button" id="outingYesBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')"><span class="jp">はい</span></button>
    <button type="button" id="outingNoBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')"><span class="jp">いいえ</span></button>
   </div>
@@ -1227,7 +1227,7 @@ const places=[
  ["そと","外面"],["おみせ","商店"],["そとのおみせ","外面商店"],["がっこう","学校"],
  ["としょかん","图书馆"],["ショッピングモール","购物中心"],["しょくどう","食堂"],["スーパー","超市"],
  ["グラウンド","运动场"],["コート","球场"],["たいいくかん","体育馆"],["こうえん","公园"],
- ["カラオケ","卡拉OK"],["うち","家"],["りょこう","旅行"],["やまに のぼります","爬山"],["でかけます","外出"]
+ ["カラオケ","卡拉OK"],["うち","家"],["りょこう","旅行"],["やまに のぼりました","爬山"],["でかけました","外出"]
 ];
 const nouns=[
  ["ごはん","饭"],["ビール","啤酒"],["ジュース","果汁"],
@@ -1239,17 +1239,17 @@ const nouns=[
  ["おかし","零食"],["え","画"],["にほんご","日语"],["えいご","英语"],["しゃしん","照片"]
 ];
 const verbs=[
- ["たべます。","吃","wo"],["のみます。","喝","wo"],["します。","做","wo"],
- ["みます。","看","wo"],["ききます。","听","wo"],["よみます。","读","wo"],
- ["かいます。","买","wo"],["かきます。","写／画","wo"],["べんきょうします。","学习","wo"],
- ["つくります。","制作／做饭","wo"],["とります。","拍（照片）／拿","wo"],
- ["かいものします。","购物","other"],["うんどうします。","运动","other"],
- ["あるきます。","走路","other"],["さんぽします。","散步","other"],
- ["はしります。","跑步","other"],["そうじします。","打扫","other"],
- ["うたいます。","唱歌","other"],
+ ["たべました。","吃","wo"],["のみました。","喝","wo"],["しました。","做","wo"],
+ ["みました。","看","wo"],["ききました。","听","wo"],["よみました。","读","wo"],
+ ["かいました。","买","wo"],["かきました。","写／画","wo"],["べんきょうしました。","学习","wo"],
+ ["つくりました。","制作／做饭","wo"],["とりました。","拍（照片）／拿","wo"],
+ ["かいものしました。","购物","other"],["うんどうしました。","运动","other"],
+ ["あるきました。","走路","other"],["さんぽしました。","散步","other"],
+ ["はしりました。","跑步","other"],["そうじしました。","打扫","other"],
+ ["うたいました。","唱歌","other"],
  
- ["～と あいます","和～见面","to"],["～と あそびます","一起玩","to"],
- ["～と はなします","说话","to"],["～と でんわします","打电话","to"]
+ ["～と あいました","和～见面","to"],["～と あそびました","一起玩","to"],
+ ["～と はなしました","说话","to"],["～と でんわしました","打电话","to"]
 ];
 let selectedVerb="";
 let selectedPartner="";
@@ -1301,23 +1301,23 @@ function renderPlaces(){
 
 /* 選択内容に合わせて、不自然な組み合わせを押せなくする */
 const nounVerbMap={
- "ごはん":["たべます。","つくります。","かいます。"],
- "ビール":["のみます。","かいます。"],
- "ジュース":["のみます。","かいます。"],
- "バスケ":["します。","みます。"],"サッカー":["します。","みます。"],"卓球":["します。","みます。"],"ビリヤード":["します。","みます。"],
- "バレーボール":["します。","みます。"],"バドミントン":["します。","みます。"],"ゲーム":["します。","みます。","かいます。"],"ダンス":["します。","みます。"],
- "りょうり":["します。","つくります。"],"アルバイト":["します。"],"パーティー":["します。"],"バーベキュー":["します。"],
- "スマホ":["みます。","かいます。"],"アニメ":["みます。"],"ドラマ":["みます。"],"えいが":["みます。"],
- "まんが":["よみます。","かいます。"],"しょうせつ":["よみます。","かいます。","かきます。"],
- "おんがく":["ききます。"],"ふく":["かいます。"],"おかし":["たべます。","かいます。","つくります。"],
- "え":["かきます。","みます。"],"にほんご":["べんきょうします。","ききます。","よみます。"],"えいご":["べんきょうします。","ききます。","よみます。"],
- "しゃしん":["とります。","みます。"]
+ "ごはん":["たべました。","つくりました。","かいました。"],
+ "ビール":["のみました。","かいました。"],
+ "ジュース":["のみました。","かいました。"],
+ "バスケ":["しました。","みました。"],"サッカー":["しました。","みました。"],"卓球":["しました。","みました。"],"ビリヤード":["しました。","みました。"],
+ "バレーボール":["しました。","みました。"],"バドミントン":["しました。","みました。"],"ゲーム":["しました。","みました。","かいました。"],"ダンス":["しました。","みました。"],
+ "りょうり":["しました。","つくりました。"],"アルバイト":["しました。"],"パーティー":["しました。"],"バーベキュー":["しました。"],
+ "スマホ":["みました。","かいました。"],"アニメ":["みました。"],"ドラマ":["みました。"],"えいが":["みました。"],
+ "まんが":["よみました。","かいました。"],"しょうせつ":["よみました。","かいました。","かきました。"],
+ "おんがく":["ききました。"],"ふく":["かいました。"],"おかし":["たべました。","かいました。","つくりました。"],
+ "え":["かきました。","みました。"],"にほんご":["べんきょうしました。","ききました。","よみました。"],"えいご":["べんきょうしました。","ききました。","よみました。"],
+ "しゃしん":["とりました。","みました。"]
 };
 const noNounVerbs=new Set([
- "かいものします。","うんどうします。","あるきます。","さんぽします。",
- "はしります。","そうじします。","うたいます。",
+ "かいものしました。","うんどうしました。","あるきました。","さんぽしました。",
+ "はしりました。","そうじしました。","うたいました。",
  
- "～と あいます","～と あそびます","～と はなします","～と でんわします"
+ "～と あいました","～と あそびました","～と はなしました","～と でんわしました"
 ]);
 
 /* 場所×名詞：可能性が少しでもある組み合わせは許可。
@@ -1353,9 +1353,9 @@ function nounFitsPlace(noun,place){
 /* 名詞単体では成立しても、その場所で「スポーツをする」だけは不自然な場合 */
 function comboFitsPlace(noun,verb,place){
  if(!place)return true;
- if(place==="しょくどう" && verb==="かいます。" && !["ごはん","ビール","ジュース"].includes(noun))return false;
- if(place==="しょくどう" && noun==="ダンス" && verb==="します。")return false;
- if(verb==="します。" && sportsNouns.has(noun) && ["りょう","しょくどう","スーパー","カラオケ"].includes(place)) return false;
+ if(place==="しょくどう" && verb==="かいました。" && !["ごはん","ビール","ジュース"].includes(noun))return false;
+ if(place==="しょくどう" && noun==="ダンス" && verb==="しました。")return false;
+ if(verb==="しました。" && sportsNouns.has(noun) && ["りょう","しょくどう","スーパー","カラオケ"].includes(place)) return false;
  return true;
 }
 
@@ -1370,15 +1370,15 @@ function verbFitsNoun(verb,noun){
 }
 function verbFitsPlace(verb,place){
  if(!place)return true;
- if(["たいいくかん","コート"].includes(place) && new Set(["かいものします。","そうじします。","うたいます。","～と でんわします","～と あいます"]).has(verb))return false;
- if(place==="スーパー" && verb==="たべます。")return false;
- if(verb==="かいます。" && ["カラオケ","コート","たいいくかん","グラウンド","うち","としょかん"].includes(place))return false;
- if(place==="カラオケ" && new Set(["うんどうします。","かいものします。","あるきます。","さんぽします。","はしります。","そうじします。","～と でんわします","～と あいます"]).has(verb))return false;
+ if(["たいいくかん","コート"].includes(place) && new Set(["かいものしました。","そうじしました。","うたいました。","～と でんわしました","～と あいました"]).has(verb))return false;
+ if(place==="スーパー" && verb==="たべました。")return false;
+ if(verb==="かいました。" && ["カラオケ","コート","たいいくかん","グラウンド","うち","としょかん"].includes(place))return false;
+ if(place==="カラオケ" && new Set(["うんどうしました。","かいものしました。","あるきました。","さんぽしました。","はしりました。","そうじしました。","～と でんわしました","～と あいました"]).has(verb))return false;
  /* 場所が意味上ほぼ決まる動詞だけ制限する */
- if(verb==="やまに のぼります。")return place==="やま";
+ if(verb==="やまに のぼりました。")return place==="やま";
  
- if(verb==="つくります。" && ["りょう","としょかん","スーパー"].includes(place))return false;
- if(verb==="かいます。" && ["りょう","としょかん"].includes(place))return false;
+ if(verb==="つくりました。" && ["りょう","としょかん","スーパー"].includes(place))return false;
+ if(verb==="かいました。" && ["りょう","としょかん"].includes(place))return false;
  return true;
 }
 function hasAvailableVerbForNoun(noun){
@@ -1573,9 +1573,9 @@ function renderSecondStage(){
  const secondDe=document.getElementById("secondDe");
  if(secondDe)secondDe.style.display="";
  if(placeEl)placeEl.style.display="inline-flex";
- if(selectedPlace==="りょこう" || selectedPlace==="でかけます"){
+ if(selectedPlace==="りょこう" || selectedPlace==="でかけました"){
    updateTravelSecondPlace();
- }else if(selectedPlace==="やまに のぼります"){
+ }else if(selectedPlace==="やまに のぼりました"){
    placeEl.innerHTML=`<span>やま</span><span class="preview-cn">山</span>`;
  }else{
    placeEl.innerHTML=`<span>${selectedPlace}</span><span class="preview-cn">${found?found[1]:""}</span>`;
@@ -1583,14 +1583,14 @@ function renderSecondStage(){
 }
 function selectPlace(v){
  if(!placeAllowed(v))return;
- if(v!==selectedPlace && (v==="りょこう"||v==="でかけます"))travelDestination="";
+ if(v!==selectedPlace && (v==="りょこう"||v==="でかけました"))travelDestination="";
  selectedPlace=v;
  if(selectedNoun && !nounFitsPlace(selectedNoun,v)) selectedNoun="";
  if(selectedNoun && selectedVerb && !comboFitsPlace(selectedNoun,selectedVerb,v)) selectedVerb="";
  if(selectedVerb && !verbFitsPlace(selectedVerb,v)) selectedVerb="";
  selectedNoun="";
  selectedVerb="";
- selectedPattern=v==="うち"?"かえります":(v==="やまに のぼります"?"のぼります":(v==="でかけます"?"でかけます":(v==="りょう"?"で":"へいきます")));
+ selectedPattern=v==="うち"?"かえりました":(v==="やまに のぼりました"?"のぼりました":(v==="でかけました"?"でかけました":(v==="りょう"?"で":"へいきました")));
  renderPlaces();
  updatePatterns();
  updatePreview();
@@ -1620,10 +1620,10 @@ function updatePreview(){
  let wo=document.getElementById("upperDormWo");
  let travelInput=document.getElementById("travelDestinationInput");
 
- if(selectedPlace==="りょこう" || selectedPlace==="でかけます"){
-   const isOuting=selectedPlace==="でかけます";
+ if(selectedPlace==="りょこう" || selectedPlace==="でかけました"){
+   const isOuting=selectedPlace==="でかけました";
    placeCard.style.display="inline-flex";
-   placeJp.textContent=isOuting?"でかけます。":"りょこう";
+   placeJp.textContent=isOuting?"でかけました。":"りょこう";
    placeCn.textContent=isOuting?"外出":"旅行";
    if(!travelInput){
      travelInput=document.createElement("input");
@@ -1640,12 +1640,12 @@ function updatePreview(){
      pat.insertAdjacentElement("afterend",travelInput);
      const go2=document.createElement("span");
      go2.id="travelGoText";
-     go2.textContent="へ いきます。";
+     go2.textContent="へ いきました。";
      travelInput.insertAdjacentElement("afterend",go2);
    }
    travelInput.style.display="inline-block";
    const go2=document.getElementById("travelGoText"); if(go2)go2.style.display="inline";
-   pat.textContent=isOuting?"":"へ いきます。";
+   pat.textContent=isOuting?"":"へ いきました。";
    const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
    if(noun)noun.remove();
    if(wo)wo.remove();
@@ -1661,21 +1661,21 @@ function updatePreview(){
  placeJp.textContent=selectedPlace||"＿＿";
  placeCn.textContent=found?found[1]:"";
 
- if(selectedPlace==="やまに のぼります"){
+ if(selectedPlace==="やまに のぼりました"){
    const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
    if(noun)noun.remove(); if(wo)wo.remove();
    placeJp.textContent="やま"; placeCn.textContent="山";
-   pat.textContent="に のぼります。";
- }else if(selectedPlace==="でかけます"){
+   pat.textContent="に のぼりました。";
+ }else if(selectedPlace==="でかけました"){
    const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
    if(noun)noun.remove(); if(wo)wo.remove();
-   placeJp.textContent="でかけます。"; placeCn.textContent="外出";
+   placeJp.textContent="でかけました。"; placeCn.textContent="外出";
    pat.textContent="";
  }else if(selectedPlace==="うち"){
    const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
    if(noun)noun.remove();
    if(wo)wo.remove();
-   pat.textContent="へ かえります。";
+   pat.textContent="へ かえりました。";
  }else if(selectedPlace==="りょう"){
    pat.textContent="で";
    let deHint=document.getElementById("firstStageDeHint");
@@ -1723,7 +1723,7 @@ function updatePreview(){
    const vc=document.getElementById("upperDormVerb"); if(vc)vc.remove();
    if(noun)noun.remove();
    if(wo)wo.remove();
-   pat.textContent=selectedPattern==="へいきます"?"へ いきます。":(selectedPattern||"＿＿＿＿");
+   pat.textContent=selectedPattern==="へいきました"?"へ いきました。":(selectedPattern||"＿＿＿＿");
  }
  refreshPostButton();
  updateLunchFoodTags();
@@ -1747,7 +1747,7 @@ function updateLunchFoodTags(){
  }
 }
 function updateTravelSecondPlace(){
- if(selectedPlace!=="りょこう" && selectedPlace!=="でかけます")return;
+ if(selectedPlace!=="りょこう" && selectedPlace!=="でかけました")return;
  const placeEl=document.getElementById("secondPlace");
  const secondLine=document.getElementById("secondPlaceLine");
  if(secondLine)secondLine.style.visibility="visible";
@@ -1765,7 +1765,7 @@ function refreshPostButton(){
  btn.classList.remove("choice-disabled");
  const placeOK=!!selectedPlace && placeAllowed(selectedPlace);
  const verbOK=!!selectedVerb;
- const destinationOK=!["りょこう","でかけます"].includes(selectedPlace) || !!travelDestination;
+ const destinationOK=!["りょこう","でかけました"].includes(selectedPlace) || !!travelDestination;
  btn.disabled=!(placeOK && verbOK && destinationOK && (activityMode!=="lunch" || lunchReady()));
 }
 
@@ -1784,7 +1784,7 @@ function setOutingAnswer(answer){
  renderPlaces();updatePreview();renderSecondStage();refreshPostButton();
 }
 const lunchPlaces=["りょう","そと","おみせ","そとのおみせ","しょくどう","ショッピングモール"];
-const lunchVerbs={"たべます。":"たべます","かいます。":"かいます"};
+const lunchVerbs={"たべました。":"たべました","かいました。":"かいました"};
 function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.every(name=>!!name.trim());}
 function setActivityMode(mode){
  const changed=activityMode!==mode;
@@ -1801,7 +1801,7 @@ function setActivityMode(mode){
  const guide=document.getElementById("modeGuideText");
  if(guide)guide.textContent={lunch:"发布一下自己中午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={lunch:"おひる、どこへ いきますか。",night:"よる、どこかへ いきますか。",weekend:"しゅうまつ、どこかへ いきますか。"}[mode];
+ if(question)question.textContent={lunch:"おひる、どこへ いきましたか。",night:"よる、どこかへ いきましたか。",weekend:"しゅうまつ、どこかへ いきましたか。"}[mode];
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
@@ -1889,24 +1889,24 @@ function postWeekend(){
    return;
  }
  if(!selectedVerb || (activityMode==="lunch" && !lunchReady()))return;
- if(["りょこう","でかけます"].includes(selectedPlace) && !travelDestination)return;
+ if(["りょこう","でかけました"].includes(selectedPlace) && !travelDestination)return;
  
 
  let lines=[];
- if(selectedPlace==="やまに のぼります"){
-   const line1="やまに のぼります。";
+ if(selectedPlace==="やまに のぼりました"){
+   const line1="やまに のぼりました。";
    let line2="やまで";
    if(selectedNoun) line2+=selectedNoun+"を";
    if(selectedVerb) line2+=selectedVerb;
    lines=[line1,line2];
- }else if(selectedPlace==="でかけます"){
-   const line1="でかけます。"+(travelDestination?travelDestination+"へ いきます。":"");
+ }else if(selectedPlace==="でかけました"){
+   const line1="でかけました。"+(travelDestination?travelDestination+"へ いきました。":"");
    let line2=(travelDestination?travelDestination:"")+"で";
    if(selectedNoun) line2+=selectedNoun+"を";
    if(selectedVerb) line2+=selectedVerb;
    lines=[line1,line2];
  }else if(selectedPlace==="うち"){
-   const line1="うちへ かえります。";
+   const line1="うちへ かえりました。";
    let line2="うちで";
    if(selectedNoun) line2+=selectedNoun+"を";
    if(selectedVerb) line2+=selectedVerb;
@@ -1917,13 +1917,13 @@ function postWeekend(){
    if(selectedVerb) line+=selectedVerb;
    lines=[line];
  }else if(selectedPlace==="りょこう"){
-   const line1="りょこうへ いきます。"+(travelDestination?travelDestination+"へ いきます。":"");
+   const line1="りょこうへ いきました。"+(travelDestination?travelDestination+"へ いきました。":"");
    let line2=(travelDestination?travelDestination:"")+"で";
    if(selectedNoun) line2+=selectedNoun+"を";
    if(selectedVerb) line2+=selectedVerb;
    lines=[line1,line2];
  }else{
-   const line1=selectedPlace+"へ いきます。";
+   const line1=selectedPlace+"へ いきました。";
    let line2=selectedPlace+"で";
    if(selectedNoun) line2+=selectedNoun+"を";
    if(selectedVerb) line2+=selectedVerb;
@@ -1932,7 +1932,7 @@ function postWeekend(){
 
  posts.push({
    id:Date.now(), author:userName, mode:activityMode, lines,
-   place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけます")?travelDestination:"",
+   place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけました")?travelDestination:"",
    foods:activityMode==="lunch"?lunchFoods.map(name=>name.trim()):[],
    noun:selectedNoun, verb:(selectedPartner&&selectedVerb.startsWith("～と")?selectedVerb.replace(/^～と\s*/,""):selectedVerb),partner:selectedPartner, pattern:selectedPattern, meTooCount:0
  });
@@ -2032,28 +2032,28 @@ function renderPosts(){
      const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
      const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"おひる、":p.mode==="night"?"よる、":"しゅうまつ、"}</span>`;
 
-     if(p.place==="やまに のぼります"){
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼります。</span></div>`;
+     if(p.place==="やまに のぼりました"){
+       const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼりました。</span></div>`;
        const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("やま","山")}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
-     }else if(p.place==="でかけます"){
+     }else if(p.place==="でかけました"){
        const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("でかけます。","外出")}${dest}<span>へ いきます。</span></div>`;
+       const row1=`<div class="posted-row">${name}${modePrefix}${card("でかけました。","外出")}${dest}<span>へ いきました。</span></div>`;
        const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="うち"){
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("うち",placeCn)}<span>へ かえります。</span></div>`;
+       const row1=`<div class="posted-row">${name}${modePrefix}${card("うち",placeCn)}<span>へ かえりました。</span></div>`;
        const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card("うち",placeCn)}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else if(p.place==="りょう"){
        d.innerHTML=`<div class="posted-row">${name}${modePrefix}${card("りょう",placeCn)}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
      }else if(p.place==="りょこう"){
        const dest=p.destination?`<span class="posted-card posted-destination"><span>${p.destination}</span></span>`:"";
-       const row1=`<div class="posted-row">${name}${modePrefix}${card("りょこう","旅行")}<span>へ いきます。</span>${dest}<span>へ いきます。</span></div>`;
+       const row1=`<div class="posted-row">${name}${modePrefix}${card("りょこう","旅行")}<span>へ いきました。</span>${dest}<span>へ いきました。</span></div>`;
        const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${dest}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }else{
-       const row1=`<div class="posted-row">${name}${modePrefix}${card(p.place,placeCn)}<span>へ いきます。</span></div>`;
+       const row1=`<div class="posted-row">${name}${modePrefix}${card(p.place,placeCn)}<span>へ いきました。</span></div>`;
        const row2=`<div class="posted-row posted-row-second"><span class="posted-name posted-name-spacer">${p.author?`（${p.author}）`:""}</span>${card(p.place,placeCn)}<span>で</span>${foodCards}${p.noun?"<span>を</span>":""}${postedVerb()}</div>`;
        d.innerHTML=row1+row2;
      }
