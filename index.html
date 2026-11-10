@@ -1438,8 +1438,8 @@ function renderNouns(){
      input.className="lunch-food-input";
      input.type="text";
      input.maxLength=80;
-     input.placeholder="请输入食物名称（可以用中文）";
-     input.setAttribute("aria-label","食物"+(index+1)+"：请输入食物名称（可以用中文）");
+     input.placeholder=index===1?"（可以不填）":"请输入食物名称（可以用中文）";
+     input.setAttribute("aria-label","食物"+(index+1)+"：请输入食物名称（可以用中文）"+(index===1?"（可以不填）":""));
      input.value=value;
      input.addEventListener("input",()=>{
        lunchFoods[index]=input.value;
@@ -1786,7 +1786,7 @@ function setOutingAnswer(answer){
 }
 const lunchPlaces=["りょう","そと","おみせ","そとのおみせ","しょくどう","ショッピングモール"];
 const lunchVerbs={"たべました。":"たべました","かいました。":"かいました"};
-function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && lunchFoods.every(name=>!!name.trim());}
+function lunchReady(){return lunchPlaces.includes(selectedPlace) && Object.hasOwn(lunchVerbs,selectedVerb) && !!lunchFoods[0].trim();}
 function setActivityMode(mode){
  const changed=activityMode!==mode;
  activityMode=mode;
