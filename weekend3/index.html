@@ -546,7 +546,7 @@ padding:7px 10px;font:600 17px inherit;cursor:pointer;transition:.15s}
 }
 
 
-/* おひる／よる／しゅうまつ 切り替え */
+/* ひる／きのう／しゅうまつ 切り替え */
 .mode-switch-wrap{
  display:flex;
  justify-content:flex-start;
@@ -1140,6 +1140,7 @@ function preserveFeedPosition(feed){
 }
 .outing-choices[hidden]{display:none;}
 .outing-choice{border-color:#3688cd;background:#fff;color:#24669e;display:flex;align-items:center;justify-content:center;flex:0 0 auto!important;}
+.outing-choice .jp{white-space:normal;line-height:1.3;}
 .outing-choice.active{background:#dceeff;border-color:#1767a8;}
 </style>
 <style>
@@ -1175,16 +1176,16 @@ function preserveFeedPosition(feed){
  <button id="feedExpandBtn" class="feed-expand-btn" type="button" aria-label="展开投稿">▼</button>
 
  <div class="composer">
-  <div class="guide"><span id="modeGuideText">发布一下自己中午的安排吧。</span></div>
+  <div class="guide"><span id="modeGuideText">说说自己中午做了什么吧。</span></div>
   <div class="mode-question-row">
 <div class="mode-switch-wrap">
   <div class="mode-switch" role="group" aria-label="時間帯切り替え">
-    <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">中午</button>
-    <button type="button" id="nightModeBtn" class="mode-switch-btn" onclick="setActivityMode('night')">晚上</button>
-    <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
+    <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">ひる</button>
+    <button type="button" id="nightModeBtn" class="mode-switch-btn" onclick="setActivityMode('night')">きのう</button>
+    <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">しゅうまつ</button>
   </div>
 </div>
-<div class="question">おひる、どこへ いきましたか。</div>
+<div class="question">ひる、どこへ いきましたか。</div>
 </div>
 
   <div class="preview">
@@ -1195,7 +1196,7 @@ function preserveFeedPosition(feed){
 
   <div id="outingChoices" class="outing-choices" role="group" aria-label="どこかへ いきましたか" hidden>
    <button type="button" id="outingYesBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('yes')"><span class="jp">はい</span></button>
-   <button type="button" id="outingNoBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')"><span class="jp">いいえ</span></button>
+   <button type="button" id="outingNoBtn" class="choice verb-choice outing-choice" aria-pressed="false" onclick="setOutingAnswer('no')"><span class="jp">いいえ、どこへもいきませんでした</span></button>
   </div>
   <div class="place-box">
    <div id="places" class="choices"></div>
@@ -1272,7 +1273,7 @@ function syncOutingButtonSizes(){
  if(!place)return;
  const size=place.getBoundingClientRect();
  document.querySelectorAll(".outing-choice").forEach(button=>{
-   button.style.width=size.width+"px";
+   button.style.width=(button.id==="outingNoBtn"?Math.max(size.width,Math.min(310,document.getElementById("outingChoices").clientWidth-size.width-24)):size.width)+"px";
    button.style.height=size.height+"px";
  });
 }
@@ -1799,9 +1800,9 @@ function setActivityMode(mode){
    document.getElementById(name+"ModeBtn")?.classList.toggle("active",mode===name);
  }
  const guide=document.getElementById("modeGuideText");
- if(guide)guide.textContent={lunch:"发布一下自己中午的安排吧。",night:"发布一下自己晚上的安排吧。",weekend:"发布一下自己的周末安排吧。"}[mode];
+ if(guide)guide.textContent={lunch:"说说自己中午做了什么吧。",night:"说说自己昨天做了什么吧。",weekend:"说说自己周末做了什么吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={lunch:"おひる、どこへ いきましたか。",night:"よる、どこかへ いきましたか。",weekend:"しゅうまつ、どこかへ いきましたか。"}[mode];
+ if(question)question.textContent={lunch:"ひる、どこへ いきましたか。",night:"きのう、どこかへ いきましたか。",weekend:"しゅうまつ、どこかへ いきましたか。"}[mode];
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
@@ -2030,7 +2031,7 @@ function renderPosts(){
        return verbCard+"<span>。</span>";
      };
      const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
-     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"おひる、":p.mode==="night"?"よる、":"しゅうまつ、"}</span>`;
+     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"ひる、":p.mode==="night"?"きのう、":"しゅうまつ、"}</span>`;
 
      if(p.place==="やまに のぼりました"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼりました。</span></div>`;
