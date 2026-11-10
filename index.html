@@ -1258,7 +1258,7 @@ let lunchFoods=["",""];
 let selectedPlace="",selectedPattern="";
 let travelDestination="";
 let userName=localStorage.getItem("weekend_user_name_v1")||"";
-let posts=JSON.parse(localStorage.getItem("weekend_posts_v1")||"[]");
+let posts=JSON.parse(localStorage.getItem("weekend3_posts_v1")||"[]");
 
 function saveName(){
  const v=document.getElementById("nameInput").value.trim();
@@ -1936,7 +1936,7 @@ function postWeekend(){
    foods:activityMode==="lunch"?lunchFoods.map(name=>name.trim()):[],
    noun:selectedNoun, verb:(selectedPartner&&selectedVerb.startsWith("～と")?selectedVerb.replace(/^～と\s*/,""):selectedVerb),partner:selectedPartner, pattern:selectedPattern, meTooCount:0
  });
- localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
+ localStorage.setItem("weekend3_posts_v1",JSON.stringify(posts));
  syncPostToDB(posts[posts.length-1]);
  renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 
@@ -1953,7 +1953,7 @@ function postWeekend(){
  selectedPlace=""; selectedPattern=""; selectedNoun=""; selectedVerb=""; selectedPartner=""; travelDestination="";
  renderPlaces(); updatePatterns(); updatePreview(); renderSecondStage();
 }
-const METOO_KEY="weekend_metoo_by_name_v1";
+const METOO_KEY="weekend3_metoo_by_name_v1";
 function meTooMap(){try{return JSON.parse(localStorage.getItem(METOO_KEY))||{}}catch{return {}}}
 function meTooKey(id){return userName+"::"+id}
 function hasMeToo(id){return !!meTooMap()[meTooKey(id)]}
@@ -1969,7 +1969,7 @@ function toggleMeToo(id){
  if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
  p.meTooCount++;
  incrementMeTooDB(id);
- localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
+ localStorage.setItem("weekend3_posts_v1",JSON.stringify(posts));
  renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
 }
 function enableAdminLongPress(el,postId){
@@ -1985,7 +1985,7 @@ function enableAdminLongPress(el,postId){
      if(confirm("この投稿を削除しますか？（确定删除这条投稿吗？）")){
        posts=posts.filter(p=>p.id!==postId);
        syncDeleteFromDB(postId);
-       localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
+       localStorage.setItem("weekend3_posts_v1",JSON.stringify(posts));
        renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
      }
    },750);
@@ -2152,7 +2152,7 @@ const firebaseConfig={
 };
 let db=null, dbRef=null, dbSet=null, dbRemove=null, dbOnValue=null, dbRunTransaction=null;
 let firebaseReady=false;
-const DB_POSTS_PATH="weekendSentence/posts";
+const DB_POSTS_PATH="weekend3Sentence/posts";
 
 async function initFirebaseSync(){
  try{
@@ -2191,7 +2191,7 @@ async function initFirebaseSync(){
    }
 
    posts=remote.sort((a,b)=>Number(a.createdAt||a.id||0)-Number(b.createdAt||b.id||0));
-   localStorage.setItem("weekend_posts_v1",JSON.stringify(posts));
+   localStorage.setItem("weekend3_posts_v1",JSON.stringify(posts));
    renderPosts();
    layoutMeTooButtons();
    forceMeTooCountTopRight();
@@ -2231,7 +2231,7 @@ async function incrementMeTooDB(id){
 }
 
 /* ===== v112 オフライン操作キュー ===== */
-const OFFLINE_QUEUE_KEY="weekend_offline_queue_v1";
+const OFFLINE_QUEUE_KEY="weekend3_offline_queue_v1";
 function readOfflineQueue(){
  try{return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY))||[]}
  catch{return []}
