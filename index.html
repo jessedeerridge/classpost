@@ -1180,12 +1180,12 @@ function preserveFeedPosition(feed){
   <div class="mode-question-row">
 <div class="mode-switch-wrap">
   <div class="mode-switch" role="group" aria-label="時間帯切り替え">
-    <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">ひる</button>
-    <button type="button" id="nightModeBtn" class="mode-switch-btn" onclick="setActivityMode('night')">きのう</button>
-    <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">しゅうまつ</button>
+    <button type="button" id="lunchModeBtn" class="mode-switch-btn active" onclick="setActivityMode('lunch')">中午</button>
+    <button type="button" id="nightModeBtn" class="mode-switch-btn" onclick="setActivityMode('night')">昨天</button>
+    <button type="button" id="weekendModeBtn" class="mode-switch-btn" onclick="setActivityMode('weekend')">周末</button>
   </div>
 </div>
-<div class="question">ひる、どこへ いきましたか。</div>
+<div class="question">おひる、どこへ いきましたか。</div>
 </div>
 
   <div class="preview">
@@ -1802,7 +1802,7 @@ function setActivityMode(mode){
  const guide=document.getElementById("modeGuideText");
  if(guide)guide.textContent={lunch:"说说自己中午做了什么吧。",night:"说说自己昨天做了什么吧。",weekend:"说说自己周末做了什么吧。"}[mode];
  const question=document.querySelector(".question");
- if(question)question.textContent={lunch:"ひる、どこへ いきましたか。",night:"きのう、どこかへ いきましたか。",weekend:"しゅうまつ、どこかへ いきましたか。"}[mode];
+ if(question)question.textContent={lunch:"おひる、どこへ いきましたか。",night:"きのう、どこかへ いきましたか。",weekend:"しゅうまつ、どこかへ いきましたか。"}[mode];
  renderPlaces();updatePatterns();updatePreview();renderSecondStage();refreshPostButton();
 }
 
@@ -2031,7 +2031,7 @@ function renderPosts(){
        return verbCard+"<span>。</span>";
      };
      const name=`<span class="posted-name">${p.author?`（${p.author}）`:""}</span>`;
-     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"ひる、":p.mode==="night"?"きのう、":"しゅうまつ、"}</span>`;
+     const modePrefix=`<span class="posted-mode-prefix">${p.mode==="lunch"?"おひる、":p.mode==="night"?"きのう、":"しゅうまつ、"}</span>`;
 
      if(p.place==="やまに のぼりました"){
        const row1=`<div class="posted-row">${name}${modePrefix}${card("やま","山")}<span>に のぼりました。</span></div>`;
