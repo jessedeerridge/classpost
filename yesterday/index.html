@@ -1153,11 +1153,15 @@ function preserveFeedPosition(feed){
 </style>
 <style>
 .posted-taste-phrase{position:relative;display:inline-flex;flex-direction:column;align-items:center;background:transparent;border:0}
-.feed .post .posted-taste{grid-template-columns:minmax(0,min(var(--posted-name-width,0px),30%)) minmax(0,1fr) auto;align-items:center}
+.feed .post .posted-row{display:block}
+.feed .post .posted-taste{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+.post-author{display:block;margin-bottom:4px;color:#555;font-size:13px}
 .feed .post .posted-taste .posted-body{transform:translateY(3px)}
 .feed .post .posted-taste .me-too-wrap{position:static!important;margin:0 0 0 6px!important;max-width:100%!important}
 .adjective-area.verb-area{background:#f5a33e;grid-template-columns:repeat(3,minmax(0,1fr))}
 .adjective-area[hidden]{display:none}
+.taste-area:has(.adjective-area:not([hidden])) .adjective-area{margin-top:0;border-radius:14px 14px 0 0}
+.taste-area:has(.adjective-area:not([hidden])) .taste-tokens{margin-top:0;border-radius:0 0 14px 14px}
 .taste-area{margin:10px 0 0;border:0;text-align:center}
 .taste-tokens.verb-area{background:#fff0d9;border:0;grid-template-columns:repeat(4,minmax(0,1fr))}
 .taste-tokens .verb-choice{display:flex;align-items:center;justify-content:center}
@@ -1225,9 +1229,9 @@ function preserveFeedPosition(feed){
     <span>を</span>
    </div>
    <div id="verbArea" class="verb-area"></div>
-   <div id="adjectiveArea" class="adjective-area verb-area" role="group" aria-label="形容詞" hidden></div>
    <div id="tasteArea" class="taste-area">
     <div class="taste-result-row"><div id="tasteResult" class="taste-result" aria-live="polite"></div><span id="tasteStatus" class="taste-status" role="status"></span></div>
+   <div id="adjectiveArea" class="adjective-area verb-area" role="group" aria-label="形容詞" hidden></div>
     <div id="tasteTokens" class="taste-tokens verb-area" role="group" aria-label="味の文を作る"></div>
    </div>
    
@@ -2147,6 +2151,9 @@ function renderPosts(){
      });
      row.appendChild(body);
    });
+   const author=d.querySelector(".posted-row .posted-name:not(.posted-name-spacer)");
+   if(author){author.className="post-author";d.prepend(author);}
+   d.querySelectorAll(".posted-name-spacer").forEach(spacer=>spacer.remove());
    const tasteRow=d.querySelector(".posted-taste");
    if(tasteRow)tasteRow.appendChild(d.querySelector(".me-too-wrap"));
    d.dataset.id=p.id;
