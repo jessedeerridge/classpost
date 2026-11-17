@@ -1153,11 +1153,14 @@ function preserveFeedPosition(feed){
 </style>
 <style>
 .posted-taste-phrase{position:relative;display:inline-flex;flex-direction:column;align-items:center;background:transparent;border:0}
+.feed .post .posted-taste{grid-template-columns:minmax(0,min(var(--posted-name-width,0px),30%)) minmax(0,1fr) auto;align-items:center}
+.feed .post .posted-taste .posted-body{transform:translateY(3px)}
+.feed .post .posted-taste .me-too-wrap{position:static!important;margin:0 0 0 6px!important;max-width:100%!important}
 .taste-area{margin:10px 0 0;border:0;text-align:center}
 .taste-tokens.verb-area{background:#fff0d9;border:0;grid-template-columns:repeat(4,minmax(0,1fr))}
 .taste-tokens .verb-choice{display:flex;align-items:center;justify-content:center}
 .taste-result-row{display:flex;align-items:center;justify-content:center;gap:8px;min-height:36px}
-.taste-result{min-height:1.5em;font-weight:600;color:#9a4e00}
+.taste-result{min-height:1.5em;font-weight:600;color:#000}
 .taste-status{width:24px;font-size:24px;line-height:1;font-weight:700;color:#dc2626}
 </style>
 </head>
@@ -1535,7 +1538,7 @@ function chooseTaste(part){
 function renderTaste(){
  const area=document.getElementById("tasteArea");
  area.hidden=false;
- document.getElementById("tasteResult").textContent=tasteParts.join("");
+ document.getElementById("tasteResult").textContent=tasteParts.join("")+(tasteComplete()?"。":"");
  document.getElementById("tasteStatus").textContent="";
  const tokens=document.getElementById("tasteTokens");tokens.replaceChildren();
  for(const part of tasteTokens){
@@ -1855,6 +1858,10 @@ function layoutMeTooButtons(){
      wrap.insertBefore(count,wrap.firstChild);
    }
 
+   if(post.querySelector(".posted-taste")){
+     wrap.style.visibility="";
+     return;
+   }
    const lastRow=rows[rows.length-1];
    const content=[...lastRow.children].filter(el=>{
      const cs=getComputedStyle(el);
@@ -2115,6 +2122,8 @@ function renderPosts(){
      });
      row.appendChild(body);
    });
+   const tasteRow=d.querySelector(".posted-taste");
+   if(tasteRow)tasteRow.appendChild(d.querySelector(".me-too-wrap"));
    d.dataset.id=p.id;
    feed.appendChild(d);
  });
