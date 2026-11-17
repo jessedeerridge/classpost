@@ -1282,7 +1282,7 @@ function renderPlaces(){
  availablePlaces.forEach(([jp,cn])=>{
   const b=document.createElement("button");
   b.className="choice"+(selectedPlace===jp?" selected":"");
-  b.innerHTML=`<span class="jp">${jp}</span><span class="cn">${cn}</span>`;
+  b.innerHTML=`<span class="jp">${jp==="ショッピングモール"?"ショッピング<br>モール":jp}</span><span class="cn">${cn}</span>`;
   b.disabled=!placeAllowed(jp);
   b.classList.toggle("choice-disabled",b.disabled);
   b.onclick=()=>selectPlace(jp);box.appendChild(b);
