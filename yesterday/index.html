@@ -1156,6 +1156,8 @@ function preserveFeedPosition(feed){
 .feed .post .posted-taste{grid-template-columns:minmax(0,min(var(--posted-name-width,0px),30%)) minmax(0,1fr) auto;align-items:center}
 .feed .post .posted-taste .posted-body{transform:translateY(3px)}
 .feed .post .posted-taste .me-too-wrap{position:static!important;margin:0 0 0 6px!important;max-width:100%!important}
+.adjective-area.verb-area{background:#f5a33e;grid-template-columns:repeat(3,minmax(0,1fr))}
+.adjective-area[hidden]{display:none}
 .taste-area{margin:10px 0 0;border:0;text-align:center}
 .taste-tokens.verb-area{background:#fff0d9;border:0;grid-template-columns:repeat(4,minmax(0,1fr))}
 .taste-tokens .verb-choice{display:flex;align-items:center;justify-content:center}
@@ -1223,6 +1225,7 @@ function preserveFeedPosition(feed){
     <span>を</span>
    </div>
    <div id="verbArea" class="verb-area"></div>
+   <div id="adjectiveArea" class="adjective-area verb-area" role="group" aria-label="形容詞" hidden></div>
    <div id="tasteArea" class="taste-area">
     <div class="taste-result-row"><div id="tasteResult" class="taste-result" aria-live="polite"></div><span id="tasteStatus" class="taste-status" role="status"></span></div>
     <div id="tasteTokens" class="taste-tokens verb-area" role="group" aria-label="味の文を作る"></div>
@@ -1248,7 +1251,7 @@ const nouns=[
  ["りょうり","做饭"],["アルバイト","打工"],["パーティー","聚会"],["バーベキュー","烧烤"],
  ["スマホ","手机"],["アニメ","动漫"],["ドラマ","电视剧"],["えいが","电影"],
  ["まんが","漫画"],["しょうせつ","小说"],["おんがく","音乐"],["ふく","衣服"],
- ["おかし","零食"],["え","画"],["にほんご","日语"],["えいご","英语"],["しゃしん","照片"]
+ ["おかし","零食"],["え","画"],["にほんご","日语"],["えいご","英语"],["しゅくだい","作业"],["しゃしん","照片"]
 ];
 const verbs=[
  ["たべました。","吃","wo"],["のみました。","喝","wo"],["しました。","做","wo"],
@@ -1304,6 +1307,7 @@ const nounVerbMap={
  "まんが":["よみました。","かいました。"],"しょうせつ":["よみました。","かいました。","かきました。"],
  "おんがく":["ききました。"],"ふく":["かいました。"],"おかし":["たべました。","かいました。","つくりました。"],
  "え":["かきました。","みました。"],"にほんご":["べんきょうしました。","ききました。","よみました。"],"えいご":["べんきょうしました。","ききました。","よみました。"],
+ "しゅくだい":["しました。"],
  "しゃしん":["とりました。","みました。"]
 };
 const noNounVerbs=new Set([
@@ -1510,7 +1514,19 @@ function updateVerbPreview(){
  }
  updatePreview();
 }
-const tasteSentences=["おいしかったです","おいしくなかったです"];
+const adjectives=[
+ {jp:"おいしい",cn:"好吃",stem:"おいし",positive:"很好吃",negative:"不好吃"},
+ {jp:"たのしい",cn:"开心",stem:"たのし",positive:"很开心",negative:"不开心"},
+ {jp:"おもしろい",cn:"有趣",stem:"おもしろ",positive:"很有趣",negative:"没意思"},
+ {jp:"むずかしい",cn:"难",stem:"むずかし",positive:"很难",negative:"不难"},
+ {jp:"ひま",cn:"空闲",stem:"ひま",na:true,positive:"很空闲",negative:"不空闲"},
+ {jp:"たいへん",cn:"辛苦",stem:"たいへん",na:true,positive:"很辛苦",negative:"不辛苦"}
+];
+let selectedAdjective=adjectives[0];
+function adjectiveSentences(a){return a.na?[a.stem+"でした",a.stem+"じゃなかったです"]:[a.stem+"かったです",a.stem+"くなかったです"];}
+const tasteTranslations=Object.fromEntries(adjectives.flatMap(a=>adjectiveSentences(a).map((sentence,i)=>[sentence,i?a.negative:a.positive])));
+function currentAdjective(){return activityMode==="night"?selectedAdjective:adjectives[0];}
+function currentTasteSentences(){return adjectiveSentences(currentAdjective());}
 let tasteParts=[];
 let tasteErrorTimer;
 const tasteEndings=["かった","です","く","なかった"];
@@ -1518,12 +1534,12 @@ for(let i=tasteEndings.length-1;i>0;i--){
  const j=Math.floor(Math.random()*(i+1));
  [tasteEndings[i],tasteEndings[j]]=[tasteEndings[j],tasteEndings[i]];
 }
-const tasteTokens=["おいし","い",...tasteEndings];
-function needsTaste(){return ["たべました。","かいました。"].includes(selectedVerb);}
-function tasteComplete(){return tasteSentences.includes(tasteParts.join(""));}
+function currentTasteTokens(){const a=currentAdjective();return a.na?[a.stem,...tasteEndings.map(token=>token==="かった"?"でした":token==="く"?"じゃ":token)]:[a.stem,"い",...tasteEndings];}
+function needsTaste(){return activityMode==="night" || ["たべました。","かいました。"].includes(selectedVerb);}
+function tasteComplete(){return currentTasteSentences().includes(tasteParts.join(""));}
 function chooseTaste(part){
  const candidate=tasteParts.join("")+part;
- if(!tasteSentences.some(sentence=>sentence.startsWith(candidate))){
+ if(!currentTasteSentences().some(sentence=>sentence.startsWith(candidate))){
    tasteParts=[];
    renderTaste();
    refreshPostButton();
@@ -1536,12 +1552,21 @@ function chooseTaste(part){
  tasteParts.push(part);renderTaste();refreshPostButton();
 }
 function renderTaste(){
+ const selector=document.getElementById("adjectiveArea");selector.hidden=activityMode!=="night";selector.replaceChildren();
+ for(const adjective of adjectives){
+   const button=document.createElement("button");button.type="button";
+   button.className="choice verb-choice"+(adjective===selectedAdjective?" selected":"");
+   button.innerHTML=`<span class="jp">${adjective.jp}</span><span class="cn">${adjective.cn}</span>`;
+   button.onclick=()=>{if(selectedAdjective!==adjective){selectedAdjective=adjective;tasteParts=[];}renderTaste();refreshPostButton();};
+   selector.appendChild(button);
+ }
+
  const area=document.getElementById("tasteArea");
  area.hidden=false;
  document.getElementById("tasteResult").textContent=tasteParts.join("")+(tasteComplete()?"。":"");
  document.getElementById("tasteStatus").textContent="";
  const tokens=document.getElementById("tasteTokens");tokens.replaceChildren();
- for(const part of tasteTokens){
+ for(const part of currentTasteTokens()){
    const button=document.createElement("button");button.type="button";button.className="choice verb-choice";
    const label=document.createElement("span");label.className="jp";label.textContent=part;button.appendChild(label);
    button.onclick=()=>chooseTaste(part);tokens.appendChild(button);
@@ -2083,14 +2108,14 @@ function renderPosts(){
      d.textContent=(p.author?`（${p.author}）`:"")+(p.text||"");
    }
 
-   if(tasteSentences.includes(p.taste)){
+   if(Object.hasOwn(tasteTranslations,p.taste)){
      const row=document.createElement("div");row.className="posted-row posted-row-second posted-taste";
      const name=document.createElement("span");name.className="posted-name posted-name-spacer";
      name.textContent=p.author?`（${p.author}）`:"";
      const card=document.createElement("span");card.className="posted-taste-phrase";
      const jp=document.createElement("span");jp.textContent=p.taste;
      const cn=document.createElement("span");cn.className="posted-cn";
-     cn.textContent=p.taste==="おいしかったです"?"很好吃":"不好吃";
+     cn.textContent=tasteTranslations[p.taste];
      card.append(jp,cn);
      const period=document.createElement("span");period.textContent="。";
      row.append(name,card,period);d.appendChild(row);
