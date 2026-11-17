@@ -1526,8 +1526,8 @@ const adjectives=[
  {jp:"ひま",cn:"空闲",stem:"ひま",na:true,positive:"很空闲",negative:"不空闲"},
  {jp:"たいへん",cn:"辛苦",stem:"たいへん",na:true,positive:"很辛苦",negative:"不辛苦"}
 ];
-let selectedAdjective=adjectives[0];
-function adjectiveSentences(a){return a.na?[a.stem+"でした",a.stem+"じゃなかったです"]:[a.stem+"かったです",a.stem+"くなかったです"];}
+let selectedAdjective=null;
+function adjectiveSentences(a){if(!a)return [];return a.na?[a.stem+"でした",a.stem+"じゃなかったです"]:[a.stem+"かったです",a.stem+"くなかったです"];}
 const tasteTranslations=Object.fromEntries(adjectives.flatMap(a=>adjectiveSentences(a).map((sentence,i)=>[sentence,i?a.negative:a.positive])));
 function currentAdjective(){return activityMode==="night"?selectedAdjective:adjectives[0];}
 function currentTasteSentences(){return adjectiveSentences(currentAdjective());}
@@ -1538,7 +1538,7 @@ for(let i=tasteEndings.length-1;i>0;i--){
  const j=Math.floor(Math.random()*(i+1));
  [tasteEndings[i],tasteEndings[j]]=[tasteEndings[j],tasteEndings[i]];
 }
-function currentTasteTokens(){const a=currentAdjective();return a.na?[a.stem,...tasteEndings.map(token=>token==="かった"?"でした":token==="く"?"じゃ":token)]:[a.stem,"い",...tasteEndings];}
+function currentTasteTokens(){const a=currentAdjective();if(!a)return [];return a.na?[a.stem,...tasteEndings.map(token=>token==="かった"?"でした":token==="く"?"じゃ":token)]:[a.stem,"い",...tasteEndings];}
 function needsTaste(){return activityMode==="night" || ["たべました。","かいました。"].includes(selectedVerb);}
 function tasteComplete(){return currentTasteSentences().includes(tasteParts.join(""));}
 function chooseTaste(part){
@@ -1567,7 +1567,7 @@ function renderTaste(){
 
  const area=document.getElementById("tasteArea");
  area.hidden=false;
- document.getElementById("tasteResult").textContent=tasteParts.join("")+(tasteComplete()?"。":"");
+ document.getElementById("tasteResult").textContent=currentAdjective()?tasteParts.join("")+(tasteComplete()?"。":""):"";
  document.getElementById("tasteStatus").textContent="";
  const tokens=document.getElementById("tasteTokens");tokens.replaceChildren();
  for(const part of currentTasteTokens()){
