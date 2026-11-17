@@ -1153,9 +1153,11 @@ function preserveFeedPosition(feed){
 </style>
 <style>
 .taste-area{margin:10px 0 0;border:0;text-align:center}
-.taste-tokens.verb-area{background:#fff0d9;border:0}
+.taste-tokens.verb-area{background:#fff0d9;border:0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.taste-tokens .verb-choice{display:flex;align-items:center;justify-content:center}
+.taste-result-row{display:flex;align-items:center;justify-content:center;gap:8px;min-height:36px}
 .taste-result{min-height:1.5em;font-weight:600;color:#9a4e00}
-.taste-status{min-height:1.5em;font-size:24px;font-weight:700;color:#dc2626}
+.taste-status{width:24px;font-size:24px;line-height:1;font-weight:700;color:#dc2626}
 .posted-taste{color:#9a4e00}
 </style>
 </head>
@@ -1219,9 +1221,8 @@ function preserveFeedPosition(feed){
    </div>
    <div id="verbArea" class="verb-area"></div>
    <div id="tasteArea" class="taste-area">
-    <div id="tasteResult" class="taste-result" aria-live="polite"></div>
+    <div class="taste-result-row"><div id="tasteResult" class="taste-result" aria-live="polite"></div><span id="tasteStatus" class="taste-status" role="status"></span></div>
     <div id="tasteTokens" class="taste-tokens verb-area" role="group" aria-label="味の文を作る"></div>
-    <div id="tasteStatus" class="taste-status" role="status"></div>
    </div>
    
   
@@ -1509,12 +1510,22 @@ function updateVerbPreview(){
 const tasteSentences=["おいしかったです","おいしくなかったです"];
 let tasteParts=[];
 let tasteVerb="";
+let tasteErrorTimer;
+const tasteEndings=["かった","です","く","なかった"];
+for(let i=tasteEndings.length-1;i>0;i--){
+ const j=Math.floor(Math.random()*(i+1));
+ [tasteEndings[i],tasteEndings[j]]=[tasteEndings[j],tasteEndings[i]];
+}
+const tasteTokens=["おいし","い",...tasteEndings];
 function needsTaste(){return ["たべました。","かいました。"].includes(selectedVerb);}
 function tasteComplete(){return tasteSentences.includes(tasteParts.join(""));}
 function chooseTaste(part){
  const candidate=tasteParts.join("")+part;
  if(!tasteSentences.some(sentence=>sentence.startsWith(candidate))){
-   document.getElementById("tasteStatus").textContent="×";
+   const status=document.getElementById("tasteStatus");
+   clearTimeout(tasteErrorTimer);
+   status.textContent="×";
+   tasteErrorTimer=setTimeout(()=>{status.textContent="";},1000);
    return;
  }
  tasteParts.push(part);renderTaste();refreshPostButton();
@@ -1526,10 +1537,9 @@ function renderTaste(){
  document.getElementById("tasteResult").textContent=tasteParts.join("");
  document.getElementById("tasteStatus").textContent="";
  const tokens=document.getElementById("tasteTokens");tokens.replaceChildren();
- for(const part of ["おいし","い","かった","です","く","なかった","です"]){
+ for(const part of tasteTokens){
    const button=document.createElement("button");button.type="button";button.className="choice verb-choice";
    const label=document.createElement("span");label.className="jp";label.textContent=part;button.appendChild(label);
-   const translation=document.createElement("span");translation.className="cn";translation.textContent="\u00a0";translation.setAttribute("aria-hidden","true");button.appendChild(translation);
    button.onclick=()=>chooseTaste(part);tokens.appendChild(button);
  }
 }
