@@ -1151,6 +1151,15 @@ function preserveFeedPosition(feed){
  #verbArea.lunch-verb-area > .verb-choice{flex-basis:calc((100% - 6px)/3);}
 }
 </style>
+<style>
+.taste-area{margin:10px auto;padding:12px;border:2px solid #ed982f;border-radius:12px;background:#fff0d9;max-width:600px;text-align:center}
+.taste-area[hidden]{display:none}
+.taste-tokens{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:8px 0}
+.taste-tokens button{padding:9px 13px;border:1px solid #d77d12;border-radius:8px;background:#ffce8a;font:inherit;cursor:pointer}
+.taste-result{min-height:1.5em;font-weight:600;color:#9a4e00}
+.taste-status{min-height:1.5em;font-size:13px;color:#9a4e00}
+.posted-taste{color:#9a4e00}
+</style>
 </head>
 <body>
 <div id="nameModal" class="name-modal">
@@ -1211,6 +1220,12 @@ function preserveFeedPosition(feed){
     <span>を</span>
    </div>
    <div id="verbArea" class="verb-area"></div>
+   <div id="tasteArea" class="taste-area" hidden>
+    <div id="tasteResult" class="taste-result" aria-live="polite"></div>
+    <div id="tasteTokens" class="taste-tokens" role="group" aria-label="味の文を作る"></div>
+    <button type="button" onclick="resetTaste()">重选</button>
+    <div id="tasteStatus" class="taste-status" role="status"></div>
+   </div>
    
   
   </div>
@@ -1494,7 +1509,34 @@ function updateVerbPreview(){
  }
  updatePreview();
 }
+const tasteSentences=["おいしかったです","おいしくなかったです"];
+let tasteParts=[];
+let tasteVerb="";
+function needsTaste(){return ["たべました。","かいました。"].includes(selectedVerb);}
+function tasteComplete(){return tasteSentences.includes(tasteParts.join(""));}
+function resetTaste(){tasteParts=[];renderTaste();refreshPostButton();}
+function chooseTaste(part){
+ const candidate=tasteParts.join("")+part;
+ if(!tasteSentences.some(sentence=>sentence.startsWith(candidate))){
+   document.getElementById("tasteStatus").textContent="顺序不对，请重新选择。";
+   return;
+ }
+ tasteParts.push(part);renderTaste();refreshPostButton();
+}
+function renderTaste(){
+ const area=document.getElementById("tasteArea");
+ if(tasteVerb!==selectedVerb){tasteParts=[];tasteVerb=selectedVerb;}
+ area.hidden=!needsTaste();
+ document.getElementById("tasteResult").textContent=tasteParts.join("")||"＿＿＿＿";
+ document.getElementById("tasteStatus").textContent=tasteComplete()?"完成": "请按顺序选择词语。";
+ const tokens=document.getElementById("tasteTokens");tokens.replaceChildren();
+ for(const part of ["おいし","い","かった","です","く","なかった","です"]){
+   const button=document.createElement("button");button.type="button";button.textContent=part;
+   button.onclick=()=>chooseTaste(part);tokens.appendChild(button);
+ }
+}
 function renderVerbs(){
+ renderTaste();
  const area=document.getElementById("verbArea");
  if(!area)return;
  area.classList.toggle("lunch-verb-area",activityMode==="lunch");
@@ -1736,7 +1778,7 @@ function refreshPostButton(){
  const placeOK=!!selectedPlace && placeAllowed(selectedPlace);
  const verbOK=!!selectedVerb;
  const destinationOK=!["りょこう","でかけました"].includes(selectedPlace) || !!travelDestination;
- btn.disabled=!(placeOK && verbOK && destinationOK && (activityMode!=="lunch" || lunchReady()));
+ btn.disabled=!(placeOK && verbOK && destinationOK && (!needsTaste() || tasteComplete()) && (activityMode!=="lunch" || lunchReady()));
 }
 
 let activityMode="lunch";
@@ -1848,7 +1890,7 @@ function postWeekend(){
    alert("发了这么多，谢谢你！");
    return;
  }
- if(!selectedVerb || (activityMode==="lunch" && !lunchReady()))return;
+ if(!selectedVerb || (activityMode==="lunch" && !lunchReady()) || (needsTaste() && !tasteComplete()))return;
  if(["りょこう","でかけました"].includes(selectedPlace) && !travelDestination)return;
  
 
@@ -1890,7 +1932,9 @@ function postWeekend(){
    lines=[line1,line2];
  }
 
+ if(needsTaste())lines.push(tasteParts.join("")+"。");
  posts.push({
+   taste:needsTaste()?tasteParts.join(""):"",
    id:Date.now(), author:userName, mode:activityMode, lines,
    place:selectedPlace, destination:(selectedPlace==="りょこう"||selectedPlace==="でかけました")?travelDestination:"",
    foods:activityMode==="lunch"?lunchFoods.map(name=>name.trim()).filter(Boolean):[],
@@ -2038,6 +2082,10 @@ function renderPosts(){
      wrap.appendChild(count);
      wrap.appendChild(btn);
      d.appendChild(wrap);
+   }
+   if(tasteSentences.includes(p.taste)){
+     const row=document.createElement("div");row.className="posted-row posted-taste";
+     row.textContent=p.taste+"。";d.appendChild(row);
    }
    enableAdminLongPress(d,p.id);
    d.querySelectorAll(".posted-row").forEach(row=>{
