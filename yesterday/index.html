@@ -1152,6 +1152,7 @@ function preserveFeedPosition(feed){
 }
 </style>
 <style>
+.posted-taste-phrase{position:relative;display:inline-flex;flex-direction:column;align-items:center;background:transparent;border:0}
 .taste-area{margin:10px 0 0;border:0;text-align:center}
 .taste-tokens.verb-area{background:#fff0d9;border:0;grid-template-columns:repeat(4,minmax(0,1fr))}
 .taste-tokens .verb-choice{display:flex;align-items:center;justify-content:center}
@@ -2075,6 +2076,18 @@ function renderPosts(){
      d.textContent=(p.author?`（${p.author}）`:"")+(p.text||"");
    }
 
+   if(tasteSentences.includes(p.taste)){
+     const row=document.createElement("div");row.className="posted-row posted-row-second posted-taste";
+     const name=document.createElement("span");name.className="posted-name posted-name-spacer";
+     name.textContent=p.author?`（${p.author}）`:"";
+     const card=document.createElement("span");card.className="posted-taste-phrase";
+     const jp=document.createElement("span");jp.textContent=p.taste;
+     const cn=document.createElement("span");cn.className="posted-cn";
+     cn.textContent=p.taste==="おいしかったです"?"很好吃":"不好吃";
+     card.append(jp,cn);
+     const period=document.createElement("span");period.textContent="。";
+     row.append(name,card,period);d.appendChild(row);
+   }
    {
      const verbText=p.verb||"";
      if(p.meTooCount==null)p.meTooCount=Array.isArray(p.meToo)?p.meToo.length:0;
@@ -2092,18 +2105,6 @@ function renderPosts(){
      wrap.appendChild(count);
      wrap.appendChild(btn);
      d.appendChild(wrap);
-   }
-   if(tasteSentences.includes(p.taste)){
-     const row=document.createElement("div");row.className="posted-row posted-row-second posted-taste";
-     const name=document.createElement("span");name.className="posted-name posted-name-spacer";
-     name.textContent=p.author?`（${p.author}）`:"";
-     const card=document.createElement("span");card.className="posted-card";
-     const jp=document.createElement("span");jp.textContent=p.taste;
-     const cn=document.createElement("span");cn.className="posted-cn";
-     cn.textContent=p.taste==="おいしかったです"?"很好吃":"不好吃";
-     card.append(jp,cn);
-     const period=document.createElement("span");period.textContent="。";
-     row.append(name,card,period);d.appendChild(row);
    }
    enableAdminLongPress(d,p.id);
    d.querySelectorAll(".posted-row").forEach(row=>{
