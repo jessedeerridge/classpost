@@ -1509,7 +1509,6 @@ function updateVerbPreview(){
 }
 const tasteSentences=["おいしかったです","おいしくなかったです"];
 let tasteParts=[];
-let tasteVerb="";
 let tasteErrorTimer;
 const tasteEndings=["かった","です","く","なかった"];
 for(let i=tasteEndings.length-1;i>0;i--){
@@ -1522,6 +1521,9 @@ function tasteComplete(){return tasteSentences.includes(tasteParts.join(""));}
 function chooseTaste(part){
  const candidate=tasteParts.join("")+part;
  if(!tasteSentences.some(sentence=>sentence.startsWith(candidate))){
+   tasteParts=[];
+   renderTaste();
+   refreshPostButton();
    const status=document.getElementById("tasteStatus");
    clearTimeout(tasteErrorTimer);
    status.textContent="×";
@@ -1532,7 +1534,6 @@ function chooseTaste(part){
 }
 function renderTaste(){
  const area=document.getElementById("tasteArea");
- if(tasteVerb!==selectedVerb){tasteParts=[];tasteVerb=selectedVerb;}
  area.hidden=false;
  document.getElementById("tasteResult").textContent=tasteParts.join("");
  document.getElementById("tasteStatus").textContent="";
@@ -1951,6 +1952,8 @@ function postWeekend(){
  localStorage.setItem("weekend3_posts_v1",JSON.stringify(posts));
  syncPostToDB(posts[posts.length-1]);
  renderPosts(); layoutMeTooButtons(); forceMeTooCountTopRight();
+
+ tasteParts=[];
 
  /* 投稿したら投稿欄を下へ展開 */
  const feed=document.getElementById("feed");
